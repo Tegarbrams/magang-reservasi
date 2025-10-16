@@ -61,7 +61,7 @@
             <div class="flex items-center justify-between">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <h1 class="text-2xl font-bold text-gold">LUXURY</h1>
+                    <h1 class="text-2xl font-bold text-gold">NDALEM HANOMAN </h1>
                 </div>
                 
                 <!-- Menu Desktop -->
@@ -98,10 +98,10 @@
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div>
                     <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-                        Pengalaman <span class="text-gold">Luxury</span> Yang Tak Terlupakan
+                        Nuansa caffe <span class="text-gold">Ndalem Hanoman</span> Yang Tak Terlupakan
                     </h1>
                     <p class="text-gray-400 text-lg mb-8">
-                        Nikmati kemewahan dan kenyamanan di setiap momen bersama kami. Kami hadirkan pengalaman terbaik dengan fasilitas premium dan pelayanan eksklusif.
+                        Nikmati suasana klasik dengan sentuhan modern di Café Ndalem Hanoman. Kami hadirkan kenyamanan dan kehangatan khas budaya Jawa dalam setiap momen Anda.
                     </p>
                     <div class="flex flex-wrap gap-4">
                         <a href="/reservasi" class="bg-gold hover-gold text-black px-8 py-3 rounded-lg font-semibold transition duration-300">
