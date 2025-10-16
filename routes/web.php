@@ -2,6 +2,7 @@
 
 // routes/web.php
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ReservasiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,3 +26,6 @@ Route::get('/home', function () {
 Route::get('/admin/dashboard', function () {
     return view('admin.dashboard');
 })->name('admin.dashboard')->middleware('auth', 'role:2');
+
+Route::get('/reservasi', [ReservasiController::class, 'index'])->name('reservasi.index');
+Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
