@@ -31,7 +31,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'no_hp' => $request->no_hp,
             'password' => Hash::make($request->password),
-            'role' => 1 // default user
+            'role' => 0 // ✅ default user = 0
         ]);
 
         return redirect()->route('login')->with('success', 'Register berhasil, silakan login.');
@@ -51,7 +51,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            if ($user->role == 2) {
+            if ($user->role == 1) { // ✅ Admin = 1
                 return redirect()->route('admin.dashboard');
             }
             return redirect()->route('home');
