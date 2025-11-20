@@ -101,20 +101,21 @@
                         Nuansa caffe <span class="text-gold">Ndalem Hanoman</span> Yang Tak Terlupakan
                     </h1>
                     <p class="text-gray-400 text-lg mb-8">
-                        Nikmati suasana klasik dengan sentuhan modern di Café Ndalem Hanoman. Kami hadirkan kenyamanan dan kehangatan khas budaya Jawa dalam setiap momen Anda.
+                        "Ciptakan momen berharga bersama orang terdekat di Café Ndalem Hanoman—tempat di mana tradisi dan modernitas bertemu."
                     </p>
                     <div class="flex flex-wrap gap-4">
                         <a href="/reservasi" class="bg-gold hover-gold text-black px-8 py-3 rounded-lg font-semibold transition duration-300">
-                            Reservasi Sekarang
+                            Reservasi 
                         </a>
                         <a href="#fasilitas" class="border-2 border-gold text-gold hover:bg-gold hover:text-black px-8 py-3 rounded-lg font-semibold transition duration-300">
-                            Lihat Fasilitas
+                            Fasilitas 
                         </a>
                     </div>
                 </div>
                 <div class="relative">
                     <div class="bg-gold bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 border border-gold border-opacity-30">
-                        <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800" alt="Luxury Hotel" class="rounded-lg w-full h-96 object-cover shadow-2xl">
+                        <img src="{{ asset('assets/gambar-gedung.png') }}" alt="Gambar gedung" class="rounded-lg w-full h-96 object-cover shadow-2xl">
+
                     </div>
                 </div>
             </div>
@@ -125,26 +126,33 @@
     <section id="fasilitas" class="py-20 bg-dark">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold mb-4">Fasilitas <span class="text-gold">Premium</span></h2>
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">Fasilitas <span class="text-gold">Reservasi</span></h2>
                 <p class="text-gray-400 text-lg max-w-2xl mx-auto">
-                    Fasilitas kelas dunia yang dirancang untuk kenyamanan dan kepuasan Anda
+                   Layanan dan fasilitas lengkap untuk menunjang kebutuhan acara Anda
                 </p>
             </div>
             
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- Fasilitas 1 -->
                 <div class="bg-darker rounded-xl p-8 hover:transform hover:-translate-y-2 transition duration-300 border border-gray-800 hover:border-gold">
-                    <div class="bg-gold bg-opacity-10 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4">Suite Premium</h3>
-                    <p class="text-gray-400">
-                        Kamar suite dengan desain mewah, tempat tidur king size, dan pemandangan kota yang menakjubkan.
-                    </p>
-                </div>
-                
+
+    <!-- FOTO -->
+    <img src="{{ asset('assets/TV.png') }}" 
+         class="w-full h-40 object-cover rounded-lg mb-6" alt="foto fasilitas">
+
+    <!-- ICON -->
+    <div class="bg-gold bg-opacity-10 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
+        <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+        </svg>
+    </div>
+
+    <!-- JUDUL -->
+    <h3 class="text-2xl font-bold mb-4">TV</h3>
+
+</div>
+
                 <!-- Fasilitas 2 -->
                 <div class="bg-darker rounded-xl p-8 hover:transform hover:-translate-y-2 transition duration-300 border border-gray-800 hover:border-gold">
                     <div class="bg-gold bg-opacity-10 w-16 h-16 rounded-lg flex items-center justify-center mb-6">
