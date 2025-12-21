@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+
+    
+
     public function up(): void
     {
         // 1. Paket Menu
@@ -47,24 +50,24 @@ return new class extends Migration
         });
 
         // 5. Reservasi
-        Schema::create('reservasis', function (Blueprint $table) {
-            $table->id();
-            $table->string('nomor_reservasi')->unique();
-            $table->string('nama');
-            $table->string('no_hp');
-            $table->string('email');
-            $table->unsignedBigInteger('paket_menu');
-            $table->unsignedBigInteger('ruangan');
-            $table->time('jam_check_in');
-            $table->decimal('total_harga', 12, 2);
-            $table->string('bukti_pembayaran');
-            $table->text('catatan')->nullable();
-            $table->enum('status', ['pending', 'confirmed', 'completed', 'cancelled'])->default('pending');
-            $table->timestamps();
+    Schema::create('reservasis', function (Blueprint $table) {
+    $table->id();
+    $table->string('nomor_reservasi')->unique(); // Bukan auto increment
+    $table->string('nama');
+    $table->string('no_hp');
+    $table->string('email');
+    $table->unsignedBigInteger('paket_menu');
+    $table->unsignedBigInteger('ruangan');
+    $table->string('jam_check_in');
+    $table->decimal('total_harga', 12, 2);
+    $table->string('bukti_pembayaran')->nullable();
+    $table->text('catatan')->nullable();
+    $table->enum('status', ['pending', 'approved', 'rejected', 'cancelled'])->default('pending');
+    $table->timestamps();
 
-            $table->foreign('paket_menu')->references('id')->on('paket_menus')->onDelete('restrict');
-            $table->foreign('ruangan')->references('id')->on('ruangans')->onDelete('restrict');
-        });
+    $table->foreign('paket_menu')->references('id')->on('paket_menus')->onDelete('restrict');
+    $table->foreign('ruangan')->references('id')->on('ruangans')->onDelete('restrict');
+});
 
         // 6. Pivot Tables
         Schema::create('reservasi_fasilitas', function (Blueprint $table) {
@@ -100,4 +103,6 @@ return new class extends Migration
         Schema::dropIfExists('ruangans');
         Schema::dropIfExists('paket_menus');
     }
+
+    
 };
