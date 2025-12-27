@@ -26,6 +26,16 @@ class Reservasi extends Model
         'status'
     ];
 
+    protected $casts = [
+        'tanggal' => 'date',
+        'total_harga' => 'decimal:2',
+        'jumlah_dibayar' => 'decimal:2',
+        'sisa_pembayaran' => 'decimal:2',
+    ];
+
+    // ✅ PENTING: Append custom attributes
+    protected $appends = ['paket_menu_obj', 'ruangan_obj'];
+
     protected static function boot()
     {
         parent::boot();
@@ -49,38 +59,48 @@ class Reservasi extends Model
     }
 
     // ============================================
-    // 👇 TAMBAHKAN RELASI INI
+    // RELASI - GUNAKAN NAMA BERBEDA
     // ============================================
     
     public function paketMenu()
     {
-        return $this->belongsTo(PaketMenu::class, 'paket_menu');
+        return $this->belongsTo(PaketMenu::class, 'paket_menu', 'id');
     }
 
-    public function ruangan()
+    public function ruanganRel()
     {
-        return $this->belongsTo(Ruangan::class, 'ruangan');
+        return $this->belongsTo(Ruangan::class, 'ruangan', 'id');
     }
 
-    // 👇 RELASI MANY-TO-MANY untuk Fasilitas
+    // ✅ ACCESSOR: Supaya bisa akses $reservasi->paket_menu_obj
+    public function getPaketMenuObjAttribute()
+    {
+        return $this->paketMenu;
+    }
+
+    // ✅ ACCESSOR: Supaya bisa akses $reservasi->ruangan_obj
+    public function getRuanganObjAttribute()
+    {
+        return $this->ruanganRel;
+    }
+
     public function fasilitas()
     {
         return $this->belongsToMany(
             Fasilitas::class,
-            'reservasi_fasilitas',  // nama tabel pivot
-            'reservasi_id',          // foreign key untuk reservasi
-            'fasilitas_id'           // foreign key untuk fasilitas
+            'reservasi_fasilitas',
+            'reservasi_id',
+            'fasilitas_id'
         );
     }
 
-    // 👇 RELASI MANY-TO-MANY untuk Menu Tambahan
     public function menuTambahan()
     {
         return $this->belongsToMany(
             MenuTambahan::class,
-            'reservasi_menu_tambahans',  // nama tabel pivot
-            'reservasi_id',               // foreign key untuk reservasi
-            'menu_tambahan_id'            // foreign key untuk menu tambahan
+            'reservasi_menu_tambahans',
+            'reservasi_id',
+            'menu_tambahan_id'
         );
     }
 }

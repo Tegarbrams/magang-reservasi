@@ -33,12 +33,12 @@ Route::get('/check-available-slots', function (Request $request) {
 
         $tanggal = Carbon::parse($request->tanggal);
         $ruanganId = $request->ruangan_id;
-        
+
         \Log::info('Checking available slots', [
             'ruangan_id' => $ruanganId,
             'tanggal' => $tanggal->format('Y-m-d')
         ]);
-        
+
         // Generate all possible time slots (08:00 - 18:00)
         $allSlots = [];
         for ($hour = 8; $hour <= 18; $hour++) {
@@ -46,25 +46,30 @@ Route::get('/check-available-slots', function (Request $request) {
         }
 
         // Get blocked slots from BlockedSchedule (both manual and auto)
+        // Get blocked slots from BlockedSchedule - NORMALISASI
         $blockedSlots = BlockedSchedule::where('ruangan_id', $ruanganId)
             ->where('tanggal', $tanggal->format('Y-m-d'))
             ->pluck('jam')
-            ->toArray();
-
-        \Log::info('Blocked slots from BlockedSchedule', ['slots' => $blockedSlots]);
+            ->map(function ($jam) {
+                return substr($jam, 0, 5); // 🔧 NORMALISASI ke HH:MM
+            })->toArray();
 
         // Get approved/pending reservations (using 'jam' field, not jam_check_in)
+        // Get approved/pending reservations - NORMALISASI
         $reservedSlots = Reservasi::where('ruangan', $ruanganId)
             ->where('tanggal', $tanggal->format('Y-m-d'))
             ->whereIn('status', ['pending', 'approved'])
-            ->pluck('jam') // PERBAIKAN: gunakan 'jam' bukan 'jam_check_in'
+            ->pluck('jam')
+            ->map(function ($jam) {
+                return substr($jam, 0, 5); // 🔧 NORMALISASI ke HH:MM
+            })
             ->toArray();
 
         \Log::info('Reserved slots from Reservasi', ['slots' => $reservedSlots]);
 
         // Combine all unavailable slots
         $unavailableSlots = array_values(array_unique(array_merge($blockedSlots, $reservedSlots)));
-        
+
         // Determine available slots
         $availableSlots = array_values(array_diff($allSlots, $unavailableSlots));
 
@@ -81,7 +86,6 @@ Route::get('/check-available-slots', function (Request $request) {
                 'message' => count($availableSlots) . ' slot tersedia dari ' . count($allSlots) . ' total slot'
             ]
         ]);
-
     } catch (\Illuminate\Validation\ValidationException $e) {
         return response()->json([
             'status' => false,
@@ -92,7 +96,7 @@ Route::get('/check-available-slots', function (Request $request) {
         \Log::error('Error in check-available-slots: ' . $e->getMessage(), [
             'trace' => $e->getTraceAsString()
         ]);
-        
+
         return response()->json([
             'status' => false,
             'message' => 'Terjadi kesalahan: ' . $e->getMessage()

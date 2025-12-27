@@ -21,97 +21,125 @@
 
         /* Form Styling */
         select,
-        input[type="month"] {
+        input[type="date"] {
             width: 100%;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
             background-color: white;
-            font-size: 0.875rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
         }
 
         select:focus,
-        input[type="month"]:focus {
+        input[type="date"]:focus {
             outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
         }
 
-        button {
-            padding: 0.5rem 1rem;
+        .btn-primary {
+            padding: 0.75rem 1.5rem;
             background: linear-gradient(135deg, #D4AF37 0%, #F4E5A1 100%);
             color: #000;
             font-weight: 600;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             border: none;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        button:hover {
+        .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
         }
 
-        /* Table Styling */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead th {
-            background-color: #f3f4f6;
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: #374151;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        tbody td {
-            padding: 0.75rem;
-            border-bottom: 1px solid #e5e7eb;
-            text-align: center;
-            font-size: 0.875rem;
-        }
-
-        tbody td:first-child {
-            text-align: left;
-            font-weight: 500;
-        }
-
-        tbody tr:hover {
-            background-color: #f9fafb;
-        }
-
-        /* Slot Status Colors */
-        .slot-available {
-            background-color: #f0fdf4;
-            color: #16a34a;
+        /* Slot Card Styling */
+        .slot-card {
+            padding: 1.25rem;
+            border-radius: 1rem;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
             cursor: pointer;
-            transition: all 0.2s;
+        }
+
+        .slot-available {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-color: #86efac;
         }
 
         .slot-available:hover {
-            background-color: #dcfce7;
-            transform: scale(1.05);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(34, 197, 94, 0.2);
+            border-color: #4ade80;
         }
 
         .slot-booked {
-            background-color: #fee2e2;
-            color: #dc2626;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-color: #fca5a5;
             cursor: not-allowed;
+            opacity: 0.8;
         }
 
         .slot-maintenance {
-            background-color: #fef3c7;
-            color: #d97706;
-            cursor: pointer;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #fcd34d;
         }
 
         .slot-maintenance:hover {
-            background-color: #fde68a;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.2);
+            border-color: #f59e0b;
+        }
+
+        /* Quick Date Navigation */
+        .date-nav-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .date-nav-btn:hover {
+            background: #f9fafb;
+            border-color: #D4AF37;
+        }
+
+        .date-nav-btn.active {
+            background: linear-gradient(135deg, #D4AF37 0%, #F4E5A1 100%);
+            border-color: #D4AF37;
+            color: #000;
+        }
+
+        /* Info Badge */
+        .info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
         }
     </style>
 </head>
@@ -120,7 +148,7 @@
 
     <div class="flex h-screen overflow-hidden">
 
-        <!-- Sidebar -->
+        <!-- Sidebar (sama seperti sebelumnya) -->
         <aside class="w-64 bg-gray-900 text-white flex-shrink-0">
             <div class="p-6 border-b border-gray-800">
                 <h1 class="text-2xl font-bold text-yellow-500">NDALEM HANOMAN</h1>
@@ -234,311 +262,403 @@
         <div class="flex-1 flex flex-col overflow-hidden">
 
             <!-- Header -->
-            <header class="bg-white border-b border-gray-200 px-8 py-4">
+            <header class="bg-white border-b border-gray-200 px-8 py-5">
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-2xl font-bold text-gray-800">Kelola Jadwal Reservasi</h2>
-                        <p class="text-sm text-gray-600">Blok/unblock jadwal untuk maintenance atau keperluan lain</p>
+                        <p class="text-sm text-gray-600 mt-1">Blok/unblock jadwal untuk maintenance atau keperluan lain</p>
                     </div>
                 </div>
             </header>
 
             <!-- Content -->
             <main class="flex-1 p-8 overflow-y-auto">
-                <div class="max-w-7xl mx-auto">
+                <div class="max-w-5xl mx-auto">
 
-                    <div class="flex justify-between items-center mb-6">
-                        <h1 class="text-2xl font-bold text-gray-800">Kelola Jadwal Ruangan</h1>
-                    </div>
-
-                    <!-- Filter -->
-                    <div class="bg-white p-6 rounded-xl shadow-md mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Filter Card -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg mb-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">📍 Pilih Ruangan & Tanggal</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Ruangan</label>
-                                <select id="ruanganSelect" class="form-select w-full">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Pilih Ruangan</label>
+                                <select id="ruanganSelect" class="w-full">
                                     @foreach ($ruangans as $ruangan)
                                         <option value="{{ $ruangan->id }}">{{ $ruangan->nama }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Bulan</label>
-                                <input type="month" id="monthSelect" class="form-control w-full"
-                                    value="{{ now()->format('Y-m') }}">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Pilih Tanggal</label>
+                                <input type="date" id="dateSelect" class="w-full" value="{{ now()->format('Y-m-d') }}">
                             </div>
-                            <div class="flex items-end">
-                                <button onclick="loadSchedule()" class="btn btn-primary w-full">Tampilkan
-                                    Jadwal</button>
+                        </div>
+
+                        <!-- Quick Navigation -->
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <button onclick="setToday()" class="date-nav-btn">
+                                📅 Hari Ini
+                            </button>
+                            <button onclick="setTomorrow()" class="date-nav-btn">
+                                ⏭️ Besok
+                            </button>
+                            <button onclick="navigateDate(-1)" class="date-nav-btn">
+                                ◀️ Kemarin
+                            </button>
+                            <button onclick="navigateDate(1)" class="date-nav-btn">
+                                ▶️ Lusa
+                            </button>
+                        </div>
+
+                        <button onclick="loadSchedule()" class="btn-primary w-full md:w-auto">
+                            🔍 Tampilkan Slot Jadwal
+                        </button>
+                    </div>
+
+                    <!-- Info Summary -->
+                    <div id="infoSummary" class="hidden mb-6 fade-in">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4">
+                            <div class="flex flex-wrap items-center gap-4 justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="info-badge bg-green-100 text-green-700 border border-green-300">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span id="availableCount">0</span> Tersedia
+                                    </div>
+                                    <div class="info-badge bg-red-100 text-red-700 border border-red-300">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span id="bookedCount">0</span> Reservasi
+                                    </div>
+                                    <div class="info-badge bg-yellow-100 text-yellow-700 border border-yellow-300">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span id="maintenanceCount">0</span> Maintenance
+                                    </div>
+                                </div>
+                                <div class="text-sm font-semibold text-gray-700" id="selectedDateDisplay"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Kalender Table -->
-                    <div id="calendarContainer" class="bg-white rounded-xl shadow-md overflow-hidden">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="p-3 text-left">Tanggal</th>
-                                    @for ($i = 8; $i <= 18; $i++)
-                                        <th class="p-3 text-center">{{ sprintf('%02d:00', $i) }}</th>
-                                    @endfor
-                                </tr>
-                            </thead>
-                            <tbody id="calendarBody">
-                                <!-- Diisi oleh JS -->
-                            </tbody>
-                        </table>
+                    <!-- Slots Container -->
+                    <div id="slotsContainer" class="hidden fade-in">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">⏰ Slot Waktu Tersedia</h3>
+                        <div id="slotsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Slots will be rendered here -->
+                        </div>
                     </div>
 
+                    <!-- Empty State -->
+                    <div id="emptyState" class="text-center py-16">
+                        <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <p class="text-gray-500 text-lg font-medium">Pilih ruangan dan tanggal untuk melihat jadwal</p>
+                    </div>
+
+                </div>
             </main>
         </div>
 
     </div>
 
-    <!-- Modal for Block/Unblock -->
-    <div id="actionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl max-w-md w-full mx-4">
-            <div class="p-6 border-b border-gray-200">
-                <h3 class="text-xl font-bold text-gray-800" id="modalTitle">Block Jadwal</h3>
-            </div>
-            <div class="p-6">
-                <div id="modalContent">
-                    <!-- Dynamic content -->
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-    // Load schedule saat halaman dimuat
-  // Load schedule saat halaman dimuat
-document.addEventListener('DOMContentLoaded', function() {
-    loadSchedule();
-});
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto load today's schedule
+            // loadSchedule();
+        });
 
-function loadSchedule() {
-    const ruanganId = document.getElementById('ruanganSelect').value;
-    const month = document.getElementById('monthSelect').value;
-
-    if (!ruanganId || !month) {
-        alert('Pilih ruangan dan bulan terlebih dahulu');
-        return;
-    }
-
-    console.log('Loading schedule...', { ruanganId, month });
-
-    // Show loading
-    document.getElementById('calendarBody').innerHTML = 
-        '<tr><td colspan="12" class="text-center py-8 text-gray-500"><div class="spinner-border text-warning"></div><br>Loading...</td></tr>';
-
-    // PERBAIKAN: gunakan GET method dan query params yang benar
-    fetch(`/admin/schedule/get-data?ruangan_id=${ruanganId}&month=${month}`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        // Quick date navigation
+        function setToday() {
+            document.getElementById('dateSelect').value = new Date().toISOString().split('T')[0];
+            loadSchedule();
         }
-    })
-    .then(res => {
-        console.log('Response status:', res.status);
-        return res.json();
-    })
-    .then(data => {
-        console.log('Schedule data received:', data);
-        
-        if (data.success) {
-            renderCalendar(data.data, month);
-        } else {
-            alert('Gagal load data: ' + (data.message || 'Unknown error'));
-            document.getElementById('calendarBody').innerHTML = 
-                '<tr><td colspan="12" class="text-center py-8 text-red-500">Gagal memuat data</td></tr>';
+
+        function setTomorrow() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('dateSelect').value = tomorrow.toISOString().split('T')[0];
+            loadSchedule();
         }
-    })
-    .catch(err => {
-        console.error('Error loading schedule:', err);
-        alert('Terjadi kesalahan saat memuat data');
-        document.getElementById('calendarBody').innerHTML = 
-            '<tr><td colspan="12" class="text-center py-8 text-red-500">Terjadi kesalahan</td></tr>';
-    });
-}
 
-function renderCalendar(scheduleData, month) {
-    const calendarBody = document.getElementById('calendarBody');
-    calendarBody.innerHTML = '';
-
-    const startDate = new Date(`${month}-01`);
-    const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
-    const today = new Date().toISOString().split('T')[0];
-
-    console.log('Rendering calendar from', startDate, 'to', endDate);
-    console.log('Schedule data:', scheduleData);
-
-    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-        const dateStr = d.toISOString().split('T')[0];
-        const row = document.createElement('tr');
-        
-        // Date cell dengan highlight hari ini
-        const dateCell = document.createElement('td');
-        dateCell.className = 'p-3 border-t font-medium';
-        
-        const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-        const dayName = dayNames[d.getDay()];
-        
-        if (dateStr === today) {
-            dateCell.innerHTML = `<span class="text-blue-600 font-bold">${dateStr}<br><small class="text-xs">(${dayName} - Hari ini)</small></span>`;
-        } else {
-            dateCell.innerHTML = `${dateStr}<br><small class="text-xs text-gray-500">${dayName}</small>`;
+        function navigateDate(days) {
+            const currentDate = new Date(document.getElementById('dateSelect').value);
+            currentDate.setDate(currentDate.getDate() + days);
+            document.getElementById('dateSelect').value = currentDate.toISOString().split('T')[0];
+            loadSchedule();
         }
-        row.appendChild(dateCell);
 
-        // Loop jam 08:00 - 18:00
-        for (let h = 8; h <= 18; h++) {
-            const time = `${h.toString().padStart(2, '0')}:00`;
-            const slotData = scheduleData.find(s => s.date === dateStr && s.time === time);
+        function loadSchedule() {
+            const ruanganId = document.getElementById('ruanganSelect').value;
+            const date = document.getElementById('dateSelect').value;
 
-            const td = document.createElement('td');
-            td.className = 'p-3 border-t text-center';
-
-            if (slotData) {
-                // Ada data (booked atau maintenance)
-                if (slotData.type === 'booked') {
-                    // Booked by reservation (auto) - TIDAK BISA DI-UNBLOCK
-                    td.className += ' slot-booked';
-                    td.innerHTML = `
-                        <div class="text-xs font-medium">Reservasi</div>
-                        <div class="text-xs">${slotData.label.substring(0, 20)}</div>
-                        <div class="text-xs text-gray-600 mt-1">
-                            <svg class="inline w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
-                            </svg>
-                            Terkunci
-                        </div>
-                    `;
-                    td.title = slotData.label + '\n\nTerkunci oleh reservasi aktif.\nBatalkan reservasi di menu Reservasi untuk membuka slot ini.';
-                    td.style.cursor = 'not-allowed';
-                    
-                } else if (slotData.type === 'maintenance') {
-                    // Manual maintenance block - BISA DI-UNBLOCK
-                    td.className += ' slot-maintenance';
-                    td.innerHTML = `
-                        <div class="text-xs font-medium">Maintenance</div>
-                        <div class="text-xs">${slotData.label.substring(0, 15)}</div>
-                        <div class="text-xs text-orange-700 mt-1">
-                            <svg class="inline w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                            </svg>
-                            Klik untuk unblock
-                        </div>
-                    `;
-                    td.onclick = () => unblockSlot(dateStr, time);
-                    td.style.cursor = 'pointer';
-                    td.title = 'Klik untuk menghapus blok maintenance';
-                }
-            } else {
-                // Available slot - BISA DI-BLOCK
-                td.className += ' slot-available';
-                td.innerHTML = `
-                    <div class="text-xs font-medium text-green-600">✓ Tersedia</div>
-                    <div class="text-xs text-gray-500 mt-1">Klik untuk block</div>
-                `;
-                td.onclick = () => blockSlot(dateStr, time);
-                td.style.cursor = 'pointer';
-                td.title = 'Klik untuk blok jadwal ini (maintenance)';
+            if (!ruanganId || !date) {
+                alert('Pilih ruangan dan tanggal terlebih dahulu');
+                return;
             }
 
-            row.appendChild(td);
+            console.log('Loading schedule...', { ruanganId, date });
+
+            // Show loading
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('slotsContainer').classList.remove('hidden');
+            document.getElementById('infoSummary').classList.remove('hidden');
+            document.getElementById('slotsGrid').innerHTML = '<div class="col-span-full text-center py-8"><div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-yellow-500"></div><p class="mt-4 text-gray-600">Memuat data...</p></div>';
+
+            // Fetch data
+            fetch(`/admin/schedule/get-data?ruangan_id=${ruanganId}&month=${date.substring(0, 7)}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Schedule data received:', data);
+                
+                if (data.success) {
+                    renderSlots(data.data, date);
+                } else {
+                    alert('Gagal load data: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                console.error('Error loading schedule:', err);
+                alert('Terjadi kesalahan saat memuat data');
+            });
         }
 
-        calendarBody.appendChild(row);
-    }
+        function renderSlots(scheduleData, selectedDate) {
+            const slotsGrid = document.getElementById('slotsGrid');
+            slotsGrid.innerHTML = '';
 
-    console.log('Calendar rendered successfully');
-}
+            console.log('=== DEBUG: Schedule Data ===');
+            console.log('All schedule data:', scheduleData);
+            console.log('Selected date:', selectedDate);
 
-function blockSlot(date, time) {
-    const ruanganId = document.getElementById('ruanganSelect').value;
-    const keterangan = prompt(
-        `Block jadwal untuk maintenance?\n\nTanggal: ${date}\nJam: ${time}\n\nMasukkan keterangan (opsional):`, 
-        'Maintenance'
-    );
-    
-    if (keterangan === null) return; // User cancel
+            // Filter data for selected date only
+            const dateSchedule = scheduleData.filter(s => s.date === selectedDate);
+            console.log('Filtered for selected date:', dateSchedule);
 
-    console.log('Blocking slot...', { ruanganId, date, time, keterangan });
+            // All time slots (08:00 - 18:00)
+            const allSlots = [];
+            for (let h = 8; h <= 18; h++) {
+                const timeStr = (h < 10 ? '0' + h : h) + ':00';
+                allSlots.push(timeStr);
+            }
 
-    fetch('/admin/schedule/toggle-block', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            ruangan_id: ruanganId,
-            tanggal: date,
-            jam: time,
-            action: 'block',
-            keterangan: keterangan
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        console.log('Block response:', data);
-        
-        if (data.success) {
-            alert('✓ Jadwal berhasil diblok untuk maintenance');
-            loadSchedule(); // Reload calendar
-        } else {
-            alert('✗ ' + (data.message || 'Gagal memblok jadwal'));
+            let availableCount = 0;
+            let bookedCount = 0;
+            let maintenanceCount = 0;
+
+            allSlots.forEach(time => {
+                const slotData = dateSchedule.find(s => s.time === time);
+                const slotCard = document.createElement('div');
+                slotCard.className = 'slot-card';
+
+                console.log(`=== Slot ${time} ===`, slotData); // DEBUG
+
+                if (slotData) {
+                    // 🔧 PERBAIKAN: Backend mengirim 'auto' untuk reservasi, bukan 'booked'
+                    if (slotData.type === 'auto') {
+                        bookedCount++;
+                        slotCard.className += ' slot-booked';
+                        slotCard.innerHTML = `
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-lg font-bold text-red-700">${time}</span>
+                                <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <p class="text-sm font-semibold text-red-700 mb-1">🔒 Sudah Direservasi</p>
+                            <p class="text-xs text-red-600 mb-2">${slotData.label.substring(0, 30)}</p>
+                            <button onclick="unblockReservation('${selectedDate}', '${time}', '${slotData.label.replace(/'/g, "\\'")}')" class="w-full px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition">
+                                🔓 Buka Blok Reservasi
+                            </button>
+                            <p class="text-xs text-red-500 mt-2 text-center">⚠️ Slot akan terbuka untuk booking lain</p>
+                        `;
+                        slotCard.style.cursor = 'pointer';
+                    } else if (slotData.type === 'manual') {
+                        maintenanceCount++;
+                        slotCard.className += ' slot-maintenance';
+                        slotCard.innerHTML = `
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-lg font-bold text-orange-700">${time}</span>
+                                <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <p class="text-sm font-semibold text-orange-700 mb-1">🔧 Maintenance</p>
+                            <p class="text-xs text-orange-600">${slotData.label.substring(0, 30)}</p>
+                            <button onclick="unblockSlot('${selectedDate}', '${time}')" class="mt-3 w-full px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition">
+                                ❌ Hapus Blok
+                            </button>
+                        `;
+                        slotCard.onclick = null;
+                    }
+                } else {
+                    availableCount++;
+                    slotCard.className += ' slot-available';
+                    slotCard.innerHTML = `
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-lg font-bold text-green-700">${time}</span>
+                            <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <p class="text-sm font-semibold text-green-700 mb-1">✅ Tersedia</p>
+                        <p class="text-xs text-green-600 mb-3">Slot ini dapat dibooking</p>
+                        <button onclick="blockSlot('${selectedDate}', '${time}')" class="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition">
+                            🔒 Blok Jadwal
+                        </button>
+                    `;
+                }
+
+                slotsGrid.appendChild(slotCard);
+            });
+
+            // Update summary
+            document.getElementById('availableCount').textContent = availableCount;
+            document.getElementById('bookedCount').textContent = bookedCount;
+            document.getElementById('maintenanceCount').textContent = maintenanceCount;
+            
+            // Format date display
+            const dateObj = new Date(selectedDate);
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = dateObj.toLocaleDateString('id-ID', options);
+            document.getElementById('selectedDateDisplay').textContent = formattedDate;
+
+            console.log('Slots rendered successfully');
         }
-    })
-    .catch(err => {
-        console.error('Error blocking slot:', err);
-        alert('Terjadi kesalahan saat memblok jadwal');
-    });
-}
 
-function unblockSlot(date, time) {
-    if (!confirm(`Hapus blok maintenance?\n\nTanggal: ${date}\nJam: ${time}\n\nSlot ini akan tersedia kembali untuk reservasi.`)) {
-        return;
-    }
+        function blockSlot(date, time) {
+            const ruanganId = document.getElementById('ruanganSelect').value;
+            const keterangan = prompt(
+                `Blok jadwal untuk maintenance?\n\nTanggal: ${date}\nJam: ${time}\n\nMasukkan keterangan:`, 
+                'Maintenance rutin'
+            );
+            
+            if (keterangan === null) return; // User cancelled
 
-    const ruanganId = document.getElementById('ruanganSelect').value;
+            console.log('Blocking slot...', { ruanganId, date, time, keterangan });
 
-    console.log('Unblocking slot...', { ruanganId, date, time });
-
-    fetch('/admin/schedule/toggle-block', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            ruangan_id: ruanganId,
-            tanggal: date,
-            jam: time,
-            action: 'unblock'
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        console.log('Unblock response:', data);
-        
-        if (data.success) {
-            alert('✓ Blok maintenance berhasil dihapus');
-            loadSchedule(); // Reload calendar
-        } else {
-            alert('✗ ' + (data.message || 'Gagal menghapus blok'));
+            fetch('/admin/schedule/toggle-block', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    ruangan_id: ruanganId,
+                    tanggal: date,
+                    jam: time,
+                    action: 'block',
+                    keterangan: keterangan
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Block response:', data);
+                
+                if (data.success) {
+                    alert('✅ Jadwal berhasil diblok untuk maintenance');
+                    loadSchedule(); // Reload
+                } else {
+                    alert('❌ ' + (data.message || 'Gagal memblok jadwal'));
+                }
+            })
+            .catch(err => {
+                console.error('Error blocking slot:', err);
+                alert('Terjadi kesalahan saat memblok jadwal');
+            });
         }
-    })
-    .catch(err => {
-        console.error('Error unblocking slot:', err);
-        alert('Terjadi kesalahan saat menghapus blok');
-    });
-}
-</script>
+
+        function unblockSlot(date, time) {
+            if (!confirm(`Hapus blok maintenance?\n\nTanggal: ${date}\nJam: ${time}\n\nSlot ini akan tersedia kembali untuk reservasi.`)) {
+                return;
+            }
+
+            const ruanganId = document.getElementById('ruanganSelect').value;
+
+            console.log('Unblocking maintenance slot...', { ruanganId, date, time });
+
+            fetch('/admin/schedule/toggle-block', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    ruangan_id: ruanganId,
+                    tanggal: date,
+                    jam: time,
+                    action: 'unblock'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Unblock response:', data);
+                
+                if (data.success) {
+                    alert('✅ Blok maintenance berhasil dihapus');
+                    loadSchedule(); // Reload
+                } else {
+                    alert('❌ ' + (data.message || 'Gagal menghapus blok'));
+                }
+            })
+            .catch(err => {
+                console.error('Error unblocking slot:', err);
+                alert('Terjadi kesalahan saat menghapus blok');
+            });
+        }
+
+        function unblockReservation(date, time, label) {
+            if (!confirm(`⚠️ PERINGATAN: Buka blok reservasi?\n\nTanggal: ${date}\nJam: ${time}\nReservasi: ${label}\n\n❗ Tindakan ini akan:\n✓ Membuka slot untuk booking customer lain\n✓ Reservasi yang ada mungkin perlu dibatalkan manual\n\nLanjutkan?`)) {
+                return;
+            }
+
+            const ruanganId = document.getElementById('ruanganSelect').value;
+
+            console.log('Unblocking reservation slot...', { ruanganId, date, time });
+
+            fetch('/admin/schedule/toggle-block', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    ruangan_id: ruanganId,
+                    tanggal: date,
+                    jam: time,
+                    action: 'unblock'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Unblock reservation response:', data);
+                
+                if (data.success) {
+                    alert('✅ Blok reservasi berhasil dibuka\n\n⚠️ Pastikan untuk membatalkan reservasi terkait di menu Reservasi!');
+                    loadSchedule(); // Reload
+                } else {
+                    alert('❌ ' + (data.message || 'Gagal membuka blok reservasi'));
+                }
+            })
+            .catch(err => {
+                console.error('Error unblocking reservation:', err);
+                alert('Terjadi kesalahan saat membuka blok reservasi');
+            });
+        }
+    </script>
 </body>
 
 </html>

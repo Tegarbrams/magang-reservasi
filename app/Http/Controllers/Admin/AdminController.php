@@ -18,48 +18,154 @@ use Carbon\Carbon;
 class AdminController extends Controller
 {
     // Dashboard
-    public function dashboard()
-    {
-        $totalReservasi = Reservasi::count();
-        $reservasiPending = Reservasi::where('status', 'pending')->count();
-        $reservasiConfirmed = Reservasi::where('status', 'approved')->count();
-        $totalUser = User::where('role', 0)->count();
-        $totalPaketMenu = PaketMenu::count();
-        $totalRuangan = Ruangan::count();
-        
-        $recentReservasi = Reservasi::with(['paketMenu', 'ruangan'])
-            ->latest()
-            ->take(5)
-            ->get();
+  public function dashboard()
+{
+    // Basic Stats
+    $totalReservasi = Reservasi::count();
+    $reservasiPending = Reservasi::where('status', 'pending')->count();
+    $reservasiConfirmed = Reservasi::where('status', 'approved')->count();
+    $totalUser = User::where('role', 0)->count();
+    $totalPaketMenu = PaketMenu::count();
+    $totalRuangan = Ruangan::count();
 
-        return view('admin.dashboard', compact(
-            'totalReservasi',
-            'reservasiPending',
-            'reservasiConfirmed',
-            'totalUser',
-            'totalPaketMenu',
-            'totalRuangan',
-            'recentReservasi'
-        ));
+    // 1. PENGUNJUNG RESERVASI (Per Hari, Minggu, Bulan)
+    $today = Carbon::today();
+    $reservasiHariIni = Reservasi::whereDate('created_at', $today)->count();
+    
+    $startOfWeek = Carbon::now()->startOfWeek();
+    $endOfWeek = Carbon::now()->endOfWeek();
+    $reservasiMingguIni = Reservasi::whereBetween('created_at', [$startOfWeek, $endOfWeek])->count();
+    
+    $startOfMonth = Carbon::now()->startOfMonth();
+    $endOfMonth = Carbon::now()->endOfMonth();
+    $reservasiBulanIni = Reservasi::whereBetween('created_at', [$startOfMonth, $endOfMonth])->count();
+
+    // 2. STATISTIK STATUS RESERVASI
+    $statusStats = [
+        'approved' => Reservasi::where('status', 'approved')->count(),
+        'pending' => Reservasi::where('status', 'pending')->count(),
+        'rejected' => Reservasi::where('status', 'rejected')->count(),
+        'cancelled' => Reservasi::where('status', 'cancelled')->count(),
+    ];
+
+    // 3. PENDAPATAN RESERVASI
+    // Pendapatan hari ini
+    $pendapatanHariIni = Reservasi::whereDate('created_at', $today)
+        ->whereIn('status', ['approved', 'pending'])
+        ->sum('jumlah_dibayar');
+    
+    // Pendapatan minggu ini
+    $pendapatanMingguIni = Reservasi::whereBetween('created_at', [$startOfWeek, $endOfWeek])
+        ->whereIn('status', ['approved', 'pending'])
+        ->sum('jumlah_dibayar');
+    
+    // Pendapatan bulan ini
+    $pendapatanBulanIni = Reservasi::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+        ->whereIn('status', ['approved', 'pending'])
+        ->sum('jumlah_dibayar');
+    
+    // Total pendapatan (all time)
+    $totalPendapatan = Reservasi::whereIn('status', ['approved', 'pending'])
+        ->sum('jumlah_dibayar');
+
+    // Grafik Reservasi per Hari (7 hari terakhir)
+    $last7Days = [];
+    $reservasiPerHari = [];
+    for ($i = 6; $i >= 0; $i--) {
+        $date = Carbon::today()->subDays($i);
+        $last7Days[] = $date->format('d M');
+        $reservasiPerHari[] = Reservasi::whereDate('created_at', $date)->count();
     }
+
+    // Grafik Pendapatan per Minggu (4 minggu terakhir)
+    $last4Weeks = [];
+    $pendapatanPerMinggu = [];
+    for ($i = 3; $i >= 0; $i--) {
+        $weekStart = Carbon::now()->subWeeks($i)->startOfWeek();
+        $weekEnd = Carbon::now()->subWeeks($i)->endOfWeek();
+        $last4Weeks[] = $weekStart->format('d M');
+        $pendapatanPerMinggu[] = Reservasi::whereBetween('created_at', [$weekStart, $weekEnd])
+            ->whereIn('status', ['approved', 'pending'])
+            ->sum('jumlah_dibayar');
+    }
+
+    $recentReservasi = Reservasi::with(['paketMenu', 'ruanganRel'])
+        ->latest()
+        ->take(5)
+        ->get();
+
+    return view('admin.dashboard', compact(
+        'totalReservasi',
+        'reservasiPending',
+        'reservasiConfirmed',
+        'totalUser',
+        'totalPaketMenu',
+        'totalRuangan',
+        'recentReservasi',
+        // Statistik baru
+        'reservasiHariIni',
+        'reservasiMingguIni',
+        'reservasiBulanIni',
+        'statusStats',
+        'pendapatanHariIni',
+        'pendapatanMingguIni',
+        'pendapatanBulanIni',
+        'totalPendapatan',
+        'last7Days',
+        'reservasiPerHari',
+        'last4Weeks',
+        'pendapatanPerMinggu'
+    ));
+}
 
     // ==================== RESERVASI ====================
-    public function reservasi()
-    {
-        $reservasis = Reservasi::with(['paketMenu', 'ruangan', 'fasilitas', 'menuTambahan'])
-            ->latest()
-            ->paginate(10);
-        
-        return view('admin.reservasi', compact('reservasis'));
+   public function reservasi(Request $request)
+{
+    $query = Reservasi::with(['paketMenu', 'ruanganRel', 'fasilitas', 'menuTambahan']);
+
+    // Filter Status
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
     }
 
-   public function updateStatusReservasi(Request $request, $id)
+    // Filter Tanggal Mulai
+    if ($request->filled('tanggal_mulai')) {
+        $query->whereDate('tanggal', '>=', $request->tanggal_mulai);
+    }
+
+    // Filter Tanggal Akhir
+    if ($request->filled('tanggal_akhir')) {
+        $query->whereDate('tanggal', '<=', $request->tanggal_akhir);
+    }
+
+    // Search
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->where('nomor_reservasi', 'like', "%{$search}%")
+              ->orWhere('nama', 'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%")
+              ->orWhere('no_hp', 'like', "%{$search}%");
+        });
+    }
+
+    // Hitung total pendapatan dari hasil filter
+    $totalPendapatan = (clone $query)->sum('jumlah_dibayar');
+    $totalReservasiFiltered = (clone $query)->count();
+
+    // Paginate hasil
+    $reservasis = $query->latest()->paginate(10)->withQueryString();
+
+    return view('admin.reservasi', compact('reservasis', 'totalPendapatan', 'totalReservasiFiltered'));
+}
+
+    public function updateStatusReservasi(Request $request, $id)
     {
         try {
             $reservasi = Reservasi::findOrFail($id);
             $oldStatus = $reservasi->status;
             $newStatus = $request->status;
-            
+
             $reservasi->status = $newStatus;
             $reservasi->save();
 
@@ -80,14 +186,14 @@ class AdminController extends Controller
 
     public function deleteReservasi($id)
     {
-       try {
+        try {
             $reservasi = Reservasi::findOrFail($id);
-            
+
             // Remove blocked schedule if exists
             BlockedSchedule::where('reservasi_id', $reservasi->id)
                 ->where('type', 'auto')
                 ->delete();
-            
+
             $reservasi->delete();
 
             return response()->json([
@@ -102,35 +208,100 @@ class AdminController extends Controller
         }
     }
 
-    // Helper function to sync blocked schedule
-   private function syncBlockedSchedule($reservasi, $oldStatus, $newStatus)
-{
-    $shouldBlock = in_array($newStatus, ['pending', 'approved']);
-    $wasBlocked = in_array($oldStatus, ['pending', 'approved']);
+    public function detailReservasi($id)
+    {
+        try {
+            $reservasi = Reservasi::with([
+                'paketMenu',
+                'ruanganRel',
+                'fasilitas',
+                'menuTambahan'
+            ])->findOrFail($id);
 
-    if ($shouldBlock && !$wasBlocked) {
-        // Create blocked schedule with type 'auto'
-        BlockedSchedule::updateOrCreate(
-            [
-                'ruangan_id' => $reservasi->ruangan,
-                'tanggal' => $reservasi->tanggal,
-                'jam' => $reservasi->jam,  // 👈 GANTI DARI jam_check_in JADI jam
-            ],
-            [
-                'type' => 'auto',
-                'keterangan' => 'Reservasi: ' . $reservasi->nomor_reservasi,
-                'reservasi_id' => $reservasi->id,
-            ]
-        );
-    } elseif (!$shouldBlock && $wasBlocked) {
-        // Remove blocked schedule
-        BlockedSchedule::where('ruangan_id', $reservasi->ruangan)
-            ->where('tanggal', $reservasi->tanggal)
-            ->where('jam', $reservasi->jam)  // 👈 GANTI DARI jam_check_in JADI jam
-            ->where('type', 'auto')
-            ->delete();
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $reservasi->id,
+                    'nomor_reservasi' => $reservasi->nomor_reservasi,
+                    'nama' => $reservasi->nama,
+                    'email' => $reservasi->email,
+                    'no_hp' => $reservasi->no_hp,
+                    'tanggal' => $reservasi->tanggal,
+                    'jam' => $reservasi->jam,
+                    'jumlah_orang' => $reservasi->jumlah_orang,
+                    'paket_menu' => $reservasi->paketMenu ? [
+                        'id' => $reservasi->paketMenu->id,
+                        'nama' => $reservasi->paketMenu->nama,
+                        'harga' => $reservasi->paketMenu->harga
+                    ] : null,
+                    'ruangan' => $reservasi->ruanganRel ? [
+                        'id' => $reservasi->ruanganRel->id,
+                        'nama' => $reservasi->ruanganRel->nama,
+                        'kapasitas' => $reservasi->ruanganRel->kapasitas,
+                        'harga' => $reservasi->ruanganRel->harga
+                    ] : null,
+                    'fasilitas' => $reservasi->fasilitas->map(function ($f) {
+                        return [
+                            'id' => $f->id,
+                            'nama' => $f->nama,
+                            'harga' => $f->harga
+                        ];
+                    }),
+                    'menu_tambahan' => $reservasi->menuTambahan->map(function ($m) {
+                        return [
+                            'id' => $m->id,
+                            'nama' => $m->nama,
+                            'harga' => $m->harga
+                        ];
+                    }),
+                    'catatan' => $reservasi->catatan,
+                    'total_harga' => $reservasi->total_harga,
+                    'tipe_pembayaran' => $reservasi->tipe_pembayaran,
+                    'jumlah_dibayar' => $reservasi->jumlah_dibayar,
+                    'sisa_pembayaran' => $reservasi->sisa_pembayaran,
+                    'bukti_pembayaran' => $reservasi->bukti_pembayaran,
+                    'status' => $reservasi->status,
+                    'created_at' => $reservasi->created_at->format('Y-m-d H:i:s')
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Detail Reservasi Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat detail: ' . $e->getMessage()
+            ], 500);
+        }
     }
-}
+
+    // 🔧 Helper function to sync blocked schedule
+    private function syncBlockedSchedule($reservasi, $oldStatus, $newStatus)
+    {
+        $shouldBlock = in_array($newStatus, ['pending', 'approved']);
+        $wasBlocked = in_array($oldStatus, ['pending', 'approved']);
+
+        $jamNormalized = substr($reservasi->jam, 0, 5);
+
+        if ($shouldBlock && !$wasBlocked) {
+            BlockedSchedule::updateOrCreate(
+                [
+                    'ruangan_id' => $reservasi->ruangan,
+                    'tanggal' => $reservasi->tanggal,
+                    'jam' => $jamNormalized,
+                ],
+                [
+                    'type' => 'auto',
+                    'keterangan' => 'Reservasi: ' . $reservasi->nomor_reservasi,
+                    'reservasi_id' => $reservasi->id,
+                ]
+            );
+        } elseif (!$shouldBlock && $wasBlocked) {
+            BlockedSchedule::where('ruangan_id', $reservasi->ruangan)
+                ->where('tanggal', $reservasi->tanggal)
+                ->where('jam', $jamNormalized)
+                ->where('type', 'auto')
+                ->delete();
+        }
+    }
 
     // ==================== SCHEDULE MANAGEMENT ====================
     public function scheduleManagement()
@@ -141,13 +312,12 @@ class AdminController extends Controller
 
     public function getScheduleData(Request $request)
     {
-       $ruanganId = $request->ruangan_id;
+        $ruanganId = $request->ruangan_id;
         $month = $request->month ?? now()->format('Y-m');
-        
+
         $startDate = Carbon::parse($month . '-01')->startOfMonth();
         $endDate = Carbon::parse($month . '-01')->endOfMonth();
 
-        // Get all blocked schedules (all types)
         $blockedSchedules = BlockedSchedule::where('ruangan_id', $ruanganId)
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->with('reservasi')
@@ -167,7 +337,7 @@ class AdminController extends Controller
 
             $scheduleData[] = [
                 'date' => $blocked->tanggal->format('Y-m-d'),
-                'time' => $blocked->jam,
+                'time' => substr($blocked->jam, 0, 5),
                 'type' => $type,
                 'label' => $label,
                 'id' => $blocked->id
@@ -191,11 +361,12 @@ class AdminController extends Controller
                 'keterangan' => 'nullable|string',
             ]);
 
+            $jamNormalized = substr($request->jam, 0, 5);
+
             if ($request->action === 'block') {
-                // Check if already booked by reservation
                 $existingReservation = Reservasi::where('ruangan', $request->ruangan_id)
                     ->where('tanggal', $request->tanggal)
-                    ->where('jam', $request->jam)
+                    ->whereRaw('SUBSTRING(jam, 1, 5) = ?', [$jamNormalized])
                     ->whereIn('status', ['pending', 'approved'])
                     ->exists();
 
@@ -209,10 +380,9 @@ class AdminController extends Controller
                 BlockedSchedule::create([
                     'ruangan_id' => $request->ruangan_id,
                     'tanggal' => $request->tanggal,
-                    'jam' => $request->jam,
-                    'type' => 'maintenance',
+                    'jam' => $jamNormalized,
+                    'type' => 'manual',
                     'keterangan' => $request->keterangan ?? 'Diblok oleh admin',
-                    'created_by' => auth()->id(),
                 ]);
 
                 return response()->json([
@@ -220,11 +390,9 @@ class AdminController extends Controller
                     'message' => 'Jadwal berhasil diblok'
                 ]);
             } else {
-                // Unblock - only maintenance type
                 $deleted = BlockedSchedule::where('ruangan_id', $request->ruangan_id)
                     ->where('tanggal', $request->tanggal)
-                    ->where('jam', $request->jam)
-                    ->where('type', 'maintenance')
+                    ->where('jam', $jamNormalized)
                     ->delete();
 
                 if ($deleted) {
@@ -235,7 +403,7 @@ class AdminController extends Controller
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Jadwal ini tidak bisa diunblock (mungkin ada reservasi aktif)'
+                        'message' => 'Slot tidak ditemukan atau sudah terhapus'
                     ], 422);
                 }
             }
@@ -500,7 +668,7 @@ class AdminController extends Controller
         ]);
 
         $data = $request->only(['name', 'email', 'no_hp', 'role']);
-        
+
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
@@ -527,7 +695,7 @@ class AdminController extends Controller
         }
     }
 
-     public function updateStatus(Request $request, $id)
+    public function updateStatus(Request $request, $id)
     {
         $request->validate([
             'status' => 'required|in:approved,rejected,cancelled'
@@ -538,21 +706,14 @@ class AdminController extends Controller
             $oldStatus = $reservasi->status;
             $newStatus = $request->status;
 
-            // Update status
             $reservasi->status = $newStatus;
             $reservasi->save();
 
-            // Handle schedule blocking/unblocking based on status change
             if ($newStatus === 'approved' && $oldStatus === 'pending') {
-                // Block the schedule when approved
                 AdminScheduleController::blockScheduleOnApprove($reservasi);
-                
                 $message = 'Reservasi berhasil disetujui dan jadwal telah diblok';
-
             } elseif (in_array($newStatus, ['rejected', 'cancelled'])) {
-                // Unblock the schedule when rejected or cancelled
                 AdminScheduleController::unblockScheduleOnCancelOrReject($reservasi);
-                
                 $message = 'Status reservasi berhasil diubah dan jadwal telah dibuka kembali';
             } else {
                 $message = 'Status reservasi berhasil diubah';
@@ -562,7 +723,6 @@ class AdminController extends Controller
                 'success' => true,
                 'message' => $message
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -571,37 +731,34 @@ class AdminController extends Controller
         }
     }
 
-   // Di AdminController.php, method approve:
-public function approve($id)
-{
-    try {
-        $reservasi = Reservasi::findOrFail($id);
-        
-        // Check if already blocked
-        $isBlocked = BlockedSchedule::where('ruangan_id', $reservasi->ruangan)
-            ->where('tanggal', $reservasi->tanggal)
-            ->where('jam', $reservasi->jam_check_in)
-            ->where('type', '!=', 'manual')
-            ->exists();
+    public function approve($id)
+    {
+        try {
+            $reservasi = Reservasi::findOrFail($id);
 
-        if ($isBlocked) {
-            return redirect()->back()->with('error', 'Jadwal sudah diblok oleh reservasi lain');
+            $jamNormalized = substr($reservasi->jam, 0, 5);
+
+            $isBlocked = BlockedSchedule::where('ruangan_id', $reservasi->ruangan)
+                ->where('tanggal', $reservasi->tanggal)
+                ->where('jam', $jamNormalized)
+                ->where('type', '!=', 'manual')
+                ->exists();
+
+            if ($isBlocked) {
+                return redirect()->back()->with('error', 'Jadwal sudah diblok oleh reservasi lain');
+            }
+
+            $reservasi->status = 'approved';
+            $reservasi->save();
+
+            AdminScheduleController::blockScheduleOnApprove($reservasi);
+
+            return redirect()->back()->with('success', 'Reservasi berhasil disetujui dan jadwal telah diblok');
+        } catch (\Exception $e) {
+            Log::error('Error approving reservation: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        // Update status
-        $reservasi->status = 'approved';
-        $reservasi->save();
-
-        // Auto block schedule
-        AdminScheduleController::blockScheduleOnApprove($reservasi);
-
-        return redirect()->back()->with('success', 'Reservasi berhasil disetujui dan jadwal telah diblok');
-
-    } catch (\Exception $e) {
-        \Log::error('Error approving reservation: ' . $e->getMessage());
-        return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
     }
-}
 
     public function reject($id)
     {
@@ -610,11 +767,9 @@ public function approve($id)
             $reservasi->status = 'rejected';
             $reservasi->save();
 
-            // Unblock if it was previously approved
             AdminScheduleController::unblockScheduleOnCancelOrReject($reservasi);
 
             return redirect()->back()->with('success', 'Reservasi berhasil ditolak');
-
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
@@ -627,11 +782,9 @@ public function approve($id)
             $reservasi->status = 'cancelled';
             $reservasi->save();
 
-            // Unblock the schedule
             AdminScheduleController::unblockScheduleOnCancelOrReject($reservasi);
 
             return redirect()->back()->with('success', 'Reservasi berhasil dibatalkan dan jadwal telah dibuka kembali');
-
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
