@@ -165,30 +165,38 @@
                 <!-- Cards Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @forelse($paketMenus as $paket)
-                        <div
-                            class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition">
-                            <div class="p-6">
-                                <div class="flex justify-between items-start mb-4">
-                                    <h3 class="text-xl font-bold text-gray-800">{{ $paket->nama }}</h3>
-                                    <span
-                                        class="px-3 py-1 rounded-full text-xs font-medium {{ $paket->stock > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        Stock: {{ $paket->stock }}
-                                    </span>
-                                </div>
-                                <p class="text-sm text-gray-600 mb-4 line-clamp-2">
-                                    {{ $paket->deskripsi ?? 'Tidak ada deskripsi' }}</p>
-                                <p class="text-2xl font-bold text-yellow-600 mb-4">Rp
-                                    {{ number_format($paket->harga, 0, ',', '.') }}</p>
-                                <div class="flex gap-2">
-                                    <button
-                                        onclick="openEditModal({{ $paket->id }}, '{{ $paket->nama }}', {{ $paket->harga }}, {{ $paket->stock }}, '{{ addslashes($paket->deskripsi ?? '') }}')"
-                                        class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
-                                        Edit
-                                    </button>
-                                    <button onclick="deletePaket({{ $paket->id }})"
-                                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition">
-                                        Hapus
-                                    </button>
+                        <div class="col-md-4">
+                            <div
+                                class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition">
+                                <!-- ← TAMBAHKAN GAMBAR -->
+                                <img src="{{ $paket->gambar ? asset($paket->gambar) : asset('img/paket1.jpg') }}"
+                                    alt="{{ $paket->nama }}" class="w-full h-48 object-cover">
+
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-gray-800">{{ $paket->nama }}</h3>
+                                        <span
+                                            class="px-3 py-1 rounded-full text-xs font-medium {{ $paket->stock > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                            Stock: {{ $paket->stock }}
+                                        </span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-4 line-clamp-2">
+                                        {{ $paket->deskripsi ?? 'Tidak ada deskripsi' }}
+                                    </p>
+                                    <p class="text-2xl font-bold text-yellow-600 mb-4">
+                                        Rp {{ number_format($paket->harga, 0, ',', '.') }}
+                                    </p>
+                                    <div class="flex gap-2">
+                                        <button
+                                            onclick="openEditModal({{ $paket->id }}, '{{ $paket->nama }}', {{ $paket->harga }}, {{ $paket->stock }}, '{{ addslashes($paket->deskripsi ?? '') }}', '{{ $paket->gambar }}')"
+                                            class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
+                                            Edit
+                                        </button>
+                                        <button onclick="deletePaket({{ $paket->id }})"
+                                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition">
+                                            Hapus
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -222,7 +230,7 @@
                     </svg>
                 </button>
             </div>
-            <form id="paketForm" method="POST" class="p-6 space-y-4">
+            <form id="paketForm" method="POST" class="p-6 space-y-4" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" id="formMethod" name="_method" value="POST">
 
@@ -248,6 +256,17 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
                     <textarea name="deskripsi" id="deskripsi" rows="3"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"></textarea>
+                </div>
+
+                <!-- ← TAMBAHKAN INPUT GAMBAR -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Paket</label>
+                    <input type="file" name="gambar" id="gambar" accept="image/*"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
+                    <div id="previewContainer" class="mt-2 hidden">
+                        <img id="imagePreview" src="" alt="Preview"
+                            class="w-32 h-32 object-cover rounded-lg">
+                    </div>
                 </div>
 
                 <div class="flex gap-2 pt-4">
@@ -276,7 +295,7 @@
             document.getElementById('formModal').classList.remove('hidden');
         }
 
-        function openEditModal(id, nama, harga, stock, deskripsi) {
+        function openEditModal(id, nama, harga, stock, deskripsi, gambar) {
             document.getElementById('modalTitle').textContent = 'Edit Paket Menu';
             document.getElementById('paketForm').action = `/admin/paket-menu/${id}`;
             document.getElementById('formMethod').value = 'PUT';
@@ -284,8 +303,30 @@
             document.getElementById('harga').value = harga;
             document.getElementById('stock').value = stock;
             document.getElementById('deskripsi').value = deskripsi;
+
+            // ← TAMBAHKAN PREVIEW GAMBAR
+            if (gambar) {
+                document.getElementById('imagePreview').src = `/${gambar}`;
+                document.getElementById('previewContainer').classList.remove('hidden');
+            } else {
+                document.getElementById('previewContainer').classList.add('hidden');
+            }
+
             document.getElementById('formModal').classList.remove('hidden');
         }
+
+        // ← TAMBAHKAN PREVIEW SAAT PILIH GAMBAR
+        document.getElementById('gambar').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('previewContainer').classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
 
         function closeModal() {
             document.getElementById('formModal').classList.add('hidden');

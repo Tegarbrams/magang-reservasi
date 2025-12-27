@@ -18,146 +18,146 @@ use Carbon\Carbon;
 class AdminController extends Controller
 {
     // Dashboard
-  public function dashboard()
-{
-    // Basic Stats
-    $totalReservasi = Reservasi::count();
-    $reservasiPending = Reservasi::where('status', 'pending')->count();
-    $reservasiConfirmed = Reservasi::where('status', 'approved')->count();
-    $totalUser = User::where('role', 0)->count();
-    $totalPaketMenu = PaketMenu::count();
-    $totalRuangan = Ruangan::count();
+    public function dashboard()
+    {
+        // Basic Stats
+        $totalReservasi = Reservasi::count();
+        $reservasiPending = Reservasi::where('status', 'pending')->count();
+        $reservasiConfirmed = Reservasi::where('status', 'approved')->count();
+        $totalUser = User::where('role', 0)->count();
+        $totalPaketMenu = PaketMenu::count();
+        $totalRuangan = Ruangan::count();
 
-    // 1. PENGUNJUNG RESERVASI (Per Hari, Minggu, Bulan)
-    $today = Carbon::today();
-    $reservasiHariIni = Reservasi::whereDate('created_at', $today)->count();
-    
-    $startOfWeek = Carbon::now()->startOfWeek();
-    $endOfWeek = Carbon::now()->endOfWeek();
-    $reservasiMingguIni = Reservasi::whereBetween('created_at', [$startOfWeek, $endOfWeek])->count();
-    
-    $startOfMonth = Carbon::now()->startOfMonth();
-    $endOfMonth = Carbon::now()->endOfMonth();
-    $reservasiBulanIni = Reservasi::whereBetween('created_at', [$startOfMonth, $endOfMonth])->count();
+        // 1. PENGUNJUNG RESERVASI (Per Hari, Minggu, Bulan)
+        $today = Carbon::today();
+        $reservasiHariIni = Reservasi::whereDate('created_at', $today)->count();
 
-    // 2. STATISTIK STATUS RESERVASI
-    $statusStats = [
-        'approved' => Reservasi::where('status', 'approved')->count(),
-        'pending' => Reservasi::where('status', 'pending')->count(),
-        'rejected' => Reservasi::where('status', 'rejected')->count(),
-        'cancelled' => Reservasi::where('status', 'cancelled')->count(),
-    ];
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+        $reservasiMingguIni = Reservasi::whereBetween('created_at', [$startOfWeek, $endOfWeek])->count();
 
-    // 3. PENDAPATAN RESERVASI
-    // Pendapatan hari ini
-    $pendapatanHariIni = Reservasi::whereDate('created_at', $today)
-        ->whereIn('status', ['approved', 'pending'])
-        ->sum('jumlah_dibayar');
-    
-    // Pendapatan minggu ini
-    $pendapatanMingguIni = Reservasi::whereBetween('created_at', [$startOfWeek, $endOfWeek])
-        ->whereIn('status', ['approved', 'pending'])
-        ->sum('jumlah_dibayar');
-    
-    // Pendapatan bulan ini
-    $pendapatanBulanIni = Reservasi::whereBetween('created_at', [$startOfMonth, $endOfMonth])
-        ->whereIn('status', ['approved', 'pending'])
-        ->sum('jumlah_dibayar');
-    
-    // Total pendapatan (all time)
-    $totalPendapatan = Reservasi::whereIn('status', ['approved', 'pending'])
-        ->sum('jumlah_dibayar');
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
+        $reservasiBulanIni = Reservasi::whereBetween('created_at', [$startOfMonth, $endOfMonth])->count();
 
-    // Grafik Reservasi per Hari (7 hari terakhir)
-    $last7Days = [];
-    $reservasiPerHari = [];
-    for ($i = 6; $i >= 0; $i--) {
-        $date = Carbon::today()->subDays($i);
-        $last7Days[] = $date->format('d M');
-        $reservasiPerHari[] = Reservasi::whereDate('created_at', $date)->count();
-    }
+        // 2. STATISTIK STATUS RESERVASI
+        $statusStats = [
+            'approved' => Reservasi::where('status', 'approved')->count(),
+            'pending' => Reservasi::where('status', 'pending')->count(),
+            'rejected' => Reservasi::where('status', 'rejected')->count(),
+            'cancelled' => Reservasi::where('status', 'cancelled')->count(),
+        ];
 
-    // Grafik Pendapatan per Minggu (4 minggu terakhir)
-    $last4Weeks = [];
-    $pendapatanPerMinggu = [];
-    for ($i = 3; $i >= 0; $i--) {
-        $weekStart = Carbon::now()->subWeeks($i)->startOfWeek();
-        $weekEnd = Carbon::now()->subWeeks($i)->endOfWeek();
-        $last4Weeks[] = $weekStart->format('d M');
-        $pendapatanPerMinggu[] = Reservasi::whereBetween('created_at', [$weekStart, $weekEnd])
+        // 3. PENDAPATAN RESERVASI
+        // Pendapatan hari ini
+        $pendapatanHariIni = Reservasi::whereDate('created_at', $today)
             ->whereIn('status', ['approved', 'pending'])
             ->sum('jumlah_dibayar');
+
+        // Pendapatan minggu ini
+        $pendapatanMingguIni = Reservasi::whereBetween('created_at', [$startOfWeek, $endOfWeek])
+            ->whereIn('status', ['approved', 'pending'])
+            ->sum('jumlah_dibayar');
+
+        // Pendapatan bulan ini
+        $pendapatanBulanIni = Reservasi::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->whereIn('status', ['approved', 'pending'])
+            ->sum('jumlah_dibayar');
+
+        // Total pendapatan (all time)
+        $totalPendapatan = Reservasi::whereIn('status', ['approved', 'pending'])
+            ->sum('jumlah_dibayar');
+
+        // Grafik Reservasi per Hari (7 hari terakhir)
+        $last7Days = [];
+        $reservasiPerHari = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::today()->subDays($i);
+            $last7Days[] = $date->format('d M');
+            $reservasiPerHari[] = Reservasi::whereDate('created_at', $date)->count();
+        }
+
+        // Grafik Pendapatan per Minggu (4 minggu terakhir)
+        $last4Weeks = [];
+        $pendapatanPerMinggu = [];
+        for ($i = 3; $i >= 0; $i--) {
+            $weekStart = Carbon::now()->subWeeks($i)->startOfWeek();
+            $weekEnd = Carbon::now()->subWeeks($i)->endOfWeek();
+            $last4Weeks[] = $weekStart->format('d M');
+            $pendapatanPerMinggu[] = Reservasi::whereBetween('created_at', [$weekStart, $weekEnd])
+                ->whereIn('status', ['approved', 'pending'])
+                ->sum('jumlah_dibayar');
+        }
+
+        $recentReservasi = Reservasi::with(['paketMenu', 'ruanganRel'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'totalReservasi',
+            'reservasiPending',
+            'reservasiConfirmed',
+            'totalUser',
+            'totalPaketMenu',
+            'totalRuangan',
+            'recentReservasi',
+            // Statistik baru
+            'reservasiHariIni',
+            'reservasiMingguIni',
+            'reservasiBulanIni',
+            'statusStats',
+            'pendapatanHariIni',
+            'pendapatanMingguIni',
+            'pendapatanBulanIni',
+            'totalPendapatan',
+            'last7Days',
+            'reservasiPerHari',
+            'last4Weeks',
+            'pendapatanPerMinggu'
+        ));
     }
-
-    $recentReservasi = Reservasi::with(['paketMenu', 'ruanganRel'])
-        ->latest()
-        ->take(5)
-        ->get();
-
-    return view('admin.dashboard', compact(
-        'totalReservasi',
-        'reservasiPending',
-        'reservasiConfirmed',
-        'totalUser',
-        'totalPaketMenu',
-        'totalRuangan',
-        'recentReservasi',
-        // Statistik baru
-        'reservasiHariIni',
-        'reservasiMingguIni',
-        'reservasiBulanIni',
-        'statusStats',
-        'pendapatanHariIni',
-        'pendapatanMingguIni',
-        'pendapatanBulanIni',
-        'totalPendapatan',
-        'last7Days',
-        'reservasiPerHari',
-        'last4Weeks',
-        'pendapatanPerMinggu'
-    ));
-}
 
     // ==================== RESERVASI ====================
-   public function reservasi(Request $request)
-{
-    $query = Reservasi::with(['paketMenu', 'ruanganRel', 'fasilitas', 'menuTambahan']);
+    public function reservasi(Request $request)
+    {
+        $query = Reservasi::with(['paketMenu', 'ruanganRel', 'fasilitas', 'menuTambahan']);
 
-    // Filter Status
-    if ($request->filled('status')) {
-        $query->where('status', $request->status);
+        // Filter Status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter Tanggal Mulai
+        if ($request->filled('tanggal_mulai')) {
+            $query->whereDate('tanggal', '>=', $request->tanggal_mulai);
+        }
+
+        // Filter Tanggal Akhir
+        if ($request->filled('tanggal_akhir')) {
+            $query->whereDate('tanggal', '<=', $request->tanggal_akhir);
+        }
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nomor_reservasi', 'like', "%{$search}%")
+                    ->orWhere('nama', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('no_hp', 'like', "%{$search}%");
+            });
+        }
+
+        // Hitung total pendapatan dari hasil filter
+        $totalPendapatan = (clone $query)->sum('jumlah_dibayar');
+        $totalReservasiFiltered = (clone $query)->count();
+
+        // Paginate hasil
+        $reservasis = $query->latest()->paginate(10)->withQueryString();
+
+        return view('admin.reservasi', compact('reservasis', 'totalPendapatan', 'totalReservasiFiltered'));
     }
-
-    // Filter Tanggal Mulai
-    if ($request->filled('tanggal_mulai')) {
-        $query->whereDate('tanggal', '>=', $request->tanggal_mulai);
-    }
-
-    // Filter Tanggal Akhir
-    if ($request->filled('tanggal_akhir')) {
-        $query->whereDate('tanggal', '<=', $request->tanggal_akhir);
-    }
-
-    // Search
-    if ($request->filled('search')) {
-        $search = $request->search;
-        $query->where(function($q) use ($search) {
-            $q->where('nomor_reservasi', 'like', "%{$search}%")
-              ->orWhere('nama', 'like', "%{$search}%")
-              ->orWhere('email', 'like', "%{$search}%")
-              ->orWhere('no_hp', 'like', "%{$search}%");
-        });
-    }
-
-    // Hitung total pendapatan dari hasil filter
-    $totalPendapatan = (clone $query)->sum('jumlah_dibayar');
-    $totalReservasiFiltered = (clone $query)->count();
-
-    // Paginate hasil
-    $reservasis = $query->latest()->paginate(10)->withQueryString();
-
-    return view('admin.reservasi', compact('reservasis', 'totalPendapatan', 'totalReservasiFiltered'));
-}
 
     public function updateStatusReservasi(Request $request, $id)
     {
@@ -428,10 +428,21 @@ class AdminController extends Controller
             'nama' => 'required|string|max:255',
             'harga' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'deskripsi' => 'nullable|string'
+            'deskripsi' => 'nullable|string',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // ← TAMBAHKAN
         ]);
 
-        PaketMenu::create($request->all());
+        $data = $request->all();
+
+        // ← TAMBAHKAN INI
+        if ($request->hasFile('gambar')) {
+            $file = $request->file('gambar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/paket-menu'), $filename);
+            $data['gambar'] = 'uploads/paket-menu/' . $filename;
+        }
+
+        PaketMenu::create($data);
 
         return redirect()->route('admin.paket-menu')
             ->with('success', 'Paket menu berhasil ditambahkan');
@@ -443,11 +454,27 @@ class AdminController extends Controller
             'nama' => 'required|string|max:255',
             'harga' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'deskripsi' => 'nullable|string'
+            'deskripsi' => 'nullable|string',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' // ← TAMBAHKAN
         ]);
 
         $paket = PaketMenu::findOrFail($id);
-        $paket->update($request->all());
+        $data = $request->all();
+
+        // ← TAMBAHKAN INI
+        if ($request->hasFile('gambar')) {
+            // Hapus gambar lama jika ada
+            if ($paket->gambar && file_exists(public_path($paket->gambar))) {
+                unlink(public_path($paket->gambar));
+            }
+
+            $file = $request->file('gambar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/paket-menu'), $filename);
+            $data['gambar'] = 'uploads/paket-menu/' . $filename;
+        }
+
+        $paket->update($data);
 
         return redirect()->route('admin.paket-menu')
             ->with('success', 'Paket menu berhasil diupdate');
@@ -456,7 +483,15 @@ class AdminController extends Controller
     public function deletePaketMenu($id)
     {
         try {
-            PaketMenu::findOrFail($id)->delete();
+            $paket = PaketMenu::findOrFail($id);
+
+            // ← TAMBAHKAN INI - Hapus gambar jika ada
+            if ($paket->gambar && file_exists(public_path($paket->gambar))) {
+                unlink(public_path($paket->gambar));
+            }
+
+            $paket->delete();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Paket menu berhasil dihapus'

@@ -282,8 +282,8 @@
                     <!-- Jumlah Orang -->
                     <div class="col-md-12 mb-3">
                         <label for="jumlah_orang" class="form-label">Jumlah Orang *</label>
-                        <input type="number" name="jumlah_orang" id="jumlah_orang" class="form-control" min="1"
-                            required>
+                        <input type="number" name="jumlah_orang" id="jumlah_orang" class="form-control"
+                            min="1" required>
                         <small class="text-muted" id="capacityWarning"></small>
                         <div class="text-danger small mt-1 d-none" id="error-jumlah_orang"></div>
                     </div>
@@ -358,17 +358,20 @@
                 <div class="alert alert-info mb-4 d-none" id="selectedPaymentInfo">
                     <h5 class="fw-bold">Detail Pembayaran:</h5>
                     <p class="mb-1">Metode: <span id="infoMetode">-</span></p>
-                    <p class="mb-1">Jumlah Bayar: <span id="infoJumlah" class="fw-bold text-success">Rp 0</span></p>
+                    <p class="mb-1">Jumlah Bayar: <span id="infoJumlah" class="fw-bold text-success">Rp 0</span>
+                    </p>
                     <p class="mb-0">Sisa Bayar: <span id="infoSisa">Rp 0</span></p>
                 </div>
 
                 <!-- Upload Bukti -->
                 <div class="mb-3">
                     <label for="bukti" class="form-label fw-bold">Upload Bukti Pembayaran *</label>
-                    <input type="file" name="bukti" id="bukti" class="form-control" accept="image/*" required>
+                    <input type="file" name="bukti" id="bukti" class="form-control" accept="image/*"
+                        required>
                     <div class="text-danger small mt-1 d-none" id="error-bukti"></div>
                     <div id="imagePreview" class="mt-3 d-none">
-                        <img id="previewImg" src="" alt="Preview" class="img-thumbnail" style="max-width: 300px;">
+                        <img id="previewImg" src="" alt="Preview" class="img-thumbnail"
+                            style="max-width: 300px;">
                     </div>
                 </div>
             </div>
@@ -455,21 +458,26 @@
             return;
         }
         container.innerHTML = database.paket_menu.map(menu => `
-            <div class="col-md-4">
-                <div class="card paket-card h-100 ${menu.stock === 0 ? 'disabled' : ''}" 
-                     onclick="${menu.stock > 0 ? `selectPaket(${menu.id})` : ''}" 
-                     id="paket-${menu.id}">
-                    <img src="${menu.gambar || '{{ asset('img/paket1.jpg') }}'}" class="card-img-top paket-img" alt="${menu.nama}">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">${menu.nama}</h5>
-                        <p class="card-text fw-bold">Rp ${Number(menu.harga).toLocaleString('id-ID')}</p>
-                        <p class="small ${menu.stock === 0 ? 'text-danger' : 'text-success'}">
-                            ${menu.stock === 0 ? '✗ Tidak Tersedia' : `✓ ${menu.stock} tersedia`}
-                        </p>
-                    </div>
+        <div class="col-md-4">
+            <div class="card paket-card h-100 ${menu.stock === 0 ? 'disabled' : ''}" 
+                 onclick="${menu.stock > 0 ? `selectPaket(${menu.id})` : ''}" 
+                 id="paket-${menu.id}">
+                <!-- ← GUNAKAN GAMBAR DARI DATABASE -->
+               <img src="${menu.gambar ? '/' + menu.gambar : '{{ asset('img/paket1.jpg') }}'}" 
+     class="card-img-top paket-img" 
+     alt="${menu.nama}">
+                <div class="card-body text-center">
+                    <h5 class="card-title">${menu.nama}</h5>
+                    <!-- ← TAMBAHKAN DESKRIPSI -->
+                    <p class="card-text small text-muted mb-2">${menu.deskripsi || 'Paket makanan spesial'}</p>
+                    <p class="card-text fw-bold">Rp ${Number(menu.harga).toLocaleString('id-ID')}</p>
+                    <p class="small ${menu.stock === 0 ? 'text-danger' : 'text-success'}">
+                        ${menu.stock === 0 ? '✗ Tidak Tersedia' : `✓ ${menu.stock} tersedia`}
+                    </p>
                 </div>
             </div>
-        `).join('');
+        </div>
+    `).join('');
     }
 
     function renderRuangan() {
@@ -542,7 +550,10 @@
         const tanggal = document.getElementById('tanggal').value;
         const container = document.getElementById('timeSlotsContainer');
 
-        console.log('Loading time slots...', { ruanganId, tanggal }); // Debug
+        console.log('Loading time slots...', {
+            ruanganId,
+            tanggal
+        }); // Debug
 
         if (!ruanganId || !tanggal) {
             container.innerHTML =
@@ -551,7 +562,8 @@
         }
 
         // Show loading
-        container.innerHTML = '<div class="col-12 text-center py-4"><div class="spinner-border text-warning"></div></div>';
+        container.innerHTML =
+            '<div class="col-12 text-center py-4"><div class="spinner-border text-warning"></div></div>';
 
         fetch(`/api/check-available-slots?ruangan_id=${ruanganId}&tanggal=${tanggal}`)
             .then(res => {
@@ -563,12 +575,14 @@
                 if (data.status) {
                     renderTimeSlots(data.data.available_slots, data.data.unavailable_slots);
                 } else {
-                    container.innerHTML = `<div class="col-12 text-center text-danger py-4">${data.message || 'Gagal memuat jam'}</div>`;
+                    container.innerHTML =
+                        `<div class="col-12 text-center text-danger py-4">${data.message || 'Gagal memuat jam'}</div>`;
                 }
             })
             .catch(err => {
                 console.error('Error loading time slots:', err);
-                container.innerHTML = '<div class="col-12 text-center text-danger py-4">Gagal memuat data jam. Coba lagi.</div>';
+                container.innerHTML =
+                    '<div class="col-12 text-center text-danger py-4">Gagal memuat data jam. Coba lagi.</div>';
             });
     }
 
@@ -576,7 +590,10 @@
         const container = document.getElementById('timeSlotsContainer');
         container.innerHTML = '';
 
-        console.log('Rendering time slots...', { available, unavailable }); // Debug
+        console.log('Rendering time slots...', {
+            available,
+            unavailable
+        }); // Debug
 
         // Jika tidak ada data sama sekali, tampilkan jam default 08:00 - 18:00
         if ((!available || available.length === 0) && (!unavailable || unavailable.length === 0)) {
@@ -599,7 +616,7 @@
         allSlots.forEach(time => {
             const col = document.createElement('div');
             col.className = 'col-6 col-md-3';
-            
+
             const div = document.createElement('div');
             div.className = 'time-slot';
             div.innerHTML = `
@@ -656,10 +673,10 @@
 
         totalPrice = total;
         document.getElementById('totalHarga').textContent = 'Rp ' + total.toLocaleString('id-ID');
-        
+
         updateDPAmounts();
         updateDpAmount();
-        
+
         return total;
     }
 
@@ -678,14 +695,14 @@
     function updateDpAmount() {
         const total = totalPrice;
         const percentage = document.getElementById('dp_percentage').value;
-        
+
         if (!percentage) return;
-        
+
         const dpAmount = Math.round(total * percentage / 100);
         const sisaBayar = total - dpAmount;
-        
+
         let metode = percentage === '20' ? 'DP 20%' : (percentage === '50' ? 'DP 50%' : 'Full Payment (100%)');
-        
+
         document.getElementById('infoMetode').textContent = metode;
         document.getElementById('infoJumlah').textContent = 'Rp ' + dpAmount.toLocaleString('id-ID');
         document.getElementById('infoSisa').textContent = 'Rp ' + sisaBayar.toLocaleString('id-ID');
@@ -946,17 +963,19 @@
                 calculateTotal();
             });
         }
-        
+
         document.querySelectorAll('.dp-card').forEach(card => {
             card.addEventListener('click', function() {
-                document.querySelectorAll('.dp-card').forEach(c => c.classList.remove('selected'));
+                document.querySelectorAll('.dp-card').forEach(c => c.classList.remove(
+                    'selected'));
                 this.classList.add('selected');
                 const percentage = this.dataset.percentage;
                 document.getElementById('dp_percentage').value = percentage;
-                
-                let tipeValue = percentage === '20' ? 'dp_20' : (percentage === '50' ? 'dp_50' : 'full');
+
+                let tipeValue = percentage === '20' ? 'dp_20' : (percentage === '50' ? 'dp_50' :
+                    'full');
                 document.getElementById('tipe_pembayaran').value = tipeValue;
-                
+
                 updateDpAmount();
             });
         });
