@@ -1,783 +1,985 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservasi - Luxury Hotel</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .luxury-title {
-            font-family: 'Playfair Display', serif;
+@include('template.header')
+<link rel="stylesheet" href="{{ asset('css/reservasi.css') }}">
+
+<style>
+    .paket-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+
+    .paket-card:hover:not(.disabled) {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .paket-card.selected {
+        border-color: #FFB22C;
+        background-color: #FFF8E7;
+    }
+
+    .paket-card.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .paket-img {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .progress-step {
+        width: 100%;
+        height: 8px;
+        background-color: #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-step.active {
+        background-color: #FFB22C;
+    }
+
+    .slide-content {
+        display: none;
+    }
+
+    .slide-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
         }
 
-        .gold-gradient {
-            background: linear-gradient(135deg, #D4AF37 0%, #F4E5A1 50%, #D4AF37 100%);
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
+    }
 
-        .input-focus:focus {
-            border-color: #D4AF37;
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
-        }
+    .facility-checkbox:checked+label {
+        background-color: #FFF8E7;
+        border-color: #FFB22C;
+    }
 
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
+    .selected-room-card {
+        background: linear-gradient(135deg, #FFB22C 0%, #FFA500 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(255, 178, 44, 0.3);
+        margin-bottom: 20px;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+    .room-locked-badge {
+        background-color: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 8px 15px;
+        border-radius: 20px;
+        display: inline-block;
+        font-weight: 600;
+    }
 
-        .slide-content {
-            display: none;
-        }
+    /* Time Slot Styling */
+    .time-slot {
+        padding: 12px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        background-color: white;
+    }
 
-        .slide-content.active {
-            display: block;
-        }
-    </style>
-</head>
-<body class="bg-neutral-900 text-white min-h-screen">
-    <!-- Navigation -->
-    <nav class="flex items-center justify-between px-8 py-6">
-        <div class="text-3xl luxury-title font-bold text-yellow-500">LUXURY</div>
-        <div class="flex gap-8 items-center">
-            <a href="#" class="hover:text-yellow-500 transition">Beranda</a>
-            <a href="#" class="hover:text-yellow-500 transition">Fasilitas</a>
-            <a href="#" class="hover:text-yellow-500 transition">Kontak Kami</a>
-            <a href="#" class="text-yellow-500 font-semibold">Reservasi</a>
-            <button class="gold-gradient text-black px-6 py-2 rounded font-semibold hover:opacity-90 transition">Login</button>
-        </div>
-    </nav>
+    .time-slot:hover:not(.blocked) {
+        border-color: #FFB22C;
+        background-color: #FFF8E7;
+        transform: scale(1.05);
+    }
 
-    <!-- Main Content -->
-    <div class="container mx-auto px-8 py-16 max-w-4xl">
-        
+    .time-slot.selected {
+        border-color: #FFB22C;
+        background-color: #FFB22C;
+        color: white;
+    }
+
+    .time-slot.blocked {
+        background-color: #fee2e2;
+        border-color: #ef4444;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .time-slot.blocked:hover {
+        transform: none;
+    }
+
+    /* DP Card Styling */
+    .dp-card {
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        background-color: white;
+    }
+
+    .dp-card:hover {
+        border-color: #FFB22C;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(255, 178, 44, 0.3);
+    }
+
+    .dp-card.selected {
+        border-color: #FFB22C;
+        background-color: #FFF8E7;
+    }
+
+    .dp-card .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .dp-card .badge.recommended {
+        background-color: #10b981;
+        color: white;
+    }
+</style>
+
+<section class="py-5" style="background-color: #FFB22C; min-height: 100vh;">
+    <div class="container">
+        <h2 class="text-center mb-4 fw-bold text-dark">Reservasi Tempat</h2>
+
         <!-- Progress Bar -->
-        <div class="mb-8">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-sm text-neutral-400">Langkah <span id="currentStep">1</span> dari 3</span>
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-dark">Langkah <span id="currentStep">1</span> dari 3</span>
             </div>
-            <div class="flex gap-4">
-                <div class="flex-1 h-2 bg-yellow-500 rounded-full" id="step1Progress"></div>
-                <div class="flex-1 h-2 bg-neutral-700 rounded-full" id="step2Progress"></div>
-                <div class="flex-1 h-2 bg-neutral-700 rounded-full" id="step3Progress"></div>
+            <div class="d-flex gap-2">
+                <div class="progress-step active" id="step1Progress"></div>
+                <div class="progress-step" id="step2Progress"></div>
+                <div class="progress-step" id="step3Progress"></div>
             </div>
         </div>
 
-        <!-- Success Message -->
-        <div id="successMessage" class="hidden bg-green-900 border border-green-700 text-green-100 px-6 py-4 rounded-lg mb-8">
-            <p class="font-semibold">✓ Reservasi Berhasil!</p>
-            <p class="text-sm">Kami akan menghubungi Anda segera untuk mengkonfirmasi pemesanan.</p>
+        @if (session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+
+        <div id="errorMessage" class="alert alert-danger d-none">
+            <p class="fw-bold mb-1">✗ Error!</p>
+            <p class="mb-0" id="errorText"></p>
         </div>
 
         <!-- Form Container -->
-        <div class="bg-neutral-800 rounded-2xl p-8 border border-neutral-700">
-            
-            <form id="reservasiForm" method="POST" action="{{ route('reservasi.store') }}" enctype="multipart/form-data">
-                @csrf
+        <form id="reservasiForm" class="bg-white p-4 rounded shadow">
+            @csrf
 
-                <!-- SLIDE 1: IDENTITAS -->
-                <div class="slide-content active fade-in" id="slide1">
-                    <h2 class="luxury-title text-3xl font-bold mb-2">Informasi Identitas</h2>
-                    <p class="text-neutral-400 mb-6">Silakan isi data diri Anda dengan lengkap</p>
+            <!-- SLIDE 1: IDENTITAS -->
+            <div class="slide-content active" id="slide1">
+                <h3 class="fw-bold mb-3">Informasi Identitas</h3>
+                <p class="text-muted mb-4">Silakan isi data diri Anda dengan lengkap</p>
 
-                    <div class="space-y-6">
-                        <!-- Nama Lengkap -->
-                        <div>
-                            <label for="nama" class="block text-sm font-medium mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
-                            <input 
-                                type="text" 
-                                id="nama" 
-                                name="nama"
-                                value="{{ old('nama') }}"
-                                class="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-4 py-3 text-white placeholder-neutral-500 input-focus outline-none transition"
-                                placeholder="Masukkan nama lengkap Anda"
-                            >
-                            @error('nama')
-                                <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
-                            @enderror
-                            <p class="error-text text-red-400 text-sm mt-2 hidden"></p>
-                        </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="nama" class="form-label">Nama Lengkap *</label>
+                        <input type="text" name="nama" id="nama" class="form-control" required>
+                        <div class="text-danger small mt-1 d-none" id="error-nama"></div>
+                    </div>
 
-                        <!-- No HP -->
-                        <div>
-                            <label for="no_hp" class="block text-sm font-medium mb-2">Nomor Handphone <span class="text-red-500">*</span></label>
-                            <input 
-                                type="tel" 
-                                id="no_hp" 
-                                name="no_hp"
-                                value="{{ old('no_hp') }}"
-                                class="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-4 py-3 text-white placeholder-neutral-500 input-focus outline-none transition"
-                                placeholder="08123456789"
-                            >
-                            @error('no_hp')
-                                <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
-                            @enderror
-                            <p class="error-text text-red-400 text-sm mt-2 hidden"></p>
-                        </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="no_hp" class="form-label">Nomor Handphone *</label>
+                        <input type="tel" name="no_hp" id="no_hp" class="form-control" required>
+                        <div class="text-danger small mt-1 d-none" id="error-no_hp"></div>
+                    </div>
 
-                        <!-- Email -->
-                        <div>
-                            <label for="email" class="block text-sm font-medium mb-2">Email <span class="text-red-500">*</span></label>
-                            <input 
-                                type="email" 
-                                id="email" 
-                                name="email"
-                                value="{{ old('email') }}"
-                                class="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-4 py-3 text-white placeholder-neutral-500 input-focus outline-none transition"
-                                placeholder="email@example.com"
-                            >
-                            @error('email')
-                                <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
-                            @enderror
-                            <p class="error-text text-red-400 text-sm mt-2 hidden"></p>
-                        </div>
+                    <div class="col-md-12 mb-3">
+                        <label for="email" class="form-label">Email *</label>
+                        <input type="email" name="email" id="email" class="form-control" required>
+                        <div class="text-danger small mt-1 d-none" id="error-email"></div>
                     </div>
                 </div>
+            </div>
 
-                <!-- SLIDE 2: PEMILIHAN LAYANAN -->
-                <div class="slide-content fade-in" id="slide2">
-                    <h2 class="luxury-title text-3xl font-bold mb-2">Pilih Paket & Layanan</h2>
-                    <p class="text-neutral-400 mb-6">Pilih paket, ruangan, dan fasilitas yang Anda inginkan</p>
+            <!-- SLIDE 2: LAYANAN -->
+            <div class="slide-content" id="slide2">
+                <h3 class="fw-bold mb-3">Pilih Paket & Layanan</h3>
 
-                    <div class="space-y-6">
-                        <!-- Paket Menu -->
-                        <div>
-                            <label class="block text-sm font-medium mb-3">Paket Menu <span class="text-red-500">*</span></label>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="paketContainer">
-                                <!-- Diisi oleh JavaScript dari database -->
+                <!-- Selected Room Display -->
+                <div id="selectedRoomDisplay" class="d-none">
+                    <div class="selected-room-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <span class="room-locked-badge">
+                                    🔒 Ruangan Terpilih
+                                </span>
                             </div>
-                            <p class="error-text text-red-400 text-sm mt-2 hidden"></p>
-                            <input type="hidden" id="paket_menu" name="paket_menu" value="{{ old('paket_menu') }}">
+                            <a href="/reservasi" class="btn btn-light btn-sm">Ganti Ruangan</a>
                         </div>
-
-                        <!-- Ruangan -->
-                        <div>
-                            <label for="ruangan" class="block text-sm font-medium mb-3">Ruangan <span class="text-red-500">*</span></label>
-                            <select 
-                                id="ruangan" 
-                                name="ruangan"
-                                class="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-4 py-3 text-white input-focus outline-none transition"
-                            >
-                                <option value="">Pilih ruangan</option>
-                                <!-- Diisi oleh JavaScript dari database -->
-                            </select>
-                            <p class="error-text text-red-400 text-sm mt-2 hidden"></p>
-                        </div>
-
-                        <!-- Jam Check-in -->
-                        <div>
-                            <label for="jam_check_in" class="block text-sm font-medium mb-3">Jam Check-in <span class="text-red-500">*</span></label>
-                            <select 
-                                id="jam_check_in" 
-                                name="jam_check_in"
-                                class="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-4 py-3 text-white input-focus outline-none transition"
-                            >
-                                <option value="">Pilih jam</option>
-                                <option value="08:00">08:00</option>
-                                <option value="09:00">09:00</option>
-                                <option value="10:00">10:00</option>
-                                <option value="11:00">11:00</option>
-                                <option value="12:00">12:00</option>
-                                <option value="13:00">13:00</option>
-                                <option value="14:00">14:00</option>
-                                <option value="15:00">15:00</option>
-                                <option value="16:00">16:00</option>
-                                <option value="17:00">17:00</option>
-                                <option value="18:00">18:00</option>
-                            </select>
-                            <p class="error-text text-red-400 text-sm mt-2 hidden"></p>
-                        </div>
-
-                        <!-- Fasilitas Tambahan -->
-                        <div>
-                            <label class="block text-sm font-medium mb-3">Fasilitas Tambahan</label>
-                            <div class="space-y-2" id="fasilitasContainer">
-                                <!-- Diisi oleh JavaScript dari database -->
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h4 class="fw-bold mb-2" id="selectedRoomName">-</h4>
+                                <p class="mb-1">📍 Kapasitas: <span id="selectedRoomCapacity">-</span> orang</p>
+                                <p class="mb-0">💰 Harga: Rp <span id="selectedRoomPrice">-</span></p>
                             </div>
-                        </div>
-
-                        <!-- Menu Tambahan -->
-                        <div>
-                            <label class="block text-sm font-medium mb-3">Menu Tambahan (Opsional)</label>
-                            <div class="space-y-2" id="menuTambahanContainer">
-                                <!-- Diisi oleh JavaScript dari database -->
-                            </div>
-                        </div>
-
-                        <!-- Total Harga -->
-                        <div class="bg-gradient-to-r from-yellow-500/20 to-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                            <div class="flex justify-between items-center">
-                                <span class="text-lg font-semibold">Total Harga:</span>
-                                <span id="totalHarga" class="text-2xl font-bold text-yellow-500">Rp 0</span>
+                            <div class="col-md-4 text-end">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"
+                                    fill="rgba(255,255,255,0.3)" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                                </svg>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- SLIDE 3: PEMBAYARAN -->
-                <div class="slide-content fade-in" id="slide3">
-                    <h2 class="luxury-title text-3xl font-bold mb-2">Pembayaran</h2>
-                    <p class="text-neutral-400 mb-6">Lakukan pembayaran melalui QRIS dan unggah bukti pembayaran</p>
+                <div class="row">
+                    <!-- Jenis Ruangan -->
+                    <div class="col-md-12 mb-3" id="ruanganSelector">
+                        <label for="ruangan" class="form-label">Jenis Ruangan *</label>
+                        <select name="ruangan" id="ruangan" class="form-select" required>
+                            <option value="">-- Pilih Ruangan --</option>
+                        </select>
+                        <div class="text-danger small mt-1 d-none" id="error-ruangan"></div>
+                    </div>
 
-                    <div class="space-y-6">
-                        <!-- Ringkasan Pesanan -->
-                        <div class="bg-neutral-700 rounded-lg p-6 mb-6">
-                            <h3 class="font-semibold mb-4">Ringkasan Pesanan</h3>
-                            <div class="space-y-2 text-sm">
-                                <div class="flex justify-between">
-                                    <span>Nama:</span>
-                                    <span id="summaryNama">-</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Paket:</span>
-                                    <span id="summaryPaket">-</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Ruangan:</span>
-                                    <span id="summaryRuangan">-</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Jam:</span>
-                                    <span id="summaryJam">-</span>
-                                </div>
-                                <hr class="border-neutral-600 my-2">
-                                <div class="flex justify-between text-lg font-bold text-yellow-500">
-                                    <span>Total:</span>
-                                    <span id="summaryTotal">Rp 0</span>
-                                </div>
+                    <!-- Pilih Paket -->
+                    <div class="col-12 mb-4">
+                        <label class="form-label fw-bold">Pilih Paket Menu *</label>
+                        <input type="hidden" name="paket_menu" id="paket_menu" required>
+                        <div class="text-danger small mt-1 d-none" id="error-paket_menu"></div>
+                        <div class="row g-3" id="paketContainer"></div>
+                    </div>
+
+                    <!-- Tanggal -->
+                    <div class="col-md-12 mb-3">
+                        <label for="tanggal" class="form-label">Tanggal Reservasi *</label>
+                        <input type="date" name="tanggal" id="tanggal" class="form-control" required>
+                        <div class="text-danger small mt-1 d-none" id="error-tanggal"></div>
+                    </div>
+
+                    <!-- Time Slot Selection -->
+                    <div class="col-12 mb-3">
+                        <label class="form-label fw-bold">Pilih Jam Check-in *</label>
+                        <input type="hidden" name="jam" id="jam" required>
+                        <div class="text-danger small mt-1 d-none" id="error-jam"></div>
+                        <div id="timeSlotsContainer" class="row g-2">
+                            <div class="col-12 text-center text-muted py-4">
+                                Pilih tanggal dan ruangan terlebih dahulu
                             </div>
                         </div>
+                    </div>
 
-                        <!-- QRIS Payment Section -->
-                        <div class="border-2 border-dashed border-yellow-500 rounded-lg p-6 text-center bg-yellow-500/5">
-                            <h3 class="font-semibold mb-4">Scan QRIS untuk Pembayaran</h3>
-                            <div class="bg-white p-4 rounded-lg inline-block mb-4">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://luxury-hotel.test/pembayaran/{{ uniqid() }}" alt="QRIS Code" class="w-64 h-64">
+                    <!-- Jumlah Orang -->
+                    <div class="col-md-12 mb-3">
+                        <label for="jumlah_orang" class="form-label">Jumlah Orang *</label>
+                        <input type="number" name="jumlah_orang" id="jumlah_orang" class="form-control"
+                            min="1" required>
+                        <small class="text-muted" id="capacityWarning"></small>
+                        <div class="text-danger small mt-1 d-none" id="error-jumlah_orang"></div>
+                    </div>
+
+                    <!-- Fasilitas Tambahan -->
+                    <div class="col-12 mb-3">
+                        <label class="form-label fw-bold">Fasilitas Tambahan (Opsional)</label>
+                        <div id="fasilitasContainer" class="row g-2"></div>
+                    </div>
+
+                    <!-- Menu Tambahan -->
+                    <div class="col-12 mb-3">
+                        <label class="form-label fw-bold">Menu Tambahan (Opsional)</label>
+                        <div id="menuTambahanContainer" class="row g-2"></div>
+                    </div>
+
+                    <!-- Catatan -->
+                    <div class="col-12 mb-3">
+                        <label for="pesan" class="form-label">Catatan Tambahan (Opsional)</label>
+                        <textarea name="pesan" id="pesan" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <!-- Total Harga -->
+                    <div class="col-12 mb-3">
+                        <div class="alert alert-warning">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">Total Harga:</span>
+                                <span id="totalHarga" class="fs-4 fw-bold text-success">Rp 0</span>
                             </div>
-                            <p class="text-sm text-neutral-400">Jumlah pembayaran: <span id="qrisAmount" class="text-yellow-500 font-semibold">Rp 0</span></p>
                         </div>
-
-                        <!-- Upload Bukti Pembayaran -->
-                        <div>
-                            <label for="bukti_pembayaran" class="block text-sm font-medium mb-2">Upload Bukti Pembayaran <span class="text-red-500">*</span></label>
-                            <div class="border-2 border-dashed border-neutral-600 rounded-lg p-6 text-center cursor-pointer hover:border-yellow-500 transition" id="uploadArea">
-                                <input 
-                                    type="file" 
-                                    id="bukti_pembayaran" 
-                                    name="bukti_pembayaran"
-                                    accept="image/*"
-                                    class="hidden"
-                                >
-                                <p class="text-neutral-400 mb-2">Drag file di sini atau klik untuk memilih</p>
-                                <p class="text-xs text-neutral-500">Format: JPG, PNG (Max 2MB)</p>
-                                <p id="fileName" class="text-sm text-yellow-500 mt-2 hidden"></p>
-                            </div>
-                            <p class="error-text text-red-400 text-sm mt-2 hidden"></p>
-                        </div>
-
-                        <!-- Catatan Tambahan -->
-                        <div>
-                            <label for="catatan" class="block text-sm font-medium mb-2">Catatan Tambahan (Opsional)</label>
-                            <textarea 
-                                id="catatan" 
-                                name="catatan"
-                                rows="4"
-                                class="w-full bg-neutral-900 border border-neutral-600 rounded-lg px-4 py-3 text-white placeholder-neutral-500 input-focus outline-none transition"
-                                placeholder="Tuliskan permintaan khusus atau catatan tambahan di sini..."
-                            ></textarea>
-                        </div>
-
-                        <!-- Persetujuan -->
-                        <div class="flex items-start gap-3">
-                            <input 
-                                type="checkbox" 
-                                id="setuju" 
-                                name="setuju"
-                                class="w-4 h-4 mt-1"
-                            >
-                            <label for="setuju" class="text-sm text-neutral-300">
-                                Saya menyetujui <a href="#" class="text-yellow-500 hover:underline">syarat dan ketentuan</a> serta <a href="#" class="text-yellow-500 hover:underline">kebijakan privasi</a> Luxury Hotel
-                            </label>
-                        </div>
-                        <p class="error-text text-red-400 text-sm hidden" id="setujuError"></p>
                     </div>
                 </div>
+            </div>
 
-                <!-- Navigation Buttons - SUDAH DIHAPUS ONCLICK -->
-                <div class="flex gap-4 mt-8 pt-6 border-t border-neutral-700">
-                    <button 
-                        type="button" 
-                        id="prevBtn"
-                        class="flex-1 px-6 py-3 border border-neutral-600 rounded-lg hover:border-yellow-500 transition font-semibold disabled:opacity-50"
-                    >
-                        ← Kembali
-                    </button>
-                    <button 
-                        type="button" 
-                        id="nextBtn"
-                        class="flex-1 gold-gradient text-black px-6 py-3 rounded-lg hover:opacity-90 transition font-semibold"
-                    >
-                        Lanjut →
-                    </button>
-                    <button 
-                        type="submit" 
-                        id="submitBtn"
-                        class="hidden flex-1 gold-gradient text-black px-6 py-3 rounded-lg hover:opacity-90 transition font-semibold"
-                    >
-                        ✓ Kirim Reservasi
-                    </button>
+            <!-- SLIDE 3: PEMBAYARAN -->
+            <div class="slide-content" id="slide3">
+                <h3 class="fw-bold mb-3">Pembayaran</h3>
+                <p class="text-muted mb-4">Pilih metode DP dan unggah bukti pembayaran</p>
+
+                <!-- Pilihan DP -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Pilih DP *</label>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="dp-card" data-percentage="20">
+                                <div class="badge">20%</div>
+                                <h4 class="fw-bold">DP Minimal</h4>
+                                <p class="mb-0" id="dp20Amount">Rp 0</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="dp-card" data-percentage="50">
+                                <div class="badge recommended">Rekomendasi</div>
+                                <h4 class="fw-bold">50%</h4>
+                                <p class="mb-0" id="dp50Amount">Rp 0</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="dp-card" data-percentage="100">
+                                <div class="badge">Lunas</div>
+                                <h4 class="fw-bold">100%</h4>
+                                <p class="mb-0" id="fullAmount">Rp 0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="dp_percentage" id="dp_percentage" required>
+                    <input type="hidden" name="tipe_pembayaran" id="tipe_pembayaran">
+                    <div class="text-danger small mt-1 d-none" id="error-dp_percentage"></div>
                 </div>
-            </form>
-        </div>
-    </div>
 
-    <script>
-        // ============================================
-        // DEKLARASI VARIABEL GLOBAL
-        // ============================================
-        let currentSlide = 1;
-        const totalSlides = 3;
-
-        // Data dari server
-        const database = {
-            paket_menu: @json($paketMenu ?? []),
-            ruangan: @json($ruangan ?? []),
-            fasilitas: @json($fasilitas ?? []),
-            menu_tambahan: @json($menuTambahan ?? []),
-            reservasi_ruangan: @json($reservasiRuangan ?? [])
-        };
-
-        // ============================================
-        // RENDER FUNCTIONS
-        // ============================================
-        function renderPaketMenu() {
-            const container = document.getElementById('paketContainer');
-            if (database.paket_menu.length === 0) {
-                container.innerHTML = '<p class="text-neutral-400 col-span-2">Tidak ada paket tersedia</p>';
-                return;
-            }
-            container.innerHTML = database.paket_menu.map(menu => `
-                <button 
-                    type="button"
-                    onclick="selectPaket(${menu.id})"
-                    class="p-4 rounded-lg text-left border transition ${
-                        menu.stock === 0 
-                        ? 'bg-neutral-700 border-neutral-600 cursor-not-allowed opacity-50' 
-                        : 'bg-neutral-700 border-neutral-600 hover:border-yellow-500'
-                    }"
-                    ${menu.stock === 0 ? 'disabled' : ''}
-                    id="paket-${menu.id}"
-                >
-                    <p class="font-semibold">${menu.nama}</p>
-                    <p class="text-sm">Rp ${Number(menu.harga).toLocaleString('id-ID')}</p>
-                    <p class="text-xs mt-1 ${menu.stock === 0 ? 'text-red-400' : 'text-green-400'}">
-                        ${menu.stock === 0 ? '✗ Tidak Tersedia' : `✓ ${menu.stock} tersedia`}
+                <!-- Total dan DP Preview -->
+                <div class="alert alert-info mb-4 d-none" id="selectedPaymentInfo">
+                    <h5 class="fw-bold">Detail Pembayaran:</h5>
+                    <p class="mb-1">Metode: <span id="infoMetode">-</span></p>
+                    <p class="mb-1">Jumlah Bayar: <span id="infoJumlah" class="fw-bold text-success">Rp 0</span>
                     </p>
+                    <p class="mb-0">Sisa Bayar: <span id="infoSisa">Rp 0</span></p>
+                </div>
+
+                <!-- Upload Bukti -->
+                <div class="mb-3">
+                    <label for="bukti" class="form-label fw-bold">Upload Bukti Pembayaran *</label>
+                    <input type="file" name="bukti" id="bukti" class="form-control" accept="image/*"
+                        required>
+                    <div class="text-danger small mt-1 d-none" id="error-bukti"></div>
+                    <div id="imagePreview" class="mt-3 d-none">
+                        <img id="previewImg" src="" alt="Preview" class="img-thumbnail"
+                            style="max-width: 300px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <button type="button" id="prevBtn" class="btn btn-secondary d-none">
+                    ← Kembali
                 </button>
-            `).join('');
-        }
 
-        function renderRuangan() {
-            const select = document.getElementById('ruangan');
-            if (database.ruangan.length === 0) {
-                select.innerHTML = '<option value="">Tidak ada ruangan tersedia</option>';
-                return;
-            }
-            select.innerHTML = '<option value="">Pilih ruangan</option>' + database.ruangan.map(ruang => `
-                <option value="${ruang.id}">
-                    ${ruang.nama} - Kapasitas: ${ruang.kapasitas} (Rp ${Number(ruang.harga).toLocaleString('id-ID')})
-                </option>
-            `).join('');
-        }
+                <button type="button" id="nextBtn" class="btn btn-warning">
+                    Lanjut →
+                </button>
 
-        function renderFasilitas() {
-            const container = document.getElementById('fasilitasContainer');
-            if (database.fasilitas.length === 0) {
-                container.innerHTML = '<p class="text-neutral-400">Tidak ada fasilitas tersedia</p>';
-                return;
-            }
-            container.innerHTML = database.fasilitas.map(fas => `
-                <label class="flex items-center gap-3 p-3 bg-neutral-700 rounded-lg cursor-pointer hover:bg-neutral-600">
-                    <input 
-                        type="checkbox" 
-                        name="fasilitas[]" 
-                        value="${fas.id}"
-                        onchange="calculateTotal()"
-                        class="w-4 h-4"
-                    >
-                    <div class="flex-1">
-                        <p class="font-medium">${fas.nama}</p>
-                        <p class="text-sm text-neutral-300">Rp ${Number(fas.harga).toLocaleString('id-ID')}</p>
-                    </div>
-                </label>
-            `).join('');
-        }
+                <button type="submit" id="submitBtn" class="btn btn-success d-none">
+                    ✓ Kirim Reservasi
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
 
-        function renderMenuTambahan() {
-            const container = document.getElementById('menuTambahanContainer');
-            if (database.menu_tambahan.length === 0) {
-                container.innerHTML = '<p class="text-neutral-400">Tidak ada menu tambahan tersedia</p>';
-                return;
-            }
-            container.innerHTML = database.menu_tambahan.map(menu => `
-                <label class="flex items-center gap-3 p-3 bg-neutral-700 rounded-lg cursor-pointer hover:bg-neutral-600">
-                    <input 
-                        type="checkbox" 
-                        name="menu_tambahan[]" 
-                        value="${menu.id}"
-                        onchange="calculateTotal()"
-                        class="w-4 h-4"
-                    >
-                    <div class="flex-1">
-                        <p class="font-medium">${menu.nama}</p>
-                        <p class="text-sm text-neutral-300">Rp ${Number(menu.harga).toLocaleString('id-ID')}</p>
-                    </div>
-                </label>
-            `).join('');
-        }
+<script>
+    let currentSlide = 1;
+    const totalSlides = 3;
+    const API_BASE_URL = '{{ url('/api') }}';
 
-        function selectPaket(id) {
-            document.getElementById('paket_menu').value = id;
-            document.querySelectorAll('#paketContainer button').forEach(btn => {
-                btn.classList.remove('bg-yellow-500', 'text-black', 'border-yellow-600');
-                btn.classList.add('bg-neutral-700', 'border-neutral-600');
-            });
-            const selectedBtn = document.getElementById('paket-' + id);
-            selectedBtn.classList.add('bg-yellow-500', 'text-black', 'border-yellow-600');
-            selectedBtn.classList.remove('bg-neutral-700', 'border-neutral-600');
-            calculateTotal();
-        }
+    const urlParams = new URLSearchParams(window.location.search);
+    const preselectedRoomId = urlParams.get('ruangan');
 
-        function calculateTotal() {
-            let total = 0;
+    const database = {
+        paket_menu: @json($paketMenu ?? collect()),
+        ruangan: @json($ruangan ?? collect()),
+        fasilitas: @json($fasilitas ?? collect()),
+        menu_tambahan: @json($menuTambahan ?? collect()),
+    };
 
-            // Paket menu
-            const paketId = document.getElementById('paket_menu').value;
-            if (paketId) {
-                const paket = database.paket_menu.find(p => p.id == paketId);
-                if (paket) total += Number(paket.harga);
-            }
+    let totalPrice = 0;
+    let selectedTime = null;
 
-            // Ruangan
-            const ruanganId = document.getElementById('ruangan').value;
-            if (ruanganId) {
-                const ruang = database.ruangan.find(r => r.id == ruanganId);
-                if (ruang) total += Number(ruang.harga);
-            }
-
-            // Fasilitas
-            document.querySelectorAll('input[name="fasilitas[]"]:checked').forEach(cb => {
-                const fas = database.fasilitas.find(f => f.id == cb.value);
-                if (fas) total += Number(fas.harga);
-            });
-
-            // Menu tambahan
-            document.querySelectorAll('input[name="menu_tambahan[]"]:checked').forEach(cb => {
-                const menu = database.menu_tambahan.find(m => m.id == cb.value);
-                if (menu) total += Number(menu.harga);
-            });
-
-            document.getElementById('totalHarga').textContent = 'Rp ' + total.toLocaleString('id-ID');
-            document.getElementById('qrisAmount').textContent = 'Rp ' + total.toLocaleString('id-ID');
-            document.getElementById('summaryTotal').textContent = 'Rp ' + total.toLocaleString('id-ID');
-        }
-
-        // ============================================
-        // VALIDATION FUNCTIONS
-        // ============================================
-        function clearErrors() {
-            document.querySelectorAll('.error-text').forEach(el => {
-                el.textContent = '';
-                el.classList.add('hidden');
-            });
-        }
-
-        function showError(fieldName, message) {
-            const field = document.getElementById(fieldName);
-            if (!field) return;
-            
-            const errorElement = field.closest('div').querySelector('.error-text');
-            if (errorElement) {
-                errorElement.textContent = message;
-                errorElement.classList.remove('hidden');
-            }
-        }
-
-        function validateSlide(slide) {
-            clearErrors();
-            let isValid = true;
-
-            if (slide === 1) {
-                const nama = document.getElementById('nama').value.trim();
-                const no_hp = document.getElementById('no_hp').value.trim();
-                const email = document.getElementById('email').value.trim();
-
-                if (!nama) {
-                    showError('nama', 'Nama lengkap harus diisi');
-                    isValid = false;
-                }
-                if (!no_hp) {
-                    showError('no_hp', 'Nomor handphone harus diisi');
-                    isValid = false;
-                } else if (!/^08\d{8,11}$/.test(no_hp)) {
-                    showError('no_hp', 'Format nomor tidak valid (08xxxxxxxxx)');
-                    isValid = false;
-                }
-                if (!email) {
-                    showError('email', 'Email harus diisi');
-                    isValid = false;
-                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    showError('email', 'Format email tidak valid');
-                    isValid = false;
-                }
-
-                if (isValid) {
-                    document.getElementById('summaryNama').textContent = nama;
-                }
-            }
-
-            if (slide === 2) {
-                const paket = document.getElementById('paket_menu').value;
-                const ruangan = document.getElementById('ruangan').value;
-                const jam = document.getElementById('jam_check_in').value;
-
-                if (!paket) {
-                    showError('paket_menu', 'Paket menu harus dipilih');
-                    isValid = false;
-                } else {
-                    const selectedPaket = database.paket_menu.find(p => p.id == paket);
-                    if (selectedPaket && selectedPaket.stock === 0) {
-                        showError('paket_menu', 'Paket ini tidak tersedia (stock habis)');
-                        isValid = false;
-                    } else if (isValid && selectedPaket) {
-                        document.getElementById('summaryPaket').textContent = selectedPaket.nama;
-                    }
-                }
-
-                if (!ruangan) {
-                    showError('ruangan', 'Ruangan harus dipilih');
-                    isValid = false;
-                } else {
-                    const selectedRuangan = database.ruangan.find(r => r.id == ruangan);
-                    if (isValid && selectedRuangan) {
-                        document.getElementById('summaryRuangan').textContent = selectedRuangan.nama;
-                    }
-                }
-
-                if (!jam) {
-                    showError('jam_check_in', 'Jam check-in harus dipilih');
-                    isValid = false;
-                } else {
-                    const isBooked = database.reservasi_ruangan.some(res => 
-                        res.ruangan == parseInt(ruangan) && res.jam_check_in === jam
-                    );
-                    if (isBooked) {
-                        showError('jam_check_in', 'Ruangan sudah dipesan di jam tersebut');
-                        isValid = false;
-                    } else if (isValid) {
-                        document.getElementById('summaryJam').textContent = jam;
-                    }
-                }
-            }
-
-            if (slide === 3) {
-                const bukti = document.getElementById('bukti_pembayaran').files.length;
-                const setuju = document.getElementById('setuju').checked;
-
-                if (bukti === 0) {
-                    showError('bukti_pembayaran', 'Bukti pembayaran harus diunggah');
-                    isValid = false;
-                }
-
-                if (!setuju) {
-                    const errorEl = document.getElementById('setujuError');
-                    if (errorEl) {
-                        errorEl.textContent = 'Anda harus menyetujui syarat dan ketentuan';
-                        errorEl.classList.remove('hidden');
-                    }
-                    isValid = false;
-                }
-            }
-
-            return isValid;
-        }
-
-        // ============================================
-        // NAVIGATION FUNCTIONS
-        // ============================================
-        function nextSlide() {
-            if (!validateSlide(currentSlide)) return;
-
-            if (currentSlide < totalSlides) {
-                currentSlide++;
-                showSlide(currentSlide);
-                updateProgress();
-            }
-        }
-
-        function previousSlide() {
-            if (currentSlide > 1) {
-                currentSlide--;
-                showSlide(currentSlide);
-                updateProgress();
-            }
-        }
-
-        function showSlide(slide) {
-            document.querySelectorAll('.slide-content').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.getElementById('slide' + slide).classList.add('active');
-
-            // Update button visibility
-            document.getElementById('prevBtn').style.display = slide === 1 ? 'none' : 'block';
-            document.getElementById('nextBtn').style.display = slide === totalSlides ? 'none' : 'block';
-            document.getElementById('submitBtn').style.display = slide === totalSlides ? 'block' : 'none';
-
-            // Summary update
-            if (slide === 3) {
+    // ============================================
+    // ROOM PRESELECTION
+    // ============================================
+    function handlePreselectedRoom() {
+        if (preselectedRoomId) {
+            const selectedRoom = database.ruangan.find(r => r.id == preselectedRoomId);
+            if (selectedRoom) {
+                document.getElementById('ruangan').value = preselectedRoomId;
+                document.getElementById('selectedRoomDisplay').classList.remove('d-none');
+                document.getElementById('selectedRoomName').textContent = selectedRoom.nama;
+                document.getElementById('selectedRoomCapacity').textContent = selectedRoom.kapasitas;
+                document.getElementById('selectedRoomPrice').textContent = Number(selectedRoom.harga).toLocaleString(
+                    'id-ID');
+                document.getElementById('ruanganSelector').classList.add('d-none');
+                updateCapacityWarning(selectedRoom.kapasitas);
                 calculateTotal();
             }
         }
+    }
 
-        function updateProgress() {
-            document.getElementById('currentStep').textContent = currentSlide;
-            
-            document.getElementById('step1Progress').style.backgroundColor = currentSlide >= 1 ? '#EAB308' : '#525252';
-            document.getElementById('step2Progress').style.backgroundColor = currentSlide >= 2 ? '#EAB308' : '#525252';
-            document.getElementById('step3Progress').style.backgroundColor = currentSlide >= 3 ? '#EAB308' : '#525252';
+    function updateCapacityWarning(capacity) {
+        const warningEl = document.getElementById('capacityWarning');
+        warningEl.textContent = `Kapasitas maksimum ruangan: ${capacity} orang`;
+        const jumlahOrangInput = document.getElementById('jumlah_orang');
+        jumlahOrangInput.setAttribute('max', capacity);
+        jumlahOrangInput.addEventListener('input', function() {
+            if (parseInt(this.value) > capacity) {
+                warningEl.classList.add('text-danger');
+                warningEl.textContent = `⚠️ Jumlah melebihi kapasitas! Maksimum ${capacity} orang`;
+            } else {
+                warningEl.classList.remove('text-danger');
+                warningEl.textContent = `Kapasitas maksimum ruangan: ${capacity} orang`;
+            }
+        });
+    }
 
-            document.getElementById('prevBtn').disabled = currentSlide === 1;
+    // ============================================
+    // RENDER FUNCTIONS
+    // ============================================
+    function renderPaketMenu() {
+        const container = document.getElementById('paketContainer');
+        if (database.paket_menu.length === 0) {
+            container.innerHTML = '<p class="text-muted">Tidak ada paket tersedia</p>';
+            return;
+        }
+        container.innerHTML = database.paket_menu.map(menu => `
+        <div class="col-md-4">
+            <div class="card paket-card h-100 ${menu.stock === 0 ? 'disabled' : ''}" 
+                 onclick="${menu.stock > 0 ? `selectPaket(${menu.id})` : ''}" 
+                 id="paket-${menu.id}">
+                <!-- ← GUNAKAN GAMBAR DARI DATABASE -->
+               <img src="${menu.gambar ? '/' + menu.gambar : '{{ asset('img/paket1.jpg') }}'}" 
+     class="card-img-top paket-img" 
+     alt="${menu.nama}">
+                <div class="card-body text-center">
+                    <h5 class="card-title">${menu.nama}</h5>
+                    <!-- ← TAMBAHKAN DESKRIPSI -->
+                    <p class="card-text small text-muted mb-2">${menu.deskripsi || 'Paket makanan spesial'}</p>
+                    <p class="card-text fw-bold">Rp ${Number(menu.harga).toLocaleString('id-ID')}</p>
+                    <p class="small ${menu.stock === 0 ? 'text-danger' : 'text-success'}">
+                        ${menu.stock === 0 ? '✗ Tidak Tersedia' : `✓ ${menu.stock} tersedia`}
+                    </p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    }
+
+    function renderRuangan() {
+        const select = document.getElementById('ruangan');
+        select.innerHTML = '<option value="">-- Pilih Ruangan --</option>' + database.ruangan.map(ruang => `
+            <option value="${ruang.id}" ${preselectedRoomId == ruang.id ? 'selected' : ''}>
+                ${ruang.nama} - Kapasitas: ${ruang.kapasitas} (Rp ${Number(ruang.harga).toLocaleString('id-ID')})
+            </option>
+        `).join('');
+        select.addEventListener('change', function() {
+            const selectedRoom = database.ruangan.find(r => r.id == this.value);
+            if (selectedRoom) {
+                updateCapacityWarning(selectedRoom.kapasitas);
+            }
+            loadAvailableTimeSlots();
+            calculateTotal();
+        });
+    }
+
+    function renderFasilitas() {
+        const container = document.getElementById('fasilitasContainer');
+        if (database.fasilitas.length === 0) {
+            container.innerHTML = '<p class="text-muted small">Tidak ada fasilitas tersedia</p>';
+            return;
+        }
+        container.innerHTML = database.fasilitas.map(fas => `
+            <div class="col-md-6">
+                <div class="form-check p-3 border rounded">
+                    <input class="form-check-input facility-checkbox" type="checkbox" name="fasilitas[]" value="${fas.id}" id="fas-${fas.id}" onchange="calculateTotal()">
+                    <label class="form-check-label w-100" for="fas-${fas.id}">
+                        <div class="fw-semibold">${fas.nama}</div>
+                        <div class="small text-muted">Rp ${Number(fas.harga).toLocaleString('id-ID')}</div>
+                    </label>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderMenuTambahan() {
+        const container = document.getElementById('menuTambahanContainer');
+        if (database.menu_tambahan.length === 0) {
+            container.innerHTML = '<p class="text-muted small">Tidak ada menu tambahan tersedia</p>';
+            return;
+        }
+        container.innerHTML = database.menu_tambahan.map(menu => `
+            <div class="col-md-6">
+                <div class="form-check p-3 border rounded">
+                    <input class="form-check-input facility-checkbox" type="checkbox" name="menu_tambahan[]" value="${menu.id}" id="menu-${menu.id}" onchange="calculateTotal()">
+                    <label class="form-check-label w-100" for="menu-${menu.id}">
+                        <div class="fw-semibold">${menu.nama}</div>
+                        <div class="small text-muted">Rp ${Number(menu.harga).toLocaleString('id-ID')}</div>
+                    </label>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function selectPaket(id) {
+        document.getElementById('paket_menu').value = id;
+        document.querySelectorAll('.paket-card').forEach(card => card.classList.remove('selected'));
+        document.getElementById('paket-' + id).classList.add('selected');
+        calculateTotal();
+    }
+
+    // ============================================
+    // TIME SLOT FUNCTIONS
+    // ============================================
+    function loadAvailableTimeSlots() {
+        const ruanganId = document.getElementById('ruangan').value;
+        const tanggal = document.getElementById('tanggal').value;
+        const container = document.getElementById('timeSlotsContainer');
+
+        console.log('Loading time slots...', {
+            ruanganId,
+            tanggal
+        }); // Debug
+
+        if (!ruanganId || !tanggal) {
+            container.innerHTML =
+                '<div class="col-12 text-center text-muted py-4">Pilih tanggal dan ruangan terlebih dahulu</div>';
+            return;
         }
 
-        // ============================================
-        // UPLOAD FILE HANDLING
-        // ============================================
-        document.getElementById('uploadArea').addEventListener('click', function() {
-            document.getElementById('bukti_pembayaran').click();
+        // Show loading
+        container.innerHTML =
+            '<div class="col-12 text-center py-4"><div class="spinner-border text-warning"></div></div>';
+
+        fetch(`/api/check-available-slots?ruangan_id=${ruanganId}&tanggal=${tanggal}`)
+            .then(res => {
+                console.log('Response status:', res.status); // Debug
+                return res.json();
+            })
+            .then(data => {
+                console.log('API Response:', data); // Debug
+                if (data.status) {
+                    renderTimeSlots(data.data.available_slots, data.data.unavailable_slots);
+                } else {
+                    container.innerHTML =
+                        `<div class="col-12 text-center text-danger py-4">${data.message || 'Gagal memuat jam'}</div>`;
+                }
+            })
+            .catch(err => {
+                console.error('Error loading time slots:', err);
+                container.innerHTML =
+                    '<div class="col-12 text-center text-danger py-4">Gagal memuat data jam. Coba lagi.</div>';
+            });
+    }
+
+    function renderTimeSlots(available, unavailable) {
+        const container = document.getElementById('timeSlotsContainer');
+        container.innerHTML = '';
+
+        console.log('Rendering time slots...', {
+            available,
+            unavailable
+        }); // Debug
+
+        // Jika tidak ada data sama sekali, tampilkan jam default 08:00 - 18:00
+        if ((!available || available.length === 0) && (!unavailable || unavailable.length === 0)) {
+            // Generate default time slots
+            const defaultSlots = [];
+            for (let hour = 8; hour <= 18; hour++) {
+                defaultSlots.push(`${String(hour).padStart(2, '0')}:00`);
+            }
+            available = defaultSlots;
+            unavailable = [];
+        }
+
+        const allSlots = [...new Set([...available, ...unavailable])].sort();
+
+        if (allSlots.length === 0) {
+            container.innerHTML = '<div class="col-12 text-center text-muted py-4">Tidak ada slot waktu tersedia</div>';
+            return;
+        }
+
+        allSlots.forEach(time => {
+            const col = document.createElement('div');
+            col.className = 'col-6 col-md-3';
+
+            const div = document.createElement('div');
+            div.className = 'time-slot';
+            div.innerHTML = `
+                <div class="fw-bold">${time}</div>
+                <div class="small">${unavailable.includes(time) ? '✖ Penuh' : '✓ Tersedia'}</div>
+            `;
+
+            if (unavailable.includes(time)) {
+                div.classList.add('blocked');
+            } else {
+                div.onclick = () => selectTimeSlot(div, time);
+            }
+
+            col.appendChild(div);
+            container.appendChild(col);
+        });
+    }
+
+    function selectTimeSlot(element, time) {
+        document.querySelectorAll('.time-slot').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+        document.getElementById('jam').value = time;
+    }
+
+    // ============================================
+    // CALCULATE TOTAL
+    // ============================================
+    function calculateTotal() {
+        let total = 0;
+
+        const paketId = document.getElementById('paket_menu').value;
+        const jumlahOrang = parseInt(document.getElementById('jumlah_orang').value) || 0;
+
+        if (paketId && jumlahOrang > 0) {
+            const paket = database.paket_menu.find(p => p.id == paketId);
+            if (paket) total += Number(paket.harga) * jumlahOrang;
+        }
+
+        const ruanganId = document.getElementById('ruangan').value;
+        if (ruanganId) {
+            const ruang = database.ruangan.find(r => r.id == ruanganId);
+            if (ruang) total += Number(ruang.harga);
+        }
+
+        document.querySelectorAll('input[name="fasilitas[]"]:checked').forEach(cb => {
+            const fas = database.fasilitas.find(f => f.id == cb.value);
+            if (fas) total += Number(fas.harga);
         });
 
-        document.getElementById('bukti_pembayaran').addEventListener('change', function(e) {
-            if (e.target.files.length > 0) {
-                document.getElementById('fileName').textContent = '✓ ' + e.target.files[0].name;
-                document.getElementById('fileName').classList.remove('hidden');
+        document.querySelectorAll('input[name="menu_tambahan[]"]:checked').forEach(cb => {
+            const menu = database.menu_tambahan.find(m => m.id == cb.value);
+            if (menu) total += Number(menu.harga);
+        });
+
+        totalPrice = total;
+        document.getElementById('totalHarga').textContent = 'Rp ' + total.toLocaleString('id-ID');
+
+        updateDPAmounts();
+        updateDpAmount();
+
+        return total;
+    }
+
+    // ============================================
+    // DP SELECTION
+    // ============================================
+    function updateDPAmounts() {
+        const dp20 = Math.round(totalPrice * 0.2);
+        const dp50 = Math.round(totalPrice * 0.5);
+
+        document.getElementById('dp20Amount').textContent = 'Rp ' + dp20.toLocaleString('id-ID');
+        document.getElementById('dp50Amount').textContent = 'Rp ' + dp50.toLocaleString('id-ID');
+        document.getElementById('fullAmount').textContent = 'Rp ' + totalPrice.toLocaleString('id-ID');
+    }
+
+    function updateDpAmount() {
+        const total = totalPrice;
+        const percentage = document.getElementById('dp_percentage').value;
+
+        if (!percentage) return;
+
+        const dpAmount = Math.round(total * percentage / 100);
+        const sisaBayar = total - dpAmount;
+
+        let metode = percentage === '20' ? 'DP 20%' : (percentage === '50' ? 'DP 50%' : 'Full Payment (100%)');
+
+        document.getElementById('infoMetode').textContent = metode;
+        document.getElementById('infoJumlah').textContent = 'Rp ' + dpAmount.toLocaleString('id-ID');
+        document.getElementById('infoSisa').textContent = 'Rp ' + sisaBayar.toLocaleString('id-ID');
+        document.getElementById('selectedPaymentInfo').classList.remove('d-none');
+    }
+
+    // ============================================
+    // VALIDATION
+    // ============================================
+    function clearErrors() {
+        document.querySelectorAll('[id^="error-"]').forEach(el => {
+            el.textContent = '';
+            el.classList.add('d-none');
+        });
+        document.getElementById('errorMessage').classList.add('d-none');
+    }
+
+    function showError(fieldName, message) {
+        const errorEl = document.getElementById('error-' + fieldName);
+        if (errorEl) {
+            errorEl.textContent = message;
+            errorEl.classList.remove('d-none');
+        }
+    }
+
+    function showGeneralError(message) {
+        document.getElementById('errorText').textContent = message;
+        document.getElementById('errorMessage').classList.remove('d-none');
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+    function validateSlide(slide) {
+        clearErrors();
+        let isValid = true;
+
+        if (slide === 1) {
+            const nama = document.getElementById('nama').value.trim();
+            const no_hp = document.getElementById('no_hp').value.trim();
+            const email = document.getElementById('email').value.trim();
+
+            if (!nama) {
+                showError('nama', 'Nama lengkap harus diisi');
+                isValid = false;
+            }
+            if (!no_hp) {
+                showError('no_hp', 'Nomor handphone harus diisi');
+                isValid = false;
+            }
+            if (!email) {
+                showError('email', 'Email harus diisi');
+                isValid = false;
+            }
+        }
+
+        if (slide === 2) {
+            const paket = document.getElementById('paket_menu').value;
+            const ruangan = document.getElementById('ruangan').value;
+            const jam = document.getElementById('jam').value;
+            const tanggal = document.getElementById('tanggal').value;
+            const jumlah = document.getElementById('jumlah_orang').value;
+
+            if (!paket) {
+                showError('paket_menu', 'Paket menu harus dipilih');
+                isValid = false;
+            }
+            if (!ruangan) {
+                showError('ruangan', 'Ruangan harus dipilih');
+                isValid = false;
+            }
+            if (!jam) {
+                showError('jam', 'Jam harus dipilih');
+                isValid = false;
+            }
+            if (!tanggal) {
+                showError('tanggal', 'Tanggal harus dipilih');
+                isValid = false;
+            }
+            if (!jumlah || jumlah < 1) {
+                showError('jumlah_orang', 'Jumlah orang minimal 1');
+                isValid = false;
+            }
+
+            const selectedRoom = database.ruangan.find(r => r.id == ruangan);
+            if (selectedRoom && parseInt(jumlah) > selectedRoom.kapasitas) {
+                showError('jumlah_orang', `Jumlah orang melebihi kapasitas ruangan (max ${selectedRoom.kapasitas})`);
+                isValid = false;
+            }
+        }
+
+        if (slide === 3) {
+            const bukti = document.getElementById('bukti') ? document.getElementById('bukti').files.length : 0;
+            const dpPercentage = document.getElementById('dp_percentage').value;
+
+            if (!dpPercentage) {
+                showError('dp_percentage', 'Pilih metode DP');
+                isValid = false;
+            }
+            if (bukti === 0) {
+                showError('bukti', 'Bukti pembayaran harus diunggah');
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
+
+    // ============================================
+    // NAVIGATION
+    // ============================================
+    function nextSlide() {
+        if (!validateSlide(currentSlide)) return;
+
+        if (currentSlide < totalSlides) {
+            currentSlide++;
+            showSlide(currentSlide);
+            updateProgress();
+        }
+    }
+
+    function previousSlide() {
+        if (currentSlide > 1) {
+            currentSlide--;
+            showSlide(currentSlide);
+            updateProgress();
+        }
+    }
+
+    function showSlide(slide) {
+        document.querySelectorAll('.slide-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('slide' + slide).classList.add('active');
+
+        document.getElementById('prevBtn').classList.toggle('d-none', slide === 1);
+        document.getElementById('nextBtn').classList.toggle('d-none', slide === totalSlides);
+        document.getElementById('submitBtn').classList.toggle('d-none', slide !== totalSlides);
+    }
+
+    function updateProgress() {
+        document.getElementById('currentStep').textContent = currentSlide;
+        document.getElementById('step1Progress').classList.toggle('active', currentSlide >= 1);
+        document.getElementById('step2Progress').classList.toggle('active', currentSlide >= 2);
+        document.getElementById('step3Progress').classList.toggle('active', currentSlide >= 3);
+    }
+
+    // ============================================
+    // IMAGE PREVIEW
+    // ============================================
+    if (document.getElementById('bukti')) {
+        document.getElementById('bukti').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('imagePreview').classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
             }
         });
+    }
 
-        document.getElementById('uploadArea').addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.style.borderColor = '#D4AF37';
-        });
+    // ============================================
+    // FORM SUBMISSION
+    // ============================================
+    document.getElementById('reservasiForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
 
-        document.getElementById('uploadArea').addEventListener('dragleave', function(e) {
-            this.style.borderColor = '#525252';
-        });
+        if (!validateSlide(3)) return;
 
-        document.getElementById('uploadArea').addEventListener('drop', function(e) {
-            e.preventDefault();
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                document.getElementById('bukti_pembayaran').files = files;
-                document.getElementById('fileName').textContent = '✓ ' + files[0].name;
-                document.getElementById('fileName').classList.remove('hidden');
-            }
-            this.style.borderColor = '#525252';
-        });
+        const formData = new FormData(this);
 
-        // ============================================
-        // FORM SUBMISSION
-        // ============================================
-        document.getElementById('reservasiForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (!validateSlide(3)) return;
+        const submitBtn = document.getElementById('submitBtn');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
 
-            const formData = new FormData(this);
-            
-            // Show loading state
-            const submitBtn = document.getElementById('submitBtn');
-            const originalText = submitBtn.textContent;
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Memproses...';
-
-            fetch('{{ route("reservasi.store") }}', {
+        try {
+            const response = await fetch(`${API_BASE_URL}/reservasi`, {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                    'Accept': 'application/json'
                 }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('successMessage').classList.remove('hidden');
-                    setTimeout(() => {
-                        window.location.href = '{{ route("reservasi.index") }}';
-                    }, 2000);
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status) {
+                window.location.href = '{{ route('reservasi.success') }}';
+            } else {
+                if (data.errors) {
+                    Object.keys(data.errors).forEach(field => showError(field, data.errors[field][0]));
                 } else {
-                    alert('Error: ' + (data.message || 'Terjadi kesalahan'));
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalText;
+                    showGeneralError(data.message || 'Terjadi kesalahan');
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan. Silakan coba lagi.');
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;
-            });
-        });
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showGeneralError('Terjadi kesalahan koneksi. Silakan coba lagi.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    });
 
-        // ============================================
-        // INITIALIZE - INI YANG PENTING!
-        // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('=== Page Loaded - Initializing ===');
-            console.log('Database loaded:', database);
-            
-            // Attach event listeners to buttons - INI YANG MEMBUAT TOMBOL BEKERJA!
-            const nextBtn = document.getElementById('nextBtn');
-            const prevBtn = document.getElementById('prevBtn');
-            
-            if (nextBtn) {
-                nextBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    console.log('Next button clicked');
-                    nextSlide();
-                });
-                console.log('✓ Next button event listener attached');
-            } else {
-                console.error('❌ Next button not found!');
-            }
-            
-            if (prevBtn) {
-                prevBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    console.log('Previous button clicked');
-                    previousSlide();
-                });
-                console.log('✓ Previous button event listener attached');
-            } else {
-                console.error('❌ Previous button not found!');
-            }
-            
-            // Render all data
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const jumlahOrangInput = document.getElementById('jumlah_orang');
+        const tanggalInput = document.getElementById('tanggal');
+        const ruanganSelect = document.getElementById('ruangan');
+
+        if (!nextBtn) {
+            console.error('Tombol nextBtn tidak ditemukan!');
+            return;
+        }
+
+        nextBtn.addEventListener('click', nextSlide);
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', previousSlide);
+        }
+
+        if (jumlahOrangInput) {
+            jumlahOrangInput.addEventListener('input', calculateTotal);
+        }
+
+        try {
             renderPaketMenu();
+            renderRuangan();
             renderFasilitas();
             renderMenuTambahan();
-            renderRuangan();
             updateProgress();
-            
-            console.log('=== Initialization Complete ===');
+            handlePreselectedRoom();
+        } catch (err) {
+            console.error('Error saat render data:', err);
+        }
+
+        if (tanggalInput) {
+            const today = new Date().toISOString().split('T')[0];
+            tanggalInput.setAttribute('min', today);
+            tanggalInput.addEventListener('change', loadAvailableTimeSlots);
+        }
+
+        if (ruanganSelect) {
+            ruanganSelect.addEventListener('change', function() {
+                const selectedRoom = database.ruangan.find(r => r.id == this.value);
+                if (selectedRoom) {
+                    updateCapacityWarning(selectedRoom.kapasitas);
+                }
+                loadAvailableTimeSlots();
+                calculateTotal();
+            });
+        }
+
+        document.querySelectorAll('.dp-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.dp-card').forEach(c => c.classList.remove(
+                    'selected'));
+                this.classList.add('selected');
+                const percentage = this.dataset.percentage;
+                document.getElementById('dp_percentage').value = percentage;
+
+                let tipeValue = percentage === '20' ? 'dp_20' : (percentage === '50' ? 'dp_50' :
+                    'full');
+                document.getElementById('tipe_pembayaran').value = tipeValue;
+
+                updateDpAmount();
+            });
         });
-    </script>
-</body>
-</html>
+    });
+</script>
+
+@include('template.footer')

@@ -13,6 +13,7 @@ class PaketMenu extends Model
         'harga',
         'deskripsi',
         'stock',
+         'gambar',
     ];
 
     public function reservasis()

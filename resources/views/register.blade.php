@@ -43,6 +43,14 @@
                 <input type="password" name="password" required 
                     class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none">
             </div>
+            
+            <!-- ✅ Tambah Confirm Password -->
+            <div>
+                <label class="block text-gray-700">Konfirmasi Password</label>
+                <input type="password" name="password_confirmation" required 
+                    class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-blue-300 focus:outline-none">
+            </div>
+
             <button type="submit" 
                 class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
                 Register

@@ -2,322 +2,323 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Reservasi;
 use App\Models\PaketMenu;
 use App\Models\Ruangan;
 use App\Models\Fasilitas;
 use App\Models\MenuTambahan;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
-use Exception;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use App\Models\BlockedSchedule; // Tambahan
+use Carbon\Carbon;
 
-/**
- * Class ReservasiController
- * Handle hotel reservation operations
- *
- * @package App\Http\Controllers
- */
 class ReservasiController extends Controller
 {
     /**
-     * Display the reservation form
-     *
-     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     * Get available time slots untuk ruangan tertentu pada tanggal tertentu
+     * Endpoint: GET /api/check-available-slots?ruangan_id=1&tanggal=2025-12-15
      */
-    public function index()
+    public function getAvailableSlots(Request $request)
     {
         try {
-            $paketMenu = PaketMenu::all();
-            $ruangan = Ruangan::all();
-            $fasilitas = Fasilitas::all();
-            $menuTambahan = MenuTambahan::all();
-            $reservasiRuangan = Reservasi::select('ruangan', 'jam_check_in')
-                ->where('status', '!=', 'cancelled')
-                ->get();
+            $ruanganId = $request->input('ruangan_id');
+            $tanggal = $request->input('tanggal');
 
-            return view('reservasi.identitas', compact(
-                'paketMenu',
-                'ruangan',
-                'fasilitas',
-                'menuTambahan',
-                'reservasiRuangan'
-            ));
-        } catch (Exception $e) {
-            Log::error('Error di index: ' . $e->getMessage());
-            return back()->with('error', 'Terjadi kesalahan saat memuat halaman');
-        }
-    }
-
-    /**
-     * Store a new reservation
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function store(Request $request): JsonResponse
-    {
-        try {
-            // Log data yang diterima untuk debugging
-            Log::info('Data request diterima:', $request->all());
-
-            // Validasi input
-            $validated = $this->validateReservation($request);
-            
-            Log::info('Validasi berhasil');
-
-            // Cek stock paket menu
-            $paket = $this->checkPaketStock($validated['paket_menu']);
-            
-            Log::info('Stock paket tersedia: ' . $paket->stock);
-
-            // Cek ketersediaan ruangan
-            $this->checkRoomAvailability($validated['ruangan'], $validated['jam_check_in']);
-            
-            Log::info('Ruangan tersedia');
-
-            // Upload bukti pembayaran
-            $buktiPath = $this->uploadBuktiPembayaran($request);
-            
-            if ($buktiPath) {
-                Log::info('Bukti pembayaran uploaded: ' . $buktiPath);
+            if (!$ruanganId || !$tanggal) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Ruangan ID dan Tanggal harus diisi'
+                ], 400);
             }
 
-            // Hitung total harga
-            $totalHarga = $this->calculateTotal($validated);
-            Log::info('Total harga: Rp ' . number_format($totalHarga, 0, ',', '.'));
+            // Jam operasional (08:00 - 18:00)
+            $jamOperasional = [];
+            for ($i = 8; $i <= 18; $i++) {
+                $jamOperasional[] = sprintf('%02d:00', $i);
+            }
 
-            // Generate nomor reservasi
-            $nomorReservasi = $this->generateNomorReservasi();
-            Log::info('Nomor reservasi: ' . $nomorReservasi);
+            // Ambil slot yang diblok (dari reservasi pending/approved DAN BlockedSchedule)
+            $bookedSlots = Reservasi::where('ruangan', $ruanganId)
+                ->where('tanggal', $tanggal)
+                ->whereIn('status', ['pending', 'approved'])
+                ->pluck('jam_check_in')
+                ->toArray();
 
-            // Simpan reservasi
-            $reservasi = $this->saveReservasi($validated, $nomorReservasi, $totalHarga, $buktiPath);
-            
-            Log::info('Reservasi tersimpan dengan ID: ' . $reservasi->id);
+            $blockedSlots = BlockedSchedule::where('ruangan_id', $ruanganId)
+                ->where('tanggal', $tanggal)
+                ->pluck('jam')
+                ->toArray();
 
-            // Attach fasilitas dan menu tambahan
-            $this->attachRelations($reservasi, $validated);
+            // Gabungkan dan unik
+            $unavailableSlots = array_unique(array_merge($bookedSlots, $blockedSlots));
 
-            // Kurangi stock paket menu
-            $paket->decrement('stock');
-            Log::info('Stock dikurangi, sisa stock: ' . $paket->fresh()->stock);
+            // Filter jam yang available
+            $availableSlots = array_values(array_diff($jamOperasional, $unavailableSlots));
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Reservasi berhasil dibuat',
-                'nomor_reservasi' => $nomorReservasi
-            ], 200);
+            // Jika tanggal adalah hari ini, filter jam yang sudah lewat
+            $today = Carbon::now()->format('Y-m-d');
+            $currentHour = Carbon::now()->hour;
 
-        } catch (ValidationException $e) {
-            Log::error('Validation error:', $e->errors());
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $e->errors()
-            ], 422);
-
-        } catch (Exception $e) {
-            Log::error('Error saat menyimpan reservasi: ' . $e->getMessage());
-            Log::error('File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
+            if ($tanggal === $today) {
+                $availableSlots = array_filter($availableSlots, function ($jam) use ($currentHour) {
+                    $jamHour = (int) substr($jam, 0, 2);
+                    return $jamHour > $currentHour;
+                });
+                $availableSlots = array_values($availableSlots);
+            }
 
             return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                'status' => true,
+                'data' => [
+                    'ruangan_id' => $ruanganId,
+                    'tanggal' => $tanggal,
+                    'jam_operasional' => $jamOperasional,
+                    'unavailable_slots' => $unavailableSlots, // Tambahan untuk JS tampil blocked
+                    'available_slots' => $availableSlots
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error: ' . $e->getMessage()
             ], 500);
         }
     }
 
     /**
-     * Validate reservation request
-     *
-     * @param Request $request
-     * @return array
-     * @throws ValidationException
+     * Check apakah slot waktu tertentu tersedia
+     * Endpoint: POST /api/check-availability
      */
-    private function validateReservation(Request $request): array
+    public function checkAvailability(Request $request)
     {
-        return $request->validate([
-            'nama' => 'required|string|max:255',
-            'no_hp' => 'required|string|regex:/^08\d{8,11}$/',
-            'email' => 'required|email|max:255',
-            'paket_menu' => 'required|exists:paket_menus,id',
-            'ruangan' => 'required|exists:ruangans,id',
-            'jam_check_in' => 'required|string',
-            'bukti_pembayaran' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'catatan' => 'nullable|string|max:1000',
-            'fasilitas' => 'nullable|array',
-            'fasilitas.*' => 'exists:fasilitas,id',
-            'menu_tambahan' => 'nullable|array',
-            'menu_tambahan.*' => 'exists:menu_tambahans,id',
+        try {
+            $validator = Validator::make($request->all(), [
+                'ruangan_id' => 'required|exists:ruangans,id',
+                'tanggal' => 'required|date',
+                'jam' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $isBooked = Reservasi::where('ruangan', $request->ruangan_id)
+                ->where('tanggal', $request->tanggal)
+                ->where('jam_check_in', $request->jam)
+                ->whereIn('status', ['pending', 'approved'])
+                ->exists();
+
+            $isBlocked = BlockedSchedule::where('ruangan_id', $request->ruangan_id)
+                ->where('tanggal', $request->tanggal)
+                ->where('jam', $request->jam)
+                ->exists();
+
+            $isUnavailable = $isBooked || $isBlocked;
+
+            return response()->json([
+                'status' => true,
+                'available' => !$isUnavailable,
+                'message' => $isUnavailable ? 'Slot tidak tersedia' : 'Slot tersedia'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Store reservasi (dipanggil dari API)
+     * Endpoint: POST /api/reservasi
+     */
+    public function store(Request $request)
+    {
+        // VALIDASI (Tambah dp_percentage)
+        $validator = Validator::make($request->all(), [
+            'nama'              => 'required|string|max:255',
+            'no_hp'             => 'required|string|max:20',
+            'email'             => 'required|email',
+            'paket_menu'        => 'required|exists:paket_menus,id',
+            'ruangan'           => 'required|exists:ruangans,id',
+            'jam'               => 'required|string',
+            'tanggal'           => 'required|date|after_or_equal:today',
+            'jumlah_orang'      => 'required|integer|min:1',
+            'fasilitas'         => 'array|nullable',
+            'fasilitas.*'       => 'exists:fasilitas,id',
+            'menu_tambahan'     => 'array|nullable',
+            'menu_tambahan.*'   => 'exists:menu_tambahans,id',
+            'bukti'             => 'required|image|max:2048',
+            'pesan'             => 'nullable|string',
+            'dp_percentage'     => 'required|in:20,50,100', // Tambahan
         ]);
-    }
 
-    /**
-     * Check paket menu stock availability
-     *
-     * @param int $paketMenuId
-     * @return PaketMenu
-     * @throws Exception
-     */
-    private function checkPaketStock(int $paketMenuId): PaketMenu
-    {
-        $paket = PaketMenu::find($paketMenuId);
-        
-        if (!$paket) {
-            throw new Exception('Paket menu tidak ditemukan');
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Validasi gagal',
+                'errors'  => $validator->errors()
+            ], 422);
         }
 
-        if ($paket->stock <= 0) {
-            throw new Exception('Paket menu tidak tersedia (stock habis)');
-        }
+        try {
+            DB::beginTransaction();
 
-        return $paket;
-    }
-
-    /**
-     * Check room availability at specified time
-     *
-     * @param int $ruanganId
-     * @param string $jamCheckIn
-     * @return void
-     * @throws Exception
-     */
-    private function checkRoomAvailability(int $ruanganId, string $jamCheckIn): void
-    {
-        $isBooked = Reservasi::where('ruangan', $ruanganId)
-            ->where('jam_check_in', $jamCheckIn)
-            ->where('status', '!=', 'cancelled')
-            ->exists();
-
-        if ($isBooked) {
-            throw new Exception('Ruangan sudah dipesan di jam tersebut');
-        }
-    }
-
-    /**
-     * Upload bukti pembayaran file
-     *
-     * @param Request $request
-     * @return string|null
-     */
-    private function uploadBuktiPembayaran(Request $request): ?string
-    {
-        if ($request->hasFile('bukti_pembayaran')) {
-            $file = $request->file('bukti_pembayaran');
-            return $file->store('bukti_pembayaran', 'public');
-        }
-
-        return null;
-    }
-
-    /**
-     * Save reservation to database
-     *
-     * @param array $validated
-     * @param string $nomorReservasi
-     * @param float $totalHarga
-     * @param string|null $buktiPath
-     * @return Reservasi
-     */
-    private function saveReservasi(array $validated, string $nomorReservasi, float $totalHarga, ?string $buktiPath): Reservasi
-    {
-        $reservasi = new Reservasi();
-        $reservasi->nomor_reservasi = $nomorReservasi;
-        $reservasi->nama = $validated['nama'];
-        $reservasi->no_hp = $validated['no_hp'];
-        $reservasi->email = $validated['email'];
-        $reservasi->paket_menu = $validated['paket_menu'];
-        $reservasi->ruangan = $validated['ruangan'];
-        $reservasi->jam_check_in = $validated['jam_check_in'];
-        $reservasi->total_harga = $totalHarga;
-        $reservasi->bukti_pembayaran = $buktiPath ?? '';
-        $reservasi->catatan = $validated['catatan'] ?? null;
-        $reservasi->status = 'pending';
-        $reservasi->save();
-
-        return $reservasi;
-    }
-
-    /**
-     * Attach fasilitas and menu tambahan to reservation
-     *
-     * @param Reservasi $reservasi
-     * @param array $validated
-     * @return void
-     */
-    private function attachRelations(Reservasi $reservasi, array $validated): void
-    {
-        // Attach fasilitas
-        if (!empty($validated['fasilitas'])) {
-            $reservasi->fasilitas()->attach($validated['fasilitas']);
-            Log::info('Fasilitas attached: ' . implode(', ', $validated['fasilitas']));
-        }
-
-        // Attach menu tambahan
-        if (!empty($validated['menu_tambahan'])) {
-            $reservasi->menuTambahan()->attach($validated['menu_tambahan']);
-            Log::info('Menu tambahan attached: ' . implode(', ', $validated['menu_tambahan']));
-        }
-    }
-
-    /**
-     * Calculate total price of reservation
-     *
-     * @param array $data
-     * @return float
-     */
-    private function calculateTotal(array $data): float
-    {
-        $total = 0.0;
-
-        // Harga paket menu
-        if (isset($data['paket_menu'])) {
-            $paket = PaketMenu::find($data['paket_menu']);
-            if ($paket) {
-                $total += (float) $paket->harga;
-                Log::info('Harga paket: Rp ' . number_format($paket->harga, 0, ',', '.'));
+            // CEK STOCK PAKET (sama)
+            $paket = PaketMenu::find($request->paket_menu);
+            if (!$paket || $paket->stock < 1) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Stock paket tidak tersedia'
+                ], 400);
             }
-        }
 
-        // Harga ruangan
-        if (isset($data['ruangan'])) {
-            $ruangan = Ruangan::find($data['ruangan']);
-            if ($ruangan) {
-                $total += (float) $ruangan->harga;
-                Log::info('Harga ruangan: Rp ' . number_format($ruangan->harga, 0, ',', '.'));
+            // CEK KAPASITAS RUANGAN (sama)
+            $ruangan = Ruangan::find($request->ruangan);
+            if ($request->jumlah_orang > $ruangan->kapasitas) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Jumlah orang melebihi kapasitas ruangan (max {$ruangan->kapasitas})"
+                ], 400);
             }
-        }
 
-        // Harga fasilitas
-        if (!empty($data['fasilitas'])) {
-            $fasilitasTotal = Fasilitas::whereIn('id', $data['fasilitas'])->sum('harga');
-            $total += (float) $fasilitasTotal;
-            Log::info('Total fasilitas: Rp ' . number_format($fasilitasTotal, 0, ',', '.'));
-        }
+            // CEK BENTROK (Double check, include BlockedSchedule)
+            $existingReservasi = Reservasi::where('ruangan', $request->ruangan)
+                ->where('tanggal', $request->tanggal)
+                ->where('jam_check_in', $request->jam)
+                ->whereIn('status', ['pending', 'approved'])
+                ->exists();
 
-        // Harga menu tambahan
-        if (!empty($data['menu_tambahan'])) {
-            $menuTambahanTotal = MenuTambahan::whereIn('id', $data['menu_tambahan'])->sum('harga');
-            $total += (float) $menuTambahanTotal;
-            Log::info('Total menu tambahan: Rp ' . number_format($menuTambahanTotal, 0, ',', '.'));
-        }
+            $existingBlock = BlockedSchedule::where('ruangan_id', $request->ruangan)
+                ->where('tanggal', $request->tanggal)
+                ->where('jam', $request->jam)
+                ->exists();
 
-        return $total;
+            if ($existingReservasi || $existingBlock) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Maaf, slot waktu ini tidak tersedia.'
+                ], 409);
+            }
+
+            // UPLOAD FOTO (sama)
+            $fileName = null;
+            if ($request->hasFile('bukti')) {
+                $fileName = time() . '_' . $request->file('bukti')->getClientOriginalName();
+                $request->file('bukti')->storeAs('public/bukti_pembayaran', $fileName);
+            }
+
+            // HITUNG TOTAL (sama)
+            $total = 0;
+            $total += $paket->harga * $request->jumlah_orang;
+            $total += $ruangan->harga;
+
+            $fasilitasIds = [];
+            if ($request->fasilitas) {
+                $fasilitasItems = Fasilitas::whereIn('id', $request->fasilitas)->get();
+                $total += $fasilitasItems->sum('harga');
+                $fasilitasIds = $fasilitasItems->pluck('id')->toArray();
+            }
+
+            $menuTambahanIds = [];
+            if ($request->menu_tambahan) {
+                $menuItems = MenuTambahan::whereIn('id', $request->menu_tambahan)->get();
+                $total += $menuItems->sum('harga');
+                $menuTambahanIds = $menuItems->pluck('id')->toArray();
+            }
+
+            // SIMPAN DATA RESERVASI (Tambah dp_percentage)
+            // Hitung DP dan Sisa Pembayaran
+            $dpPercentage = $request->dp_percentage;
+            $jumlahDibayar = round(($total * $dpPercentage) / 100);
+            $sisaPembayaran = $total - $jumlahDibayar;
+
+            // Tentukan tipe pembayaran
+            $tipePembayaran = match ($dpPercentage) {
+                '20' => 'dp_20',
+                '50' => 'dp_50',
+                '100' => 'full',
+                default => 'full'
+            };
+
+            // SIMPAN DATA RESERVASI
+            $reservasi = Reservasi::create([
+                'nama'              => $request->nama,
+                'no_hp'             => $request->no_hp,
+                'email'             => $request->email,
+                'paket_menu'        => $request->paket_menu,
+                'ruangan'           => $request->ruangan,
+                'jam_check_in'      => $request->jam,
+                'jam'               => $request->jam,  // 👈 TAMBAHKAN
+                'tanggal'           => $request->tanggal,
+                'jumlah_orang'      => $request->jumlah_orang,
+                'bukti_pembayaran'  => $fileName,
+                'catatan'           => $request->pesan,
+                'total_harga'       => $total,
+                'tipe_pembayaran'   => $tipePembayaran,      // 👈 TAMBAHKAN
+                'jumlah_dibayar'    => $jumlahDibayar,       // 👈 TAMBAHKAN
+                'sisa_pembayaran'   => $sisaPembayaran,      // 👈 TAMBAHKAN
+                'status'            => 'pending',
+            ]);
+
+            // ATTACH FASILITAS & MENU (sama)
+            if (!empty($fasilitasIds)) {
+                $reservasi->fasilitas()->attach($fasilitasIds);
+            }
+            if (!empty($menuTambahanIds)) {
+                $reservasi->menuTambahan()->attach($menuTambahanIds);
+            }
+
+            // KURANGI STOCK (sama)
+            $paket->decrement('stock');
+
+            DB::commit();
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Reservasi berhasil dibuat',
+                'data'    => [
+                    'nomor_reservasi' => $reservasi->nomor_reservasi,
+                    'nama' => $reservasi->nama,
+                    'total_harga' => $reservasi->total_harga,
+                    'dp_percentage' => $reservasi->dp_percentage, // Tambahan
+                    'status' => $reservasi->status,
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
-     * Generate unique reservation number
-     *
-     * @return string
+     * Get reservasi via API
+     * Endpoint: GET /api/reservasi
      */
-    private function generateNomorReservasi(): string
+    public function index(Request $request)
     {
-        $date = now()->format('YmdHis');
-        $random = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-        return 'RES-' . $date . '-' . $random;
+        try {
+            $reservasi = Reservasi::with(['paketMenu', 'ruangan', 'fasilitas', 'menuTambahan'])
+                ->latest()
+                ->paginate(10);
+
+            return response()->json([
+                'status' => true,
+                'data' => $reservasi
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
