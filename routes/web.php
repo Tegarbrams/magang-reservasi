@@ -20,6 +20,10 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
+Route::get('/menu', function () {
+    return view('menu');
+})->name('menu');
+
 // Authentication Routes (Web Form)
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
@@ -131,9 +135,28 @@ Route::prefix('admin')->middleware(['auth', 'role:1'])->name('admin.')->group(fu
     Route::put('/menu-tambahan/{id}', [AdminController::class, 'updateMenuTambahan'])->name('menu-tambahan.update');
     Route::delete('/menu-tambahan/{id}', [AdminController::class, 'deleteMenuTambahan'])->name('menu-tambahan.delete');
 
-    // ==================== USERS ====================
-    Route::get('/users', [AdminController::class, 'users'])->name('users');
-    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
-    Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
-    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
+    // // ==================== USERS ====================
+    // Route::get('/users', [AdminController::class, 'users'])->name('users');
+    // Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+    // Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
+    // Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
+});
+
+// =========================================
+// SUPER ADMIN ROUTES (Role = 2)
+// =========================================
+Route::prefix('superadmin')->middleware(['auth', 'role:2'])->name('superadmin.')->group(function () {
+    
+    // Dashboard (Read Only)
+    Route::get('/dashboard', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'dashboard'])->name('dashboard');
+    
+    // Reservasi (Read Only)
+    Route::get('/reservasi', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'reservasi'])->name('reservasi');
+    Route::get('/reservasi/{id}/detail', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'detailReservasi'])->name('reservasi.detail');
+    
+    // Admin & User Management (Full CRUD)
+    Route::get('/admins', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'admins'])->name('admins');
+    Route::post('/admins', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'storeAdmin'])->name('admins.store');
+    Route::put('/admins/{id}', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'updateAdmin'])->name('admins.update');
+    Route::delete('/admins/{id}', [\App\Http\Controllers\SuperAdmin\SuperAdminController::class, 'deleteAdmin'])->name('admins.delete');
 });

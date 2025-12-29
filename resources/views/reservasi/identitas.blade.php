@@ -1,210 +1,524 @@
 @include('template.header')
 <link rel="stylesheet" href="{{ asset('css/reservasi.css') }}">
 
+
 <style>
-    .paket-card {
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+        --gold-primary: #D4AF37;
+        --gold-light: #F4E5C3;
+        --gold-dark: #B8941F;
+        --white: #FFFFFF;
+        --black: #1A1A1A;
+        --gray-50: #FAFAFA;
+        --gray-100: #F5F5F5;
+        --gray-200: #E5E5E5;
+        --gray-300: #D4D4D4;
+        --gray-600: #525252;
+        --gray-700: #404040;
+        --shadow-sm: 0 1px 2px 0 rgba(212, 175, 55, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(212, 175, 55, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(212, 175, 55, 0.15);
+        --shadow-xl: 0 20px 25px -5px rgba(212, 175, 55, 0.2);
+    }
+
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
+        color: var(--black);
+    }
+
+    /* Main Section */
+    section {
+        min-height: 100vh;
+        padding: 3rem 0;
+        background: var(--white);
+    }
+
+    .container {
+        max-width: 1000px;
+    }
+
+    /* Header */
+    h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--black);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--black);
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.01em;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: 16px;
+        border: 1px solid var(--gray-200);
+        margin-bottom: 2rem;
+    }
+
+    .progress-steps {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .progress-step {
+        flex: 1;
+        height: 4px;
+        background: var(--gray-200);
+        border-radius: 2px;
         transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-step.active {
+        background: var(--gold-primary);
+    }
+
+    .progress-step.active::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    #currentStep {
+        font-weight: 600;
+        color: var(--gold-primary);
+    }
+
+    /* Form Container */
+    #reservasiForm {
+        background: var(--white);
+        padding: 2.5rem;
+        border-radius: 20px;
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-lg);
+    }
+
+    /* Cards */
+    .paket-card, .dp-card {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.2s ease;
         cursor: pointer;
-        border: 2px solid transparent;
+        position: relative;
     }
 
-    .paket-card:hover:not(.disabled) {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    .paket-card:hover:not(.disabled), .dp-card:hover {
+        border-color: var(--gold-primary);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
     }
 
-    .paket-card.selected {
-        border-color: #FFB22C;
-        background-color: #FFF8E7;
+    .paket-card.selected, .dp-card.selected {
+        border-color: var(--gold-primary);
+        background: linear-gradient(135deg, var(--white) 0%, var(--gold-light) 100%);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .paket-card.selected::before, .dp-card.selected::before {
+        content: '✓';
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 24px;
+        height: 24px;
+        background: var(--gold-primary);
+        color: var(--white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
     }
 
     .paket-card.disabled {
         opacity: 0.5;
         cursor: not-allowed;
+        background: var(--gray-50);
     }
 
     .paket-img {
-        height: 200px;
-        object-fit: cover;
-    }
-
-    .progress-step {
         width: 100%;
-        height: 8px;
-        background-color: #e0e0e0;
-        border-radius: 10px;
-        overflow: hidden;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 1rem;
     }
 
-    .progress-step.active {
-        background-color: #FFB22C;
+    .card-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--black);
+        margin-bottom: 0.5rem;
     }
 
+    /* Selected Room Card */
+    .selected-room-card {
+        background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-dark) 100%);
+        color: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: none;
+    }
+
+    .room-locked-badge {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    /* Time Slots */
+    .time-slot {
+        background: var(--white);
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .time-slot:hover:not(.blocked) {
+        border-color: var(--gold-primary);
+        background: var(--gold-light);
+    }
+
+    .time-slot.selected {
+        background: var(--gold-primary);
+        border-color: var(--gold-primary);
+        color: var(--white);
+        font-weight: 600;
+    }
+
+    .time-slot.blocked {
+        background: var(--gray-100);
+        border-color: var(--gray-300);
+        color: var(--gray-600);
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    /* DP Cards */
+    .dp-card .badge {
+        display: inline-block;
+        padding: 0.375rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        background: var(--gold-light);
+        color: var(--gold-dark);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .dp-card .badge.recommended {
+        background: var(--gold-primary);
+        color: var(--white);
+    }
+
+    .dp-card h4 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--black);
+    }
+
+    .dp-card p {
+        font-size: 1rem;
+        color: var(--gray-600);
+        margin: 0;
+    }
+
+    /* Form Controls */
+    .form-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--black);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 0.9375rem;
+        transition: all 0.2s ease;
+        background: var(--white);
+        color: var(--black);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--gold-primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        background: var(--white);
+    }
+
+    .form-control::placeholder {
+        color: var(--gray-600);
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 0.75rem 1.75rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-warning {
+        background: var(--gold-primary);
+        color: var(--white);
+    }
+
+    .btn-warning:hover {
+        background: var(--gold-dark);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-success {
+        background: var(--gold-primary);
+        color: var(--white);
+    }
+
+    .btn-success:hover {
+        background: var(--gold-dark);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-secondary {
+        background: var(--white);
+        color: var(--black);
+        border: 1px solid var(--gray-200);
+    }
+
+    .btn-secondary:hover {
+        background: var(--gray-50);
+        border-color: var(--gray-300);
+    }
+
+    .btn-light {
+        background: var(--white);
+        color: var(--gold-primary);
+        border: 1px solid var(--gold-primary);
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .btn-light:hover {
+        background: var(--gold-light);
+    }
+
+    /* Alerts */
+    .alert {
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        border: 1px solid;
+        font-size: 0.9375rem;
+    }
+
+    .alert-warning {
+        background: var(--gold-light);
+        border-color: var(--gold-primary);
+        color: var(--gold-dark);
+    }
+
+    .alert-info {
+        background: var(--gold-light);
+        border-color: var(--gold-primary);
+        color: var(--black);
+    }
+
+    .alert-danger {
+        background: #FEE2E2;
+        border-color: #EF4444;
+        color: #991B1B;
+    }
+
+    /* Slide Animation */
     .slide-content {
         display: none;
     }
 
     .slide-content.active {
         display: block;
-        animation: fadeIn 0.3s ease-in;
+        animation: slideIn 0.3s ease;
     }
 
-    @keyframes fadeIn {
+    @keyframes slideIn {
         from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateX(20px);
         }
-
         to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(0);
         }
     }
 
-    .facility-checkbox:checked+label {
-        background-color: #FFF8E7;
-        border-color: #FFB22C;
-    }
-
-    .selected-room-card {
-        background: linear-gradient(135deg, #FFB22C 0%, #FFA500 100%);
-        color: white;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 5px 15px rgba(255, 178, 44, 0.3);
-        margin-bottom: 20px;
-    }
-
-    .room-locked-badge {
-        background-color: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
-        padding: 8px 15px;
-        border-radius: 20px;
-        display: inline-block;
-        font-weight: 600;
-    }
-
-    /* Time Slot Styling */
-    .time-slot {
-        padding: 12px;
-        border: 2px solid #e5e7eb;
+    /* Image Preview */
+    .img-thumbnail {
+        border: 1px solid var(--gray-200);
         border-radius: 8px;
-        text-align: center;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        background-color: white;
+        padding: 0.5rem;
+        max-width: 100%;
+        height: auto;
     }
 
-    .time-slot:hover:not(.blocked) {
-        border-color: #FFB22C;
-        background-color: #FFF8E7;
-        transform: scale(1.05);
+    /* Text Utilities */
+    .text-muted {
+        color: var(--gray-600);
+        font-size: 0.9375rem;
     }
 
-    .time-slot.selected {
-        border-color: #FFB22C;
-        background-color: #FFB22C;
-        color: white;
+    .text-success {
+        color: var(--gold-primary);
     }
 
-    .time-slot.blocked {
-        background-color: #fee2e2;
-        border-color: #ef4444;
-        cursor: not-allowed;
-        opacity: 0.6;
+    .text-danger {
+        color: #EF4444;
     }
 
-    .time-slot.blocked:hover {
-        transform: none;
+    .fw-bold {
+        font-weight: 700;
     }
 
-    /* DP Card Styling */
-    .dp-card {
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 20px;
-        text-align: center;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        background-color: white;
-    }
-
-    .dp-card:hover {
-        border-color: #FFB22C;
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(255, 178, 44, 0.3);
-    }
-
-    .dp-card.selected {
-        border-color: #FFB22C;
-        background-color: #FFF8E7;
-    }
-
-    .dp-card .badge {
-        display: inline-block;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 12px;
+    .fw-semibold {
         font-weight: 600;
-        margin-bottom: 8px;
     }
 
-    .dp-card .badge.recommended {
-        background-color: #10b981;
-        color: white;
+    /* Responsive */
+    @media (max-width: 768px) {
+        #reservasiForm {
+            padding: 1.5rem;
+        }
+
+        .progress-container {
+            padding: 1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .d-flex.gap-3 {
+            flex-direction: column;
+            gap: 0.75rem !important;
+        }
+    }
+
+    /* Loading State */
+    .spinner-border {
+        width: 1.25rem;
+        height: 1.25rem;
+        border-width: 2px;
+        border-color: currentColor;
+        border-right-color: transparent;
+    }
+
+    /* Focus Visible */
+    *:focus-visible {
+        outline: 2px solid var(--gold-primary);
+        outline-offset: 2px;
     }
 </style>
 
-<section class="py-5" style="background-color: #FFB22C; min-height: 100vh;">
+<section>
     <div class="container">
-        <h2 class="text-center mb-4 fw-bold text-dark">Reservasi Tempat</h2>
+        <div class="text-center mb-4">
+            <h2>Reservasi Tempat</h2>
+            <p class="text-muted">Lengkapi formulir di bawah untuk melakukan reservasi</p>
+        </div>
 
         <!-- Progress Bar -->
-        <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-dark">Langkah <span id="currentStep">1</span> dari 3</span>
+        <div class="progress-container">
+            <div class="d-flex justify-content-between align-items-center">
+                <span style="color: var(--gray-600); font-size: 0.875rem;">Langkah <span id="currentStep">1</span> dari 3</span>
             </div>
-            <div class="d-flex gap-2">
+            <div class="progress-steps">
                 <div class="progress-step active" id="step1Progress"></div>
                 <div class="progress-step" id="step2Progress"></div>
                 <div class="progress-step" id="step3Progress"></div>
             </div>
         </div>
 
-        @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-
-        <div id="errorMessage" class="alert alert-danger d-none">
-            <p class="fw-bold mb-1">✗ Error!</p>
+        <div id="errorMessage" class="alert alert-danger d-none mb-3">
+            <p class="fw-bold mb-1">Error!</p>
             <p class="mb-0" id="errorText"></p>
         </div>
 
         <!-- Form Container -->
-        <form id="reservasiForm" class="bg-white p-4 rounded shadow">
-            @csrf
-
+        <form id="reservasiForm">
             <!-- SLIDE 1: IDENTITAS -->
             <div class="slide-content active" id="slide1">
-                <h3 class="fw-bold mb-3">Informasi Identitas</h3>
+                <h3>Informasi Identitas</h3>
                 <p class="text-muted mb-4">Silakan isi data diri Anda dengan lengkap</p>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="nama" class="form-label">Nama Lengkap *</label>
-                        <input type="text" name="nama" id="nama" class="form-control" required>
+                        <input type="text" name="nama" id="nama" class="form-control" placeholder="Masukkan nama lengkap" required>
                         <div class="text-danger small mt-1 d-none" id="error-nama"></div>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="no_hp" class="form-label">Nomor Handphone *</label>
-                        <input type="tel" name="no_hp" id="no_hp" class="form-control" required>
+                        <input type="tel" name="no_hp" id="no_hp" class="form-control" placeholder="08xxxxxxxxxx" required>
                         <div class="text-danger small mt-1 d-none" id="error-no_hp"></div>
                     </div>
 
                     <div class="col-md-12 mb-3">
                         <label for="email" class="form-label">Email *</label>
-                        <input type="email" name="email" id="email" class="form-control" required>
+                        <input type="email" name="email" id="email" class="form-control" placeholder="nama@email.com" required>
                         <div class="text-danger small mt-1 d-none" id="error-email"></div>
                     </div>
                 </div>
@@ -212,30 +526,24 @@
 
             <!-- SLIDE 2: LAYANAN -->
             <div class="slide-content" id="slide2">
-                <h3 class="fw-bold mb-3">Pilih Paket & Layanan</h3>
+                <h3>Pilih Paket & Layanan</h3>
 
                 <!-- Selected Room Display -->
                 <div id="selectedRoomDisplay" class="d-none">
                     <div class="selected-room-card">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <div>
-                                <span class="room-locked-badge">
-                                    🔒 Ruangan Terpilih
-                                </span>
-                            </div>
-                            <a href="/reservasi" class="btn btn-light btn-sm">Ganti Ruangan</a>
+                            <span class="room-locked-badge">🔒 Ruangan Terpilih</span>
+                            <a href="/reservasi" class="btn btn-light">Ganti</a>
                         </div>
                         <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <h4 class="fw-bold mb-2" id="selectedRoomName">-</h4>
-                                <p class="mb-1">📍 Kapasitas: <span id="selectedRoomCapacity">-</span> orang</p>
-                                <p class="mb-0">💰 Harga: Rp <span id="selectedRoomPrice">-</span></p>
+                            <div class="col-md-9">
+                                <h4 class="fw-bold mb-2" style="color: white;" id="selectedRoomName">-</h4>
+                                <p class="mb-1" style="font-size: 0.9375rem;">📍 Kapasitas: <span id="selectedRoomCapacity">-</span> orang</p>
+                                <p class="mb-0" style="font-size: 0.9375rem;">💰 Harga: Rp <span id="selectedRoomPrice">-</span></p>
                             </div>
-                            <div class="col-md-4 text-end">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"
-                                    fill="rgba(255,255,255,0.3)" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
-                                    <path
-                                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                            <div class="col-md-3 text-end">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="rgba(255,255,255,0.5)" viewBox="0 0 16 16">
+                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                                 </svg>
                             </div>
                         </div>
@@ -254,7 +562,7 @@
 
                     <!-- Pilih Paket -->
                     <div class="col-12 mb-4">
-                        <label class="form-label fw-bold">Pilih Paket Menu *</label>
+                        <label class="form-label">Pilih Paket Menu *</label>
                         <input type="hidden" name="paket_menu" id="paket_menu" required>
                         <div class="text-danger small mt-1 d-none" id="error-paket_menu"></div>
                         <div class="row g-3" id="paketContainer"></div>
@@ -269,7 +577,7 @@
 
                     <!-- Time Slot Selection -->
                     <div class="col-12 mb-3">
-                        <label class="form-label fw-bold">Pilih Jam Check-in *</label>
+                        <label class="form-label">Pilih Jam Check-in *</label>
                         <input type="hidden" name="jam" id="jam" required>
                         <div class="text-danger small mt-1 d-none" id="error-jam"></div>
                         <div id="timeSlotsContainer" class="row g-2">
@@ -282,36 +590,35 @@
                     <!-- Jumlah Orang -->
                     <div class="col-md-12 mb-3">
                         <label for="jumlah_orang" class="form-label">Jumlah Orang *</label>
-                        <input type="number" name="jumlah_orang" id="jumlah_orang" class="form-control"
-                            min="1" required>
+                        <input type="number" name="jumlah_orang" id="jumlah_orang" class="form-control" min="1" placeholder="Masukkan jumlah orang" required>
                         <small class="text-muted" id="capacityWarning"></small>
                         <div class="text-danger small mt-1 d-none" id="error-jumlah_orang"></div>
                     </div>
 
                     <!-- Fasilitas Tambahan -->
                     <div class="col-12 mb-3">
-                        <label class="form-label fw-bold">Fasilitas Tambahan (Opsional)</label>
+                        <label class="form-label">Fasilitas Tambahan (Opsional)</label>
                         <div id="fasilitasContainer" class="row g-2"></div>
                     </div>
 
                     <!-- Menu Tambahan -->
                     <div class="col-12 mb-3">
-                        <label class="form-label fw-bold">Menu Tambahan (Opsional)</label>
+                        <label class="form-label">Menu Tambahan (Opsional)</label>
                         <div id="menuTambahanContainer" class="row g-2"></div>
                     </div>
 
                     <!-- Catatan -->
                     <div class="col-12 mb-3">
                         <label for="pesan" class="form-label">Catatan Tambahan (Opsional)</label>
-                        <textarea name="pesan" id="pesan" class="form-control" rows="3"></textarea>
+                        <textarea name="pesan" id="pesan" class="form-control" rows="3" placeholder="Tambahkan catatan khusus..."></textarea>
                     </div>
 
                     <!-- Total Harga -->
                     <div class="col-12 mb-3">
                         <div class="alert alert-warning">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="fw-bold">Total Harga:</span>
-                                <span id="totalHarga" class="fs-4 fw-bold text-success">Rp 0</span>
+                                <span class="fw-semibold">Total Harga:</span>
+                                <span id="totalHarga" style="font-size: 1.5rem; font-weight: 700; color: var(--gold-dark);">Rp 0</span>
                             </div>
                         </div>
                     </div>
@@ -320,32 +627,32 @@
 
             <!-- SLIDE 3: PEMBAYARAN -->
             <div class="slide-content" id="slide3">
-                <h3 class="fw-bold mb-3">Pembayaran</h3>
+                <h3>Pembayaran</h3>
                 <p class="text-muted mb-4">Pilih metode DP dan unggah bukti pembayaran</p>
 
                 <!-- Pilihan DP -->
                 <div class="mb-4">
-                    <label class="form-label fw-bold">Pilih DP *</label>
+                    <label class="form-label">Pilih DP *</label>
                     <div class="row g-3">
                         <div class="col-md-4">
                             <div class="dp-card" data-percentage="20">
                                 <div class="badge">20%</div>
-                                <h4 class="fw-bold">DP Minimal</h4>
-                                <p class="mb-0" id="dp20Amount">Rp 0</p>
+                                <h4>DP Minimal</h4>
+                                <p id="dp20Amount">Rp 0</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="dp-card" data-percentage="50">
                                 <div class="badge recommended">Rekomendasi</div>
-                                <h4 class="fw-bold">50%</h4>
-                                <p class="mb-0" id="dp50Amount">Rp 0</p>
+                                <h4>50%</h4>
+                                <p id="dp50Amount">Rp 0</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="dp-card" data-percentage="100">
                                 <div class="badge">Lunas</div>
-                                <h4 class="fw-bold">100%</h4>
-                                <p class="mb-0" id="fullAmount">Rp 0</p>
+                                <h4>100%</h4>
+                                <p id="fullAmount">Rp 0</p>
                             </div>
                         </div>
                     </div>
@@ -356,44 +663,32 @@
 
                 <!-- Total dan DP Preview -->
                 <div class="alert alert-info mb-4 d-none" id="selectedPaymentInfo">
-                    <h5 class="fw-bold">Detail Pembayaran:</h5>
+                    <h5 class="fw-semibold mb-3">Detail Pembayaran:</h5>
                     <p class="mb-1">Metode: <span id="infoMetode">-</span></p>
-                    <p class="mb-1">Jumlah Bayar: <span id="infoJumlah" class="fw-bold text-success">Rp 0</span>
-                    </p>
+                    <p class="mb-1">Jumlah Bayar: <span id="infoJumlah" class="fw-bold" style="color: var(--gold-dark);">Rp 0</span></p>
                     <p class="mb-0">Sisa Bayar: <span id="infoSisa">Rp 0</span></p>
                 </div>
 
                 <!-- Upload Bukti -->
                 <div class="mb-3">
-                    <label for="bukti" class="form-label fw-bold">Upload Bukti Pembayaran *</label>
-                    <input type="file" name="bukti" id="bukti" class="form-control" accept="image/*"
-                        required>
+                    <label for="bukti" class="form-label">Upload Bukti Pembayaran *</label>
+                    <input type="file" name="bukti" id="bukti" class="form-control" accept="image/*" required>
                     <div class="text-danger small mt-1 d-none" id="error-bukti"></div>
                     <div id="imagePreview" class="mt-3 d-none">
-                        <img id="previewImg" src="" alt="Preview" class="img-thumbnail"
-                            style="max-width: 300px;">
+                        <img id="previewImg" src="" alt="Preview" class="img-thumbnail" style="max-width: 300px;">
                     </div>
                 </div>
             </div>
 
             <!-- Navigation Buttons -->
             <div class="d-flex justify-content-center gap-3 mt-4">
-                <button type="button" id="prevBtn" class="btn btn-secondary d-none">
-                    ← Kembali
-                </button>
-
-                <button type="button" id="nextBtn" class="btn btn-warning">
-                    Lanjut →
-                </button>
-
-                <button type="submit" id="submitBtn" class="btn btn-success d-none">
-                    ✓ Kirim Reservasi
-                </button>
+                <button type="button" id="prevBtn" class="btn btn-secondary d-none">← Kembali</button>
+                <button type="button" id="nextBtn" class="btn btn-warning">Lanjut →</button>
+                <button type="submit" id="submitBtn" class="btn btn-success d-none">✓ Kirim Reservasi</button>
             </div>
         </form>
     </div>
 </section>
-
 <script>
     let currentSlide = 1;
     const totalSlides = 3;
@@ -475,7 +770,7 @@
                         ${menu.stock === 0 ? '✗ Tidak Tersedia' : `✓ ${menu.stock} tersedia`}
                     </p>
                 </div>
-            </div>
+            </div>  
         </div>
     `).join('');
     }
