@@ -1,43 +1,76 @@
 @include('template.header')
 <link rel="stylesheet" href="{{ asset('css/reservasi.css') }}">
 
+
 <style>
+    :root {
+        --primary-color: #FFB800;
+        --primary-dark: #F59E0B;
+        --primary-light: #FCD34D;
+        --secondary-color: #FBBF24;
+        --success-color: #FFB800;
+        --danger-color: #ef4444;
+        --warning-color: #FFB800;
+        --info-color: #FFD93D;
+        --dark-color: #1f2937;
+        --light-bg: #FFFBEB;
+        --border-color: #FEF3C7;
+        --shadow-sm: 0 1px 3px rgba(255, 184, 0, 0.1);
+        --shadow-md: 0 4px 6px rgba(255, 184, 0, 0.15);
+        --shadow-lg: 0 10px 25px rgba(255, 184, 0, 0.2);
+    }
+
     .paket-card {
         transition: all 0.3s ease;
         cursor: pointer;
-        border: 2px solid transparent;
+        border: 3px solid var(--border-color);
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(255, 184, 0, 0.1);
     }
 
     .paket-card:hover:not(.disabled) {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        transform: translateY(-8px);
+        box-shadow: 0 12px 28px rgba(255, 184, 0, 0.25);
+        border-color: var(--primary-color);
     }
 
     .paket-card.selected {
-        border-color: #FFB22C;
-        background-color: #FFF8E7;
+        border-color: var(--primary-color);
+        background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+        box-shadow: 0 8px 20px rgba(255, 184, 0, 0.35);
     }
 
     .paket-card.disabled {
         opacity: 0.5;
         cursor: not-allowed;
+        filter: grayscale(0.5);
     }
 
     .paket-img {
         height: 200px;
         object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .paket-card:hover:not(.disabled) .paket-img {
+        transform: scale(1.05);
     }
 
     .progress-step {
         width: 100%;
-        height: 8px;
-        background-color: #e0e0e0;
+        height: 12px;
+        background: linear-gradient(90deg, #FEF3C7 0%, #FDE68A 100%);
         border-radius: 10px;
         overflow: hidden;
+        position: relative;
+        border: 2px solid #FBBF24;
     }
 
     .progress-step.active {
-        background-color: #FFB22C;
+        background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        box-shadow: 0 3px 10px rgba(255, 184, 0, 0.5);
     }
 
     .slide-content {
@@ -46,13 +79,13 @@
 
     .slide-content.active {
         display: block;
-        animation: fadeIn 0.3s ease-in;
+        animation: fadeIn 0.4s ease-in;
     }
 
     @keyframes fadeIn {
         from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(20px);
         }
 
         to {
@@ -62,56 +95,94 @@
     }
 
     .facility-checkbox:checked+label {
-        background-color: #FFF8E7;
-        border-color: #FFB22C;
+        background: linear-gradient(135deg, #FEF9C3 0%, #FEF08A 100%);
+        border-color: var(--primary-color);
+        box-shadow: 0 3px 10px rgba(255, 184, 0, 0.3);
     }
 
     .selected-room-card {
-        background: linear-gradient(135deg, #FFB22C 0%, #FFA500 100%);
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
         color: white;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 5px 15px rgba(255, 178, 44, 0.3);
-        margin-bottom: 20px;
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 10px 25px rgba(255, 184, 0, 0.4);
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+        border: 3px solid #FBBF24;
+    }
+
+    .selected-room-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+        pointer-events: none;
     }
 
     .room-locked-badge {
-        background-color: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.25);
         backdrop-filter: blur(10px);
-        padding: 8px 15px;
-        border-radius: 20px;
+        padding: 12px 20px;
+        border-radius: 30px;
         display: inline-block;
-        font-weight: 600;
+        font-weight: 700;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     /* Time Slot Styling */
     .time-slot {
-        padding: 12px;
-        border: 2px solid #e5e7eb;
-        border-radius: 8px;
+        padding: 18px;
+        border: 3px solid var(--border-color);
+        border-radius: 14px;
         text-align: center;
         transition: all 0.3s ease;
         cursor: pointer;
-        background-color: white;
+        background: white;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(255, 184, 0, 0.08);
+    }
+
+    .time-slot::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 184, 0, 0.15), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .time-slot:hover:not(.blocked)::before {
+        left: 100%;
     }
 
     .time-slot:hover:not(.blocked) {
-        border-color: #FFB22C;
-        background-color: #FFF8E7;
-        transform: scale(1.05);
+        border-color: var(--primary-color);
+        background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+        transform: scale(1.08);
+        box-shadow: 0 6px 15px rgba(255, 184, 0, 0.25);
     }
 
     .time-slot.selected {
-        border-color: #FFB22C;
-        background-color: #FFB22C;
+        border-color: var(--primary-color);
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
         color: white;
+        box-shadow: 0 6px 16px rgba(255, 184, 0, 0.45);
+        font-weight: 700;
     }
 
     .time-slot.blocked {
-        background-color: #fee2e2;
-        border-color: #ef4444;
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        border-color: var(--danger-color);
         cursor: not-allowed;
-        opacity: 0.6;
+        opacity: 0.7;
     }
 
     .time-slot.blocked:hover {
@@ -120,49 +191,355 @@
 
     /* DP Card Styling */
     .dp-card {
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 20px;
+        border: 3px solid var(--border-color);
+        border-radius: 18px;
+        padding: 28px;
         text-align: center;
         transition: all 0.3s ease;
         cursor: pointer;
-        background-color: white;
+        background: white;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(255, 184, 0, 0.1);
+    }
+
+    .dp-card::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 184, 0, 0.15);
+        transform: translate(-50%, -50%);
+        transition: width 0.4s ease, height 0.4s ease;
+    }
+
+    .dp-card:hover::after {
+        width: 300px;
+        height: 300px;
     }
 
     .dp-card:hover {
-        border-color: #FFB22C;
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(255, 178, 44, 0.3);
+        border-color: var(--primary-color);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(255, 184, 0, 0.3);
     }
 
     .dp-card.selected {
-        border-color: #FFB22C;
-        background-color: #FFF8E7;
+        border-color: var(--primary-color);
+        background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+        box-shadow: 0 8px 20px rgba(255, 184, 0, 0.35);
     }
 
     .dp-card .badge {
         display: inline-block;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 12px;
+        padding: 8px 18px;
+        border-radius: 25px;
+        font-size: 13px;
+        font-weight: 800;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(255, 184, 0, 0.3);
+    }
+
+    .dp-card .badge.recommended {
+        background: linear-gradient(135deg, #FFB800 0%, #F59E0B 100%);
+        color: white;
+        box-shadow: 0 3px 10px rgba(255, 184, 0, 0.4);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    /* Form Controls */
+    .form-control,
+    .form-select {
+        border: 3px solid var(--border-color);
+        border-radius: 12px;
+        padding: 14px 18px;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 5px rgba(255, 184, 0, 0.15);
+        outline: none;
+        background: #FFFBEB;
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 12px;
+        padding: 14px 32px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        border: none;
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        box-shadow: 0 5px 15px rgba(255, 184, 0, 0.4);
+        border: 2px solid #F59E0B;
+    }
+
+    .btn-warning:hover {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-dark) 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(255, 184, 0, 0.5);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #FFB800 0%, #F59E0B 100%);
+        color: white;
+        box-shadow: 0 5px 15px rgba(255, 184, 0, 0.4);
+        border: 2px solid #F59E0B;
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(255, 184, 0, 0.5);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        transform: translateY(-2px);
+    }
+
+    .btn-light {
+        background: white;
+        color: var(--primary-dark);
+        border: 3px solid var(--primary-color);
+        font-weight: 700;
+    }
+
+    .btn-light:hover {
+        background: var(--light-bg);
+        border-color: var(--primary-dark);
+        color: var(--primary-dark);
+        transform: scale(1.05);
+    }
+
+    /* Alerts */
+    .alert {
+        border-radius: 14px;
+        border: 3px solid;
+        padding: 18px 24px;
+        box-shadow: var(--shadow-md);
+    }
+
+    .alert-warning {
+        background: linear-gradient(135deg, #FEF9C3 0%, #FEF08A 100%);
+        color: #92400e;
+        border-color: var(--primary-color);
+    }
+
+    .alert-info {
+        background: linear-gradient(135deg, #FEF9C3 0%, #FDE68A 100%);
+        color: #78350f;
+        border-color: var(--secondary-color);
+    }
+
+    .alert-danger {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #991b1b;
+        border-color: var(--danger-color);
+    }
+
+    /* Main Section */
+    section {
+        background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 50%, #FDE68A 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 184, 0, 0.1) 0%, transparent 70%);
+        animation: rotate 30s linear infinite;
+    }
+
+    section::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 300px;
+        background: linear-gradient(to top, rgba(255, 184, 0, 0.15), transparent);
+        pointer-events: none;
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    #reservasiForm {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(255, 184, 0, 0.25);
+        border: 4px solid var(--primary-color);
+    }
+
+    h2,
+    h3 {
+        color: var(--dark-color);
+        text-shadow: 2px 2px 4px rgba(255, 184, 0, 0.1);
+    }
+
+    h2 {
+        color: white !important;
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+        font-size: 2.5rem;
+        font-weight: 800;
+    }
+
+    .form-check {
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        padding: 12px;
+    }
+
+    .form-check:hover {
+        background-color: var(--light-bg);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .card-title {
+        color: var(--dark-color);
+        font-weight: 700;
+    }
+
+    .text-success {
+        color: var(--primary-dark) !important;
+    }
+
+    .text-danger {
+        color: var(--danger-color) !important;
+    }
+
+    /* Image Preview */
+    .img-thumbnail {
+        border: 4px solid var(--border-color);
+        border-radius: 14px;
+        padding: 10px;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .img-thumbnail:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 6px 16px rgba(255, 184, 0, 0.3);
+        transform: scale(1.03);
+    }
+
+    /* Spinner */
+    .spinner-border {
+        border-color: currentColor;
+        border-right-color: transparent;
+    }
+
+    /* Step Progress Text */
+    #currentStep {
+        font-weight: 800;
+        color: var(--primary-dark);
+        font-size: 1.2em;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .text-white.fw-semibold {
+        color: var(--dark-color) !important;
+        font-weight: 700 !important;
+        text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Form Labels */
+    .form-label {
+        color: var(--dark-color);
         font-weight: 600;
         margin-bottom: 8px;
     }
 
-    .dp-card .badge.recommended {
-        background-color: #10b981;
-        color: white;
+    .form-label.fw-bold {
+        font-weight: 800;
+        color: var(--primary-dark);
     }
 </style>
 
-<section class="py-5" style="background-color: #FFB22C; min-height: 100vh;">
+<section class="py-5" style="min-height: 100vh;">
     <div class="container">
-        <h2 class="text-center mb-4 fw-bold text-dark">Reservasi Tempat</h2>
+        <h2 class="text-center mb-4 fw-bold text-white">Reservasi Tempat</h2>
 
         <!-- Progress Bar -->
         <div class="mb-4">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-dark">Langkah <span id="currentStep">1</span> dari 3</span>
+                <span class="text-white fw-semibold">Langkah <span id="currentStep">1</span> dari 3</span>
             </div>
             <div class="d-flex gap-2">
                 <div class="progress-step active" id="step1Progress"></div>
@@ -475,7 +852,7 @@
                         ${menu.stock === 0 ? '✗ Tidak Tersedia' : `✓ ${menu.stock} tersedia`}
                     </p>
                 </div>
-            </div>
+            </div>  
         </div>
     `).join('');
     }

@@ -663,72 +663,72 @@ class AdminController extends Controller
     }
 
     // ==================== DATA USER ====================
-    public function users()
-    {
-        $users = User::latest()->paginate(10);
-        return view('admin.users', compact('users'));
-    }
+    // public function users()
+    // {
+    //     $users = User::latest()->paginate(10);
+    //     return view('admin.users', compact('users'));
+    // }
 
-    public function storeUser(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'no_hp' => 'required|string',
-            'password' => 'required|min:6',
-            'role' => 'required|in:0,1'
-        ]);
+    // public function storeUser(Request $request)
+    // {
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|email|unique:users,email',
+    //         'no_hp' => 'required|string',
+    //         'password' => 'required|min:6',
+    //         'role' => 'required|in:0,1'
+    //     ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'no_hp' => $request->no_hp,
-            'password' => Hash::make($request->password),
-            'role' => $request->role
-        ]);
+    //     User::create([
+    //         'name' => $request->name,
+    //         'email' => $request->email,
+    //         'no_hp' => $request->no_hp,
+    //         'password' => Hash::make($request->password),
+    //         'role' => $request->role
+    //     ]);
 
-        return redirect()->route('admin.users')
-            ->with('success', 'User berhasil ditambahkan');
-    }
+    //     return redirect()->route('admin.users')
+    //         ->with('success', 'User berhasil ditambahkan');
+    // }
 
-    public function updateUser(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
+    // public function updateUser(Request $request, $id)
+    // {
+    //     $user = User::findOrFail($id);
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'no_hp' => 'required|string',
-            'role' => 'required|in:0,1'
-        ]);
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|email|unique:users,email,' . $id,
+    //         'no_hp' => 'required|string',
+    //         'role' => 'required|in:0,1'
+    //     ]);
 
-        $data = $request->only(['name', 'email', 'no_hp', 'role']);
+    //     $data = $request->only(['name', 'email', 'no_hp', 'role']);
 
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        }
+    //     if ($request->filled('password')) {
+    //         $data['password'] = Hash::make($request->password);
+    //     }
 
-        $user->update($data);
+    //     $user->update($data);
 
-        return redirect()->route('admin.users')
-            ->with('success', 'User berhasil diupdate');
-    }
+    //     return redirect()->route('admin.users')
+    //         ->with('success', 'User berhasil diupdate');
+    // }
 
-    public function deleteUser($id)
-    {
-        try {
-            User::findOrFail($id)->delete();
-            return response()->json([
-                'success' => true,
-                'message' => 'User berhasil dihapus'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menghapus: ' . $e->getMessage()
-            ], 500);
-        }
-    }
+    // public function deleteUser($id)
+    // {
+    //     try {
+    //         User::findOrFail($id)->delete();
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'User berhasil dihapus'
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Gagal menghapus: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
 
     public function updateStatus(Request $request, $id)
     {

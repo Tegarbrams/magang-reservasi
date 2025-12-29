@@ -7,17 +7,31 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <style>
+        :root {
+            --primary-color: #D4773C;
+            --secondary-color: #8B4513;
+            --accent-color: #F4A460;
+            --light-bg: #FFF8F0;
+            --dark-text: #3E2723;
+            --hover-color: #C5662A;
+        }
+
+        body {
+            color: var(--dark-text);
+        }
+
         .active-link {
             font-weight: bold;
-            color: #FFB22C !important;
+            color: var(--primary-color) !important;
         }
+        
         .nav-link:hover {
-            color: #FFB22C !important;
+            color: var(--primary-color) !important;
         }
         
         /* Gallery Grid Style */
         .gallery-section {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #FFF8F0 0%, #FFE8D6 100%);
         }
         
         .gallery-grid {
@@ -30,12 +44,14 @@
             width: 100%;
             height: 250px;
             object-fit: cover;
-            border-radius: 8px;
-            transition: transform 0.3s ease;
+            border-radius: 12px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         .gallery-grid img:hover {
             transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(212, 119, 60, 0.3);
         }
         
         /* Area Cafe Clickable Styles */
@@ -48,11 +64,11 @@
         
         .area-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3) !important;
+            box-shadow: 0 15px 30px rgba(212, 119, 60, 0.4) !important;
         }
         
         .area-card:hover .badge {
-            background-color: #28a745 !important;
+            background-color: var(--secondary-color) !important;
         }
         
         .area-card::after {
@@ -62,7 +78,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 178, 44, 0.1);
+            background: rgba(212, 119, 60, 0.15);
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
@@ -72,7 +88,70 @@
         .area-card:hover::after {
             opacity: 1;
         }
-        
+
+        /* Hero Button */
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 119, 60, 0.3);
+        }
+
+        /* Section Backgrounds */
+        .bg-light-custom {
+            background-color: var(--light-bg);
+        }
+
+        .bg-accent-custom {
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+        }
+
+        /* Text Colors */
+        .text-primary-custom {
+            color: var(--primary-color);
+        }
+
+        /* Facility Icons */
+        .facility-circle {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            box-shadow: 0 5px 15px rgba(212, 119, 60, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .facility-circle:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(212, 119, 60, 0.3);
+        }
+
+        /* Area Cards Color */
+        .area-card-bg {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        }
+
+        /* Carousel Indicators */
+        .carousel-indicators button {
+            background-color: var(--secondary-color);
+        }
+
+        .carousel-indicators button.active {
+            background-color: var(--primary-color);
+        }
+
+        /* Badge Colors */
+        .badge-custom {
+            background-color: var(--secondary-color);
+        }
+
+        .badge-custom-hover {
+            background-color: var(--primary-color);
+        }
+
         @media (max-width: 768px) {
             .gallery-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -96,10 +175,10 @@
             <div class="col-md-6 px-5">
                 <h1 class="fw-bold mb-3">
                     Selamat Datang <br>
-                    di <span class="text-warning">Café Ndalem Hanoman</span>
+                    di <span class="text-primary-custom">Café Ndalem Hanoman</span>
                 </h1>
                 <p class="fs-5 mb-4">Tempat nongkrong nyaman di tengah Yogyakarta</p>
-                <a href="/reservasi" class="btn btn-warning px-4 py-2">Reservasi Sekarang</a>
+                <a href="/reservasi" class="btn btn-primary-custom px-4 py-2">Reservasi Sekarang</a>
             </div>
 
             <!-- Kanan: Gambar full -->
@@ -112,7 +191,7 @@
     <!-- SECTION: TENTANG CAFE -->
     <section class="position-relative text-white text-center py-5" style="background-image: url('{{ url('/about-cafe.jpg') }}'); background-size: cover; background-position: center;">
         <!-- Overlay gelap dan blur -->
-        <div class="position-absolute top-0 start-0 w-100 h-100" style="background-color: rgba(0,0,0,0.5); backdrop-filter: blur(3px); z-index: 1;"></div>
+        <div class="position-absolute top-0 start-0 w-100 h-100" style="background-color: rgba(62,39,35,0.7); backdrop-filter: blur(3px); z-index: 1;"></div>
 
         <!-- Konten -->
         <div class="container position-relative d-flex flex-column justify-content-center align-items-center" style="z-index: 2; min-height: 60vh;">
@@ -124,22 +203,22 @@
     </section>
 
     <!-- Section Area Café - UPDATED WITH CLICKABLE CARDS -->
-    <section class="py-5" style="background-color: #F7F7F7;">
+    <section class="py-5 bg-light-custom">
         <div class="container">
-            <h2 class="text-center mb-3 fw-bold">Area Café</h2>
+            <h2 class="text-center mb-3 fw-bold text-primary-custom">Area Café</h2>
             <p class="text-center text-muted mb-5">Klik area yang Anda inginkan untuk melakukan reservasi</p>
 
             <div class="row justify-content-center g-4">
                 {{-- VIP Room --}}
                 <div class="col-12 col-sm-6 col-lg-2" style="min-width: 200px;">
                     <a href="{{ route('reservasi.index', ['ruangan' => 1]) }}" class="text-decoration-none">
-                        <div class="rounded-4 shadow-sm overflow-hidden text-center area-card" style="background-color: #FFB22C;">
+                        <div class="rounded-4 shadow-sm overflow-hidden text-center area-card area-card-bg">
                             <img src="{{ asset('img/vip.jpg') }}" alt="VIP Room" style="width: 100%; height: 160px; object-fit: cover;">
                             <div class="p-2">
-                                <h6 class="fw-bold mb-1 text-dark">VIP Room</h6>
-                                <p class="mb-1 small text-dark">10–15 orang</p>
-                                <p class="mb-2 small text-dark">Tertutup & nyaman</p>
-                                <span class="badge bg-dark">Klik untuk Reservasi</span>
+                                <h6 class="fw-bold mb-1 text-white">VIP Room</h6>
+                                <p class="mb-1 small text-white">10–15 orang</p>
+                                <p class="mb-2 small text-white">Tertutup & nyaman</p>
+                                <span class="badge badge-custom">Klik untuk Reservasi</span>
                             </div>
                         </div>
                     </a>
@@ -148,13 +227,13 @@
                 {{-- Meeting Room --}}
                 <div class="col-12 col-sm-6 col-lg-2" style="min-width: 200px;">
                     <a href="{{ route('reservasi.index', ['ruangan' => 2]) }}" class="text-decoration-none">
-                        <div class="rounded-4 shadow-sm overflow-hidden text-center area-card" style="background-color: #FFB22C;">
+                        <div class="rounded-4 shadow-sm overflow-hidden text-center area-card area-card-bg">
                             <img src="{{ asset('img/meeting-room.jpg') }}" alt="Meeting Room" style="width: 100%; height: 160px; object-fit: cover;">
                             <div class="p-2">
-                                <h6 class="fw-bold mb-1 text-dark">Meeting Room</h6>
-                                <p class="mb-1 small text-dark">20–25 orang</p>
-                                <p class="mb-2 small text-dark">Diskusi & rapat</p>
-                                <span class="badge bg-dark">Klik untuk Reservasi</span>
+                                <h6 class="fw-bold mb-1 text-white">Meeting Room</h6>
+                                <p class="mb-1 small text-white">20–25 orang</p>
+                                <p class="mb-2 small text-white">Diskusi & rapat</p>
+                                <span class="badge badge-custom">Klik untuk Reservasi</span>
                             </div>
                         </div>
                     </a>
@@ -163,13 +242,13 @@
                 {{-- Indoor AC --}}
                 <div class="col-12 col-sm-6 col-lg-2" style="min-width: 200px;">
                     <a href="{{ route('reservasi.index', ['ruangan' => 3]) }}" class="text-decoration-none">
-                        <div class="rounded-4 shadow-sm overflow-hidden text-center area-card" style="background-color: #FFB22C;">
+                        <div class="rounded-4 shadow-sm overflow-hidden text-center area-card area-card-bg">
                             <img src="{{ asset('img/indoor-ac.jpg') }}" alt="Indoor AC" style="width: 100%; height: 160px; object-fit: cover;">
                             <div class="p-2">
-                                <h6 class="fw-bold mb-1 text-dark">Indoor AC</h6>
-                                <p class="mb-1 small text-dark">30–40 orang</p>
-                                <p class="mb-2 small text-dark">Sejuk & nyaman</p>
-                                <span class="badge bg-dark">Klik untuk Reservasi</span>
+                                <h6 class="fw-bold mb-1 text-white">Indoor AC</h6>
+                                <p class="mb-1 small text-white">30–40 orang</p>
+                                <p class="mb-2 small text-white">Sejuk & nyaman</p>
+                                <span class="badge badge-custom">Klik untuk Reservasi</span>
                             </div>
                         </div>
                     </a>
@@ -178,13 +257,13 @@
                 {{-- Backyard Outdoor --}}
                 <div class="col-12 col-sm-6 col-lg-2" style="min-width: 200px;">
                     <a href="{{ route('reservasi.index', ['ruangan' => 4]) }}" class="text-decoration-none">
-                        <div class="rounded-4 shadow-sm overflow-hidden text-center area-card" style="background-color: #FFB22C;">
+                        <div class="rounded-4 shadow-sm overflow-hidden text-center area-card area-card-bg">
                             <img src="{{ asset('img/backyard-outdoor.jpg') }}" alt="Backyard Outdoor" style="width: 100%; height: 160px; object-fit: cover;">
                             <div class="p-2">
-                                <h6 class="fw-bold mb-1 text-dark">Backyard Outdoor</h6>
-                                <p class="mb-1 small text-dark">40–50 orang</p>
-                                <p class="mb-2 small text-dark">Outdoor asri</p>
-                                <span class="badge bg-dark">Klik untuk Reservasi</span>
+                                <h6 class="fw-bold mb-1 text-white">Backyard Outdoor</h6>
+                                <p class="mb-1 small text-white">40–50 orang</p>
+                                <p class="mb-2 small text-white">Outdoor asri</p>
+                                <span class="badge badge-custom">Klik untuk Reservasi</span>
                             </div>
                         </div>
                     </a>
@@ -193,13 +272,13 @@
                 {{-- Indoor Non-AC --}}
                 <div class="col-12 col-sm-6 col-lg-2" style="min-width: 200px;">
                     <a href="{{ route('reservasi.index', ['ruangan' => 5]) }}" class="text-decoration-none">
-                        <div class="rounded-4 shadow-sm overflow-hidden text-center area-card" style="background-color: #FFB22C;">
+                        <div class="rounded-4 shadow-sm overflow-hidden text-center area-card area-card-bg">
                             <img src="{{ asset('img/indoor-nonac.jpg') }}" alt="Indoor Non AC" style="width: 100%; height: 160px; object-fit: cover;">
                             <div class="p-2">
-                                <h6 class="fw-bold mb-1 text-dark">Indoor Non-AC</h6>
-                                <p class="mb-1 small text-dark">25–30 orang</p>
-                                <p class="mb-2 small text-dark">Klasik alami</p>
-                                <span class="badge bg-dark">Klik untuk Reservasi</span>
+                                <h6 class="fw-bold mb-1 text-white">Indoor Non-AC</h6>
+                                <p class="mb-1 small text-white">25–30 orang</p>
+                                <p class="mb-2 small text-white">Klasik alami</p>
+                                <span class="badge badge-custom">Klik untuk Reservasi</span>
                             </div>
                         </div>
                     </a>
@@ -211,14 +290,14 @@
     <!-- Section: Kenapa Harus Hanoman -->
     <section class="py-5" style="background-color: #ffffff;">
         <div class="container text-center">
-            <h2 class="fw-bold mb-3">Kenapa Harus Hanoman?</h2>
+            <h2 class="fw-bold mb-3 text-primary-custom">Kenapa Harus Hanoman?</h2>
             <p class="mb-5">Karena kami menyediakan fasilitas lengkap yang mendukung kenyamanan Anda.</p>
 
             <div class="row justify-content-center g-4">
                 {{-- LCD Proyektor --}}
                 <div class="col-6 col-md-3">
-                    <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center shadow-sm"
-                         style="width: 120px; height: 120px; background-color: #FFB22C; overflow: hidden;">
+                    <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center shadow-sm facility-circle"
+                         style="width: 120px; height: 120px; overflow: hidden;">
                         <img src="{{ asset('img/proyektor.png') }}" alt="LCD Proyektor" style="width: 60%; height: auto;">
                     </div>
                     <p class="mt-3 fw-semibold">LCD Proyektor</p>
@@ -226,8 +305,8 @@
 
                 {{-- Smart TV --}}
                 <div class="col-6 col-md-3">
-                    <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center shadow-sm"
-                         style="width: 120px; height: 120px; background-color: #FFB22C; overflow: hidden;">
+                    <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center shadow-sm facility-circle"
+                         style="width: 120px; height: 120px; overflow: hidden;">
                         <img src="{{ asset('img/tv.png') }}" alt="Smart TV" style="width: 60%; height: auto;">
                     </div>
                     <p class="mt-3 fw-semibold">Smart TV</p>
@@ -235,8 +314,8 @@
 
                 {{-- Free Wi-Fi --}}
                 <div class="col-6 col-md-3">
-                    <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center shadow-sm"
-                         style="width: 120px; height: 120px; background-color: #FFB22C; overflow: hidden;">
+                    <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center shadow-sm facility-circle"
+                         style="width: 120px; height: 120px; overflow: hidden;">
                         <img src="{{ asset('img/wifi.jpg') }}" alt="Free Wi-Fi" style="width: 60%; height: auto;">
                     </div>
                     <p class="mt-3 fw-semibold">Free Wi-Fi</p>
@@ -244,8 +323,8 @@
 
                 {{-- Sound System --}}
                 <div class="col-6 col-md-3">
-                    <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center shadow-sm"
-                         style="width: 120px; height: 120px; background-color: #FFB22C; overflow: hidden;">
+                    <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center shadow-sm facility-circle"
+                         style="width: 120px; height: 120px; overflow: hidden;">
                         <img src="{{ asset('img/sound.jpg') }}" alt="Sound System" style="width: 60%; height: auto;">
                     </div>
                     <p class="mt-3 fw-semibold">Sound System</p>
@@ -255,9 +334,9 @@
     </section>
 
     <!-- Section Event -->
-    <section class="py-5" style="background-color: #FFB22C;">
+    <section class="py-5 bg-accent-custom">
         <div class="container">
-            <h2 class="text-center fw-bold mb-5">Event di Ndalem Hanoman</h2>
+            <h2 class="text-center fw-bold mb-5 text-white">Event di Ndalem Hanoman</h2>
 
             <div id="eventCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
                 <!-- Indicators -->
@@ -277,10 +356,10 @@
                                 <img src="{{ asset('img/pekan.png') }}" alt="Pekan Hanoman" class="img-fluid" style="max-height: 360px; object-fit: contain;">
                             </div>
                             <div class="col-md-6">
-                                <h4 class="fw-bold text-dark">Pekan Hanoman 2024 is Here!</h4>
-                                <p class="text-dark">Siapkan diri kamu untuk menikmati akhir pekan seru di Ndalem Hanoman pada tanggal <strong>31 Agustus - 1 September 2024</strong>. Acara ini akan dipenuhi dengan tenant kreatif, penampilan menarik, fun run, dan workshop foto analog!</p>
-                                <p>🎉 Open gate mulai pukul <strong>08.00 pagi</strong> hingga selesai. Jangan lewatkan kesempatan eksplorasi produk, penampilan seru, dan berbagai kegiatan menarik bersama teman-teman.</p>
-                                <p><strong>Sampai jumpa di Pekan Hanoman!</strong></p>
+                                <h4 class="fw-bold text-white">Pekan Hanoman 2024 is Here!</h4>
+                                <p class="text-white">Siapkan diri kamu untuk menikmati akhir pekan seru di Ndalem Hanoman pada tanggal <strong>31 Agustus - 1 September 2024</strong>. Acara ini akan dipenuhi dengan tenant kreatif, penampilan menarik, fun run, dan workshop foto analog!</p>
+                                <p class="text-white">🎉 Open gate mulai pukul <strong>08.00 pagi</strong> hingga selesai. Jangan lewatkan kesempatan eksplorasi produk, penampilan seru, dan berbagai kegiatan menarik bersama teman-teman.</p>
+                                <p class="text-white"><strong>Sampai jumpa di Pekan Hanoman!</strong></p>
                             </div>
                         </div>
                     </div>
@@ -292,15 +371,15 @@
                                 <img src="{{ asset('img/analog.png') }}" alt="Workshop Foto Analog" class="img-fluid" style="max-height: 360px; object-fit: contain;">
                             </div>
                             <div class="col-md-6">
-                                <h4 class="fw-bold text-dark">Workshop Foto Analog & Hunting</h4>
-                                <p class="text-dark">Siapa nih yang punya film dari foto analog bagus, tapi bingung mau cetaknya gimana? Yuk ikutan workshop bareng <strong>@analogkanaja</strong>, <strong>@koyopasar</strong>, <strong>@huntingfullsenyum</strong>.</p>
-                                <ul class="mb-2">
+                                <h4 class="fw-bold text-white">Workshop Foto Analog & Hunting</h4>
+                                <p class="text-white">Siapa nih yang punya film dari foto analog bagus, tapi bingung mau cetaknya gimana? Yuk ikutan workshop bareng <strong>@analogkanaja</strong>, <strong>@koyopasar</strong>, <strong>@huntingfullsenyum</strong>.</p>
+                                <ul class="mb-2 text-white">
                                     <li>🗓️ Minggu, 01 September 2024</li>
                                     <li>⏰ 12.00 WIB (Workshop) | 14.00 WIB (Hunting)</li>
                                     <li>📍 Ndalem Hanoman, Lempuyangan</li>
                                     <li>🎟️ HTM Workshop: Rp 50.000 | Hunting: Free!</li>
                                 </ul>
-                                <p>✨ Peserta workshop dapat <strong>voucher 20% ALL Menu</strong>!</p>
+                                <p class="text-white">✨ Peserta workshop dapat <strong>voucher 20% ALL Menu</strong>!</p>
                             </div>
                         </div>
                     </div>
@@ -312,14 +391,14 @@
                                 <img src="{{ asset('img/funrun.png') }}" alt="Fun Run" class="img-fluid" style="max-height: 360px; object-fit: contain;">
                             </div>
                             <div class="col-md-6">
-                                <h4 class="fw-bold text-dark">Jelajah Kampung Wisata - Fun Run 2024</h4>
-                                <p class="text-dark">👋 Hai Runners! Yuk gabung di <strong>Fun Run 2024</strong> untuk jelajah kampung wisata bareng komunitas!</p>
-                                <ul>
+                                <h4 class="fw-bold text-white">Jelajah Kampung Wisata - Fun Run 2024</h4>
+                                <p class="text-white">👋 Hai Runners! Yuk gabung di <strong>Fun Run 2024</strong> untuk jelajah kampung wisata bareng komunitas!</p>
+                                <ul class="text-white">
                                     <li>📅 Sabtu, 31 Agustus 2024</li>
                                     <li>⏰ Jam 06.00 WIB</li>
                                     <li>📍 Start & Finish di Ndalem Hanoman</li>
                                 </ul>
-                                <p>🎟️ <strong>GRATIS!</strong> Untuk pendaftaran cek link di bio yaa... Terima kasih 😊</p>
+                                <p class="text-white">🎟️ <strong>GRATIS!</strong> Untuk pendaftaran cek link di bio yaa... Terima kasih 😊</p>
                             </div>
                         </div>
                     </div>
@@ -331,14 +410,14 @@
                                 <img src="{{ asset('img/merdekarun.png') }}" alt="Merdeka Run" class="img-fluid" style="max-height: 360px; object-fit: contain;">
                             </div>
                             <div class="col-md-6">
-                                <h4 class="fw-bold text-dark">Hanoman Merdeka Run 🇮🇩</h4>
-                                <p class="text-dark">Persiapkan diri kamu untuk <strong>Merdeka Run</strong>! Rayakan kemerdekaan RI dengan lari penuh semangat dan lomba seru!</p>
-                                <ul>
+                                <h4 class="fw-bold text-white">Hanoman Merdeka Run 🇮🇩</h4>
+                                <p class="text-white">Persiapkan diri kamu untuk <strong>Merdeka Run</strong>! Rayakan kemerdekaan RI dengan lari penuh semangat dan lomba seru!</p>
+                                <ul class="text-white">
                                     <li>📅 Sabtu, 17 Agustus 2024</li>
                                     <li>⏰ Start jam 06.00 WIB</li>
                                     <li>📍 Start & Finish di Ndalem Hanoman</li>
                                 </ul>
-                                <p>🎉 Ada refreshment, dokumentasi fotografer, dan lomba 17an seru! Ajak teman & keluarga! 🏃‍♀️</p>
+                                <p class="text-white">🎉 Ada refreshment, dokumentasi fotografer, dan lomba 17an seru! Ajak teman & keluarga! 🏃‍♀️</p>
                             </div>
                         </div>
                     </div>
@@ -359,7 +438,7 @@
     <!-- Section Galeri Foto -->
     <section class="py-5 gallery-section">
         <div class="container">
-            <h2 class="text-center fw-bold mb-5">Galeri Suasana Café</h2>
+            <h2 class="text-center fw-bold mb-5 text-primary-custom">Galeri Suasana Café</h2>
 
             <div class="gallery-grid">
                 <img src="{{ asset('img/galeri1.png') }}" alt="Galeri 1">

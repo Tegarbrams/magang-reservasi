@@ -14,7 +14,7 @@ class AuthController extends Controller
     // ================================
     // WEB VIEWS (Untuk Form HTML)
     // ================================
-    
+
     /**
      * Tampilkan form register
      */
@@ -43,9 +43,11 @@ class AuthController extends Controller
 
         if (auth()->attempt($request->only('email', 'password'))) {
             $request->session()->regenerate();
-            
+
             // Redirect berdasarkan role
-            if (auth()->user()->role == 1) {
+            if (auth()->user()->role == 2) {
+                return redirect()->route('admin.dashboard');
+            } elseif (auth()->user()->role == 1) {
                 return redirect()->route('admin.dashboard');
             }
             return redirect()->route('home');
@@ -87,7 +89,7 @@ class AuthController extends Controller
         auth()->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        
+
         return redirect()->route('login')->with('success', 'Logout berhasil');
     }
 
@@ -118,7 +120,7 @@ class AuthController extends Controller
         $request->validate(['email' => 'required|email']);
 
         $user = User::where('email', $request->email)->first();
-        
+
         if (!$user) {
             return back()->with('error', 'Email tidak ditemukan');
         }
@@ -171,7 +173,7 @@ class AuthController extends Controller
     // ================================
     // API ENDPOINTS (JSON Response)
     // ================================
-    
+
     /**
      * API Register
      */

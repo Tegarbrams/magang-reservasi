@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Ndalem Hanoman</title>
+    <title>Dashboard Super Admin - Ndalem Hanoman</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -14,26 +14,24 @@
 </head>
 <body class="bg-gray-50">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar (sama seperti sebelumnya) -->
+        <!-- Sidebar Super Admin -->
         <aside class="w-64 bg-gray-900 text-white flex-shrink-0">
-            <!-- ... sidebar code sama ... -->
-             <aside class="w-64 bg-gray-900 text-white flex-shrink-0">
             <div class="p-6 border-b border-gray-800">
                 <h1 class="text-2xl font-bold text-yellow-500">NDALEM HANOMAN</h1>
-                <p class="text-xs text-gray-400 mt-1">Admin Dashboard</p>
+                <p class="text-xs text-gray-400 mt-1">Super Admin Dashboard</p>
             </div>
 
             <nav class="p-4 space-y-2">
-                <a href="{{ route('admin.dashboard') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                <a href="{{ route('superadmin.dashboard') }}"
+                    class="sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    <span>Dashboard</span>
+                    <span class="font-medium">Dashboard</span>
                 </a>
 
-                <a href="{{ route('admin.reservasi') }}"
+                <a href="{{ route('superadmin.reservasi') }}"
                     class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -42,78 +40,28 @@
                     <span>Reservasi</span>
                 </a>
 
-                <a href="{{ route('admin.schedule-management') }}"
-                    class="sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span class="font-medium">Kelola Jadwal</span>
-                </a>
-
-                <div class="pt-4 pb-2">
-                    <p class="px-4 text-xs font-semibold text-gray-500 uppercase">Stok Management</p>
-                </div>
-
-                <a href="{{ route('admin.paket-menu') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    <span>Paket Menu</span>
-                </a>
-
-                <a href="{{ route('admin.ruangan') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                    <span>Ruangan</span>
-                </a>
-
-                <a href="{{ route('admin.fasilitas') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                    </svg>
-                    <span>Fasilitas</span>
-                </a>
-
-                <a href="{{ route('admin.menu-tambahan') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    <span>Menu Tambahan</span>
-                </a>
-
                 <div class="pt-4 pb-2">
                     <p class="px-4 text-xs font-semibold text-gray-500 uppercase">User Management</p>
                 </div>
 
-                {{-- <a href="{{ route('admin.users') }}"
+                <a href="{{ route('superadmin.admins') }}"
                     class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
-                    <span>Data User</span>
-                </a> --}}
+                    <span>Kelola Admin & User</span>
+                </a>
             </nav>
 
             <div class="absolute bottom-0 w-64 p-4 border-t border-gray-800">
                 <div class="flex items-center gap-3 px-4 py-3">
-                    <div
-                        class="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-black font-bold">
+                    <div class="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white font-bold">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
                     <div class="flex-1">
                         <p class="text-sm font-medium">{{ auth()->user()->name }}</p>
-                        <p class="text-xs text-gray-400">Administrator</p>
+                        <p class="text-xs text-gray-400">Super Admin</p>
                     </div>
                 </div>
                 <form action="{{ route('logout') }}" method="POST">
@@ -125,7 +73,6 @@
                 </form>
             </div>
         </aside>
-        </aside>
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
@@ -133,17 +80,16 @@
             <header class="bg-white border-b border-gray-200 px-8 py-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
-                        <p class="text-sm text-gray-600">Selamat datang di dashboard admin</p>
+                        <h2 class="text-2xl font-bold text-gray-800">Dashboard Super Admin</h2>
+                        <p class="text-sm text-gray-600">Monitoring & Overview (Read Only)</p>
                     </div>
-                    <div class="text-sm text-gray-600">Thursday, 25 December 2025</div>
+                    <div class="text-sm text-gray-600">{{ now()->format('l, d F Y') }}</div>
                 </div>
             </header>
 
-            <!-- Content -->
+            <!-- Content - SAMA SEPERTI ADMIN DASHBOARD -->
             <main class="flex-1 overflow-y-auto p-8">
-
-                <!-- 📊 STATS CARDS ROW 1 -->
+                <!-- Stats Cards Row 1 -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                         <div class="flex items-center justify-between">
@@ -190,8 +136,8 @@
                     <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm text-gray-600 mb-1">Total User</p>
-                                <h3 class="text-3xl font-bold text-purple-600">{{ $totalUser }}</h3>
+                                <p class="text-sm text-gray-600 mb-1">Total Admin</p>
+                                <h3 class="text-3xl font-bold text-purple-600">{{ $totalAdmin }}</h3>
                             </div>
                             <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,7 +148,7 @@
                     </div>
                 </div>
 
-                <!-- 📈 STATS CARDS ROW 2: PENGUNJUNG RESERVASI -->
+                <!-- Statistik Reservasi -->
                 <div class="mb-8">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">📊 Statistik Reservasi</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -241,7 +187,7 @@
                     </div>
                 </div>
 
-                <!-- 💰 PENDAPATAN -->
+                <!-- Pendapatan -->
                 <div class="mb-8">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">💰 Pendapatan</h3>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -264,15 +210,13 @@
                     </div>
                 </div>
 
-                <!-- 📊 CHARTS & STATUS -->
+                <!-- Charts & Status -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                    <!-- Chart Reservasi 7 Hari -->
                     <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                         <h3 class="text-lg font-bold text-gray-800 mb-4">📈 Reservasi 7 Hari Terakhir</h3>
                         <canvas id="reservasiChart"></canvas>
                     </div>
 
-                    <!-- Status Pie Chart -->
                     <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                         <h3 class="text-lg font-bold text-gray-800 mb-4">📊 Status Reservasi</h3>
                         <canvas id="statusChart"></canvas>
@@ -297,91 +241,49 @@
                     </div>
                 </div>
 
-                <!-- Chart Pendapatan 4 Minggu -->
+                <!-- Chart Pendapatan -->
                 <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-8">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">💵 Pendapatan 4 Minggu Terakhir</h3>
                     <canvas id="pendapatanChart"></canvas>
                 </div>
 
-                <!-- Recent Reservations & Stock -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Recent Reservasi (sama seperti sebelumnya) -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                        <div class="p-6 border-b border-gray-200">
-                            <h3 class="text-lg font-bold text-gray-800">Reservasi Terbaru</h3>
-                        </div>
-                        <div class="p-6">
-                            @if ($recentReservasi->count() > 0)
-                                <div class="space-y-4">
-                                    @foreach ($recentReservasi as $res)
-                                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                            <div>
-                                                <p class="font-semibold text-gray-800">{{ $res->nama }}</p>
-                                                <p class="text-sm text-gray-600">{{ $res->nomor_reservasi }}</p>
-                                                <p class="text-xs text-gray-500 mt-1">{{ $res->created_at->format('d M Y, H:i') }}</p>
-                                            </div>
-                                            <div>
-                                                <span class="px-3 py-1 rounded-full text-xs font-medium
-                                                    @if ($res->status == 'pending') bg-yellow-100 text-yellow-800
-                                                    @elseif($res->status == 'approved') bg-green-100 text-green-800
-                                                    @elseif($res->status == 'cancelled') bg-blue-100 text-blue-800
-                                                    @else bg-red-100 text-red-800 @endif">
-                                                    {{ ucfirst($res->status) }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <p class="text-gray-500 text-center py-8">Belum ada reservasi</p>
-                            @endif
-                        </div>
+                <!-- Recent Reservasi -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-800">Reservasi Terbaru</h3>
                     </div>
-
-                    <!-- Stock Summary -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                        <div class="p-6 border-b border-gray-200">
-                            <h3 class="text-lg font-bold text-gray-800">Ringkasan Stok</h3>
-                        </div>
-                        <div class="p-6 space-y-4">
-                            <div class="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                        </svg>
+                    <div class="p-6">
+                        @if ($recentReservasi->count() > 0)
+                            <div class="space-y-4">
+                                @foreach ($recentReservasi as $res)
+                                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p class="font-semibold text-gray-800">{{ $res->nama }}</p>
+                                            <p class="text-sm text-gray-600">{{ $res->nomor_reservasi }}</p>
+                                            <p class="text-xs text-gray-500 mt-1">{{ $res->created_at->format('d M Y, H:i') }}</p>
+                                        </div>
+                                        <div>
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium
+                                                @if ($res->status == 'pending') bg-yellow-100 text-yellow-800
+                                                @elseif($res->status == 'approved') bg-green-100 text-green-800
+                                                @elseif($res->status == 'cancelled') bg-blue-100 text-blue-800
+                                                @else bg-red-100 text-red-800 @endif">
+                                                {{ ucfirst($res->status) }}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="font-semibold text-gray-800">Paket Menu</p>
-                                        <p class="text-xs text-gray-600">Total paket tersedia</p>
-                                    </div>
-                                </div>
-                                <span class="text-2xl font-bold text-yellow-600">{{ $totalPaketMenu }}</span>
+                                @endforeach
                             </div>
-                            <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="font-semibold text-gray-800">Ruangan</p>
-                                        <p class="text-xs text-gray-600">Total ruangan tersedia</p>
-                                    </div>
-                                </div>
-                                <span class="text-2xl font-bold text-blue-600">{{ $totalRuangan }}</span>
-                            </div>
-                        </div>
+                        @else
+                            <p class="text-gray-500 text-center py-8">Belum ada reservasi</p>
+                        @endif
                     </div>
                 </div>
-
             </main>
         </div>
     </div>
 
     <script>
-        // Chart Reservasi 7 Hari
         const reservasiCtx = document.getElementById('reservasiChart').getContext('2d');
         new Chart(reservasiCtx, {
             type: 'line',
@@ -403,7 +305,6 @@
             }
         });
 
-        // Chart Status (Pie)
         const statusCtx = document.getElementById('statusChart').getContext('2d');
         new Chart(statusCtx, {
             type: 'doughnut',
@@ -425,7 +326,6 @@
             }
         });
 
-        // Chart Pendapatan 4 Minggu
         const pendapatanCtx = document.getElementById('pendapatanChart').getContext('2d');
         new Chart(pendapatanCtx, {
             type: 'bar',
