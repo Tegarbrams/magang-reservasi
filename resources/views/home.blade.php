@@ -334,7 +334,7 @@
 </section>
 
 <!-- ABOUT SECTION -->
-<section class="about-section" style="background-image: url('{{ url('/about-cafe.jpg') }}');">
+<section class="about-section mt-5" style="background-image: url('{{ url('/about-cafe.jpg') }}');">
     <div class="about-overlay"></div>
     <div class="about-content">
         <h2>CAFE AND RESTO TRADISIONAL MODERN</h2>
