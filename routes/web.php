@@ -103,6 +103,7 @@ Route::prefix('admin')->middleware(['auth', 'role:1'])->name('admin.')->group(fu
     Route::get('/reservasi/{id}/detail', [AdminController::class, 'detailReservasi'])->name('reservasi.detail');
     Route::post('/reservasi/{id}/update-status', [AdminController::class, 'updateStatusReservasi'])->name('reservasi.update-status');
     Route::delete('/reservasi/{id}', [AdminController::class, 'deleteReservasi'])->name('reservasi.delete');
+    Route::get('/reservasi/export-excel', [AdminController::class, 'exportReservasiExcel'])->name('reservasi.export-excel');
 
 
     // ==================== SCHEDULE MANAGEMENT ====================
@@ -135,11 +136,7 @@ Route::prefix('admin')->middleware(['auth', 'role:1'])->name('admin.')->group(fu
     Route::put('/menu-tambahan/{id}', [AdminController::class, 'updateMenuTambahan'])->name('menu-tambahan.update');
     Route::delete('/menu-tambahan/{id}', [AdminController::class, 'deleteMenuTambahan'])->name('menu-tambahan.delete');
 
-    // // ==================== USERS ====================
-    // Route::get('/users', [AdminController::class, 'users'])->name('users');
-    // Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
-    // Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
-    // Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
+    
 });
 
 // =========================================

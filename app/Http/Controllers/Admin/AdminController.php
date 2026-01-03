@@ -15,6 +15,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+
 class AdminController extends Controller
 {
     // Dashboard
@@ -662,73 +668,188 @@ class AdminController extends Controller
         }
     }
 
-    // ==================== DATA USER ====================
-    // public function users()
-    // {
-    //     $users = User::latest()->paginate(10);
-    //     return view('admin.users', compact('users'));
-    // }
+    public function exportReservasiExcel(Request $request)
+    {
+        try {
+            // Query sama seperti di method reservasi()
+            $query = Reservasi::with(['paketMenu', 'ruanganRel', 'fasilitas', 'menuTambahan']);
 
-    // public function storeUser(Request $request)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|email|unique:users,email',
-    //         'no_hp' => 'required|string',
-    //         'password' => 'required|min:6',
-    //         'role' => 'required|in:0,1'
-    //     ]);
+            // Filter Status
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
 
-    //     User::create([
-    //         'name' => $request->name,
-    //         'email' => $request->email,
-    //         'no_hp' => $request->no_hp,
-    //         'password' => Hash::make($request->password),
-    //         'role' => $request->role
-    //     ]);
+            // Filter Tanggal Mulai
+            if ($request->filled('tanggal_mulai')) {
+                $query->whereDate('tanggal', '>=', $request->tanggal_mulai);
+            }
 
-    //     return redirect()->route('admin.users')
-    //         ->with('success', 'User berhasil ditambahkan');
-    // }
+            // Filter Tanggal Akhir
+            if ($request->filled('tanggal_akhir')) {
+                $query->whereDate('tanggal', '<=', $request->tanggal_akhir);
+            }
 
-    // public function updateUser(Request $request, $id)
-    // {
-    //     $user = User::findOrFail($id);
+            // Search
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('nomor_reservasi', 'like', "%{$search}%")
+                        ->orWhere('nama', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('no_hp', 'like', "%{$search}%");
+                });
+            }
 
-    //     $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|email|unique:users,email,' . $id,
-    //         'no_hp' => 'required|string',
-    //         'role' => 'required|in:0,1'
-    //     ]);
+            // Ambil semua data (tanpa pagination)
+            $reservasis = $query->latest()->get();
 
-    //     $data = $request->only(['name', 'email', 'no_hp', 'role']);
+            // Buat Spreadsheet baru
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setTitle('Data Reservasi');
 
-    //     if ($request->filled('password')) {
-    //         $data['password'] = Hash::make($request->password);
-    //     }
+            // Header Excel
+            $headers = [
+                'No',
+                'Nomor Reservasi',
+                'Nama',
+                'Email',
+                'No HP',
+                'Tanggal',
+                'Jam Check-in',
+                'Jumlah Orang',
+                'Paket Menu',
+                'Ruangan',
+                'Fasilitas',
+                'Menu Tambahan',
+                'Total Harga',
+                'Tipe Pembayaran',
+                'DP Dibayar',
+                'Sisa Pembayaran',
+                'Status',
+                'Catatan',
+                'Tanggal Dibuat'
+            ];
 
-    //     $user->update($data);
+            // Set header di row 1
+            $column = 'A';
+            foreach ($headers as $header) {
+                $sheet->setCellValue($column . '1', $header);
+                $column++;
+            }
 
-    //     return redirect()->route('admin.users')
-    //         ->with('success', 'User berhasil diupdate');
-    // }
+            // Style untuk header
+            $headerStyle = [
+                'font' => [
+                    'bold' => true,
+                    'color' => ['rgb' => 'FFFFFF'],
+                    'size' => 11
+                ],
+                'fill' => [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => 'D4AF37'] // Warna gold
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => '000000']
+                    ]
+                ]
+            ];
+            $sheet->getStyle('A1:S1')->applyFromArray($headerStyle);
 
-    // public function deleteUser($id)
-    // {
-    //     try {
-    //         User::findOrFail($id)->delete();
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'User berhasil dihapus'
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Gagal menghapus: ' . $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
+            // Set height untuk header
+            $sheet->getRowDimension(1)->setRowHeight(25);
+
+            // Isi data
+            $row = 2;
+            $no = 1;
+            foreach ($reservasis as $reservasi) {
+                // Format tipe pembayaran
+                $tipePembayaran = '';
+                switch ($reservasi->tipe_pembayaran) {
+                    case 'dp_20':
+                        $tipePembayaran = 'DP 20%';
+                        break;
+                    case 'dp_50':
+                        $tipePembayaran = 'DP 50%';
+                        break;
+                    case 'full':
+                        $tipePembayaran = 'Lunas (100%)';
+                        break;
+                    default:
+                        $tipePembayaran = $reservasi->tipe_pembayaran;
+                }
+
+                // Fasilitas (gabungkan semua)
+                $fasilitas = $reservasi->fasilitas->pluck('nama')->implode(', ');
+
+                // Menu Tambahan (gabungkan semua)
+                $menuTambahan = $reservasi->menuTambahan->pluck('nama')->implode(', ');
+
+                $sheet->setCellValue('A' . $row, $no);
+                $sheet->setCellValue('B' . $row, $reservasi->nomor_reservasi);
+                $sheet->setCellValue('C' . $row, $reservasi->nama);
+                $sheet->setCellValue('D' . $row, $reservasi->email);
+                $sheet->setCellValue('E' . $row, $reservasi->no_hp);
+                $sheet->setCellValue('F' . $row, \Carbon\Carbon::parse($reservasi->tanggal)->format('d M Y'));
+                $sheet->setCellValue('G' . $row, $reservasi->jam);
+                $sheet->setCellValue('H' . $row, $reservasi->jumlah_orang);
+                $sheet->setCellValue('I' . $row, $reservasi->paketMenu->nama ?? '-');
+                $sheet->setCellValue('J' . $row, $reservasi->ruanganRel->nama ?? '-');
+                $sheet->setCellValue('K' . $row, $fasilitas ?: '-');
+                $sheet->setCellValue('L' . $row, $menuTambahan ?: '-');
+                $sheet->setCellValue('M' . $row, 'Rp ' . number_format($reservasi->total_harga, 0, ',', '.'));
+                $sheet->setCellValue('N' . $row, $tipePembayaran);
+                $sheet->setCellValue('O' . $row, 'Rp ' . number_format($reservasi->jumlah_dibayar ?? 0, 0, ',', '.'));
+                $sheet->setCellValue('P' . $row, 'Rp ' . number_format($reservasi->sisa_pembayaran ?? 0, 0, ',', '.'));
+                $sheet->setCellValue('Q' . $row, strtoupper($reservasi->status));
+                $sheet->setCellValue('R' . $row, $reservasi->catatan ?? '-');
+                $sheet->setCellValue('S' . $row, $reservasi->created_at->format('d M Y, H:i'));
+
+                $row++;
+                $no++;
+            }
+
+            // Style untuk data
+            $dataRange = 'A2:S' . ($row - 1);
+            $dataStyle = [
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['rgb' => 'CCCCCC']
+                    ]
+                ],
+                'alignment' => [
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ]
+            ];
+            $sheet->getStyle($dataRange)->applyFromArray($dataStyle);
+
+            // Auto size columns
+            foreach (range('A', 'S') as $col) {
+                $sheet->getColumnDimension($col)->setAutoSize(true);
+            }
+
+            // Buat nama file
+            $filename = 'Reservasi_' . date('Y-m-d_His') . '.xlsx';
+
+            // Set header untuk download
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . $filename . '"');
+            header('Cache-Control: max-age=0');
+
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+            exit;
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal export Excel: ' . $e->getMessage());
+        }
+    }
 
     public function updateStatus(Request $request, $id)
     {
