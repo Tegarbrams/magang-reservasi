@@ -21,6 +21,8 @@
     body {
         background: var(--white);
         color: var(--black);
+        margin: 0;
+        padding: 0;
     }
 
     /* HEADER STYLES */
@@ -49,6 +51,8 @@
     }
 
     header .rounded-circle {
+        width: 80px;
+        height: 80px;
         border: 3px solid var(--gold-light);
         box-shadow: 0 4px 12px rgba(255, 184, 0, 0.15);
         transition: all 0.3s ease;
@@ -63,11 +67,23 @@
     header .fw-bold {
         transition: all 0.3s ease;
         color: var(--black);
+        font-size: 1.25rem;
     }
 
     header .d-flex.align-items-center:hover .fw-bold {
         color: var(--gold-primary) !important;
         text-shadow: 0 2px 10px rgba(255, 184, 0, 0.2);
+    }
+
+    /* HAMBURGER BUTTON */
+    .hamburger-btn {
+        display: none;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        font-size: 1.5rem;
+        color: var(--gray-600);
     }
 
     /* NAVIGATION */
@@ -109,6 +125,20 @@
 
     /* RESPONSIVE */
     @media (max-width: 768px) {
+        .hamburger-btn {
+            display: block;
+        }
+
+        header .rounded-circle {
+            width: 60px;
+            height: 60px;
+            border-width: 2px;
+        }
+
+        header .fw-bold {
+            font-size: 1rem;
+        }
+
         header .nav {
             display: none;
             position: absolute;
@@ -147,15 +177,41 @@
             display: none;
         }
     }
+
+    @media (max-width: 480px) {
+        header {
+            padding: 0.75rem 1rem !important;
+        }
+
+        header .rounded-circle {
+            width: 50px;
+            height: 50px;
+            margin-right: 8px !important;
+        }
+
+        header .fw-bold {
+            font-size: 0.9rem;
+        }
+
+        .hamburger-btn {
+            font-size: 1.3rem;
+        }
+    }
 </style>
 
 <!-- HEADER -->
 <header class="d-flex justify-content-between align-items-center px-4 py-3">
     <div class="d-flex align-items-center">
         <img src="{{ url('/logo.jpg') }}" alt="Logo" class="rounded-circle"
-            style="width: 80px; height: 80px; object-fit: cover; margin-right: 10px;">
-        <span class="fw-bold fs-5">Ndalem Hanoman</span>
+            style="object-fit: cover; margin-right: 10px;">
+        <span class="fw-bold">Ndalem Hanoman</span>
     </div>
+
+    <!-- Hamburger Button -->
+    <button class="hamburger-btn" id="hamburgerBtn">
+        ☰
+    </button>
+
     <nav>
         <ul class="nav">
             <li class="nav-item">
@@ -173,3 +229,12 @@
         </ul>
     </nav>
 </header>
+
+<script>
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const nav = document.querySelector('header nav ul');
+
+    hamburgerBtn.addEventListener('click', function() {
+        nav.classList.toggle('show');
+    });
+</script>

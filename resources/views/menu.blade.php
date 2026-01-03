@@ -11,24 +11,26 @@
   
   <style>
   :root {
-    --gold-primary: #F5C542;
-    --gold-light: #FFF5D6;
-    --gold-dark: #B8941F;
+    --gold-primary: #FFB800;
+    --gold-light: #FFF4DC;
+    --gold-medium: #FFD700;
+    --gold-dark: #F4A300;
     --white: #FFFFFF;
-    --black: #1F1F1F;
-    --gray-50: #FBFBFB;
+    --black: #2C2C2C;
+    --gray-50: #FAFAFA;
     --gray-200: #EDEDED;
-    --gray-600: #5A5A5A;
+    --gray-600: #6B6B6B;
+    --cream: #FFFEF7;
   }
 
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to bottom, #ffffff, #faf7ef);
+    background: linear-gradient(to bottom, var(--white), var(--cream));
   }
 
   /* HERO */
   .menu-hero {
-    background: linear-gradient(150deg, var(--gold-primary), var(--gold-dark));
+    background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
     padding: 4.5rem 2rem 3.5rem;
     color: var(--white);
     text-align: center;
@@ -49,7 +51,7 @@
   /* FILTER BAR */
   .filter-wrapper {
     background: var(--white);
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 2px solid var(--gold-light);
     padding: 1.4rem 0;
     position: sticky;
     top: 0;
@@ -57,8 +59,8 @@
   }
 
   .btn-light {
-    border: 2px solid transparent;
-    color: #444;
+    border: 2px solid var(--gold-light);
+    color: var(--gray-600);
     font-weight: 700;
     border-radius: 999px;
     padding: .65rem 1.6rem;
@@ -70,14 +72,14 @@
     border-color: var(--gold-primary);
     background: var(--gold-light);
     color: var(--black);
-    box-shadow: 0 6px 14px rgba(245, 197, 66, .25);
+    box-shadow: 0 6px 14px rgba(255, 184, 0, .25);
   }
 
   .btn-light.active {
-    background: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+    background: var(--gold-primary);
     border-color: var(--gold-primary);
-    color: var(--black);
-    box-shadow: 0 10px 20px rgba(245, 197, 66, .3);
+    color: var(--white);
+    box-shadow: 0 10px 20px rgba(255, 184, 0, .3);
     transform: translateY(-1px);
   }
 
@@ -89,15 +91,15 @@
   .card {
     border-radius: 20px;
     background: var(--white);
-    border: 1px solid rgba(0,0,0,.04);
-    box-shadow: 0 14px 30px rgba(0,0,0,.05);
+    border: 2px solid var(--gold-light);
+    box-shadow: 0 14px 30px rgba(255, 184, 0, .1);
     transition: .3s ease;
     height: 100%;
   }
 
   .card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 18px 32px rgba(245, 197, 66, .18);
+    box-shadow: 0 18px 32px rgba(255, 184, 0, .25);
   }
 
   .card-img-top {
@@ -118,12 +120,12 @@
   }
 
   .price-badge {
-    background: linear-gradient(135deg, #fff5d6, #ffd467);
+    background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
     padding: .45rem .9rem;
     border-radius: 10px;
-    color: #6a5200;
+    color: var(--white);
     font-weight: 900;
-    box-shadow: 0 3px 10px rgba(255, 214, 103, .45);
+    box-shadow: 0 3px 10px rgba(255, 184, 0, .45);
   }
 
   .card-text {

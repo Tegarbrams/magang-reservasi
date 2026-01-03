@@ -96,13 +96,18 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
         animation: shimmer 2s infinite;
     }
 
     @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
+        0% {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(100%);
+        }
     }
 
     #currentStep {
@@ -120,7 +125,8 @@
     }
 
     /* Cards */
-    .paket-card, .dp-card {
+    .paket-card,
+    .dp-card {
         background: var(--white);
         border: 1px solid var(--gray-200);
         border-radius: 12px;
@@ -130,19 +136,22 @@
         position: relative;
     }
 
-    .paket-card:hover:not(.disabled), .dp-card:hover {
+    .paket-card:hover:not(.disabled),
+    .dp-card:hover {
         border-color: var(--gold-primary);
         box-shadow: var(--shadow-md);
         transform: translateY(-2px);
     }
 
-    .paket-card.selected, .dp-card.selected {
+    .paket-card.selected,
+    .dp-card.selected {
         border-color: var(--gold-primary);
         background: linear-gradient(135deg, var(--white) 0%, var(--gold-light) 100%);
         box-shadow: var(--shadow-lg);
     }
 
-    .paket-card.selected::before, .dp-card.selected::before {
+    .paket-card.selected::before,
+    .dp-card.selected::before {
         content: '✓';
         position: absolute;
         top: 0.75rem;
@@ -273,7 +282,8 @@
         display: block;
     }
 
-    .form-control, .form-select {
+    .form-control,
+    .form-select {
         border: 1px solid var(--gray-200);
         border-radius: 8px;
         padding: 0.75rem 1rem;
@@ -283,7 +293,8 @@
         color: var(--black);
     }
 
-    .form-control:focus, .form-select:focus {
+    .form-control:focus,
+    .form-select:focus {
         border-color: var(--gold-primary);
         outline: none;
         box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
@@ -395,6 +406,7 @@
             opacity: 0;
             transform: translateX(20px);
         }
+
         to {
             opacity: 1;
             transform: translateX(0);
@@ -482,7 +494,8 @@
         <!-- Progress Bar -->
         <div class="progress-container">
             <div class="d-flex justify-content-between align-items-center">
-                <span style="color: var(--gray-600); font-size: 0.875rem;">Langkah <span id="currentStep">1</span> dari 3</span>
+                <span style="color: var(--gray-600); font-size: 0.875rem;">Langkah <span id="currentStep">1</span> dari
+                    3</span>
             </div>
             <div class="progress-steps">
                 <div class="progress-step active" id="step1Progress"></div>
@@ -506,19 +519,22 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="nama" class="form-label">Nama Lengkap *</label>
-                        <input type="text" name="nama" id="nama" class="form-control" placeholder="Masukkan nama lengkap" required>
+                        <input type="text" name="nama" id="nama" class="form-control"
+                            placeholder="Masukkan nama lengkap" required>
                         <div class="text-danger small mt-1 d-none" id="error-nama"></div>
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label for="no_hp" class="form-label">Nomor Handphone *</label>
-                        <input type="tel" name="no_hp" id="no_hp" class="form-control" placeholder="08xxxxxxxxxx" required>
+                        <input type="tel" name="no_hp" id="no_hp" class="form-control"
+                            placeholder="08xxxxxxxxxx" required>
                         <div class="text-danger small mt-1 d-none" id="error-no_hp"></div>
                     </div>
 
                     <div class="col-md-12 mb-3">
                         <label for="email" class="form-label">Email *</label>
-                        <input type="email" name="email" id="email" class="form-control" placeholder="nama@email.com" required>
+                        <input type="email" name="email" id="email" class="form-control"
+                            placeholder="nama@email.com" required>
                         <div class="text-danger small mt-1 d-none" id="error-email"></div>
                     </div>
                 </div>
@@ -538,12 +554,16 @@
                         <div class="row align-items-center">
                             <div class="col-md-9">
                                 <h4 class="fw-bold mb-2" style="color: white;" id="selectedRoomName">-</h4>
-                                <p class="mb-1" style="font-size: 0.9375rem;">📍 Kapasitas: <span id="selectedRoomCapacity">-</span> orang</p>
-                                <p class="mb-0" style="font-size: 0.9375rem;">💰 Harga: Rp <span id="selectedRoomPrice">-</span></p>
+                                <p class="mb-1" style="font-size: 0.9375rem;">📍 Kapasitas: <span
+                                        id="selectedRoomCapacity">-</span> orang</p>
+                                <p class="mb-0" style="font-size: 0.9375rem;">💰 Harga: Rp <span
+                                        id="selectedRoomPrice">-</span></p>
                             </div>
                             <div class="col-md-3 text-end">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="rgba(255,255,255,0.5)" viewBox="0 0 16 16">
-                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"
+                                    fill="rgba(255,255,255,0.5)" viewBox="0 0 16 16">
+                                    <path
+                                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
                                 </svg>
                             </div>
                         </div>
@@ -587,10 +607,38 @@
                         </div>
                     </div>
 
+                    <!-- INFO DURASI RESERVASI - TAMBAHKAN INI -->
+                    <div class="alert"
+                        style="background: linear-gradient(135deg, var(--gold-light) 0%, var(--white) 100%); border: 1px solid var(--gold-primary); margin-top: 0.75rem; margin-bottom: 0.75rem;">
+                        <div class="d-flex align-items-start gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                fill="var(--gold-dark)" viewBox="0 0 16 16" style="flex-shrink: 0; margin-top: 2px;">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                                <path
+                                    d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0" />
+                            </svg>
+                            <div style="flex: 1;">
+                                <p class="mb-1 fw-semibold" style="color: var(--gold-dark); font-size: 0.9375rem;">
+                                    ℹ️ Informasi Durasi Reservasi
+                                </p>
+                                <p class="mb-0"
+                                    style="color: var(--gray-700); font-size: 0.875rem; line-height: 1.5;">
+                                    Jam yang Anda pilih adalah <strong>jam check-in</strong>. Durasi reservasi otomatis
+                                    adalah <strong>2 jam</strong> dari waktu check-in yang dipilih.
+                                    <br>
+                                    <span class="text-muted small">Contoh: Jika memilih check-in jam 10:00, maka
+                                        reservasi berlaku hingga jam 12:00</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- AKHIR INFO DURASI -->
+
                     <!-- Jumlah Orang -->
                     <div class="col-md-12 mb-3">
                         <label for="jumlah_orang" class="form-label">Jumlah Orang *</label>
-                        <input type="number" name="jumlah_orang" id="jumlah_orang" class="form-control" min="1" placeholder="Masukkan jumlah orang" required>
+                        <input type="number" name="jumlah_orang" id="jumlah_orang" class="form-control"
+                            min="1" placeholder="Masukkan jumlah orang" required>
                         <small class="text-muted" id="capacityWarning"></small>
                         <div class="text-danger small mt-1 d-none" id="error-jumlah_orang"></div>
                     </div>
@@ -610,7 +658,8 @@
                     <!-- Catatan -->
                     <div class="col-12 mb-3">
                         <label for="pesan" class="form-label">Catatan Tambahan (Opsional)</label>
-                        <textarea name="pesan" id="pesan" class="form-control" rows="3" placeholder="Tambahkan catatan khusus..."></textarea>
+                        <textarea name="pesan" id="pesan" class="form-control" rows="3"
+                            placeholder="Tambahkan catatan khusus..."></textarea>
                     </div>
 
                     <!-- Total Harga -->
@@ -618,7 +667,8 @@
                         <div class="alert alert-warning">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="fw-semibold">Total Harga:</span>
-                                <span id="totalHarga" style="font-size: 1.5rem; font-weight: 700; color: var(--gold-dark);">Rp 0</span>
+                                <span id="totalHarga"
+                                    style="font-size: 1.5rem; font-weight: 700; color: var(--gold-dark);">Rp 0</span>
                             </div>
                         </div>
                     </div>
@@ -665,17 +715,68 @@
                 <div class="alert alert-info mb-4 d-none" id="selectedPaymentInfo">
                     <h5 class="fw-semibold mb-3">Detail Pembayaran:</h5>
                     <p class="mb-1">Metode: <span id="infoMetode">-</span></p>
-                    <p class="mb-1">Jumlah Bayar: <span id="infoJumlah" class="fw-bold" style="color: var(--gold-dark);">Rp 0</span></p>
+                    <p class="mb-1">Jumlah Bayar: <span id="infoJumlah" class="fw-bold"
+                            style="color: var(--gold-dark);">Rp 0</span></p>
                     <p class="mb-0">Sisa Bayar: <span id="infoSisa">Rp 0</span></p>
+                    <hr style="margin: 1rem 0; border-color: var(--gold-primary); opacity: 0.3;">
+                    <p class="mb-1">🕐 Check-in: <span id="infoCheckin" class="fw-semibold">-</span></p>
+                    <p class="mb-0">🕐 Check-out (estimasi): <span id="infoCheckout" class="fw-semibold">-</span>
+                    </p>
+                </div>
+
+                <div class="mb-4">
+                    <div
+                        style="background: var(--white); border: 1px solid var(--gray-200); border-radius: 12px; padding: 1.5rem;">
+                        <h5 class="fw-semibold mb-3" style="color: var(--black);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                fill="var(--gold-primary)" viewBox="0 0 16 16"
+                                style="margin-right: 0.5rem; vertical-align: middle;">
+                                <path
+                                    d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2.5 1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm0 3a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm3 0a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z" />
+                            </svg>
+                            Scan QRIS untuk Pembayaran
+                        </h5>
+
+                        <div class="text-center">
+                            <!-- QRIS Image Container -->
+                            <div
+                                style="background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%); border: 2px dashed var(--gold-primary); border-radius: 12px; padding: 1.5rem; display: inline-block; max-width: 100%;">
+                                <img src="{{ asset('img/qris.png') }}" alt="QRIS Payment"
+                                    style="max-width: 280px; width: 100%; height: auto; border-radius: 8px; box-shadow: var(--shadow-md);">
+
+                                <div class="mt-3"
+                                    style="background: var(--gold-light); border-radius: 8px; padding: 0.75rem; margin-top: 1rem;">
+                                    <p class="mb-1 fw-semibold" style="color: var(--gold-dark); font-size: 0.875rem;">
+                                        📱 Cara Pembayaran:
+                                    </p>
+                                    <ol class="mb-0 text-start"
+                                        style="color: var(--gray-700); font-size: 0.8125rem; padding-left: 1.25rem; line-height: 1.6;">
+                                        <li>Buka aplikasi mobile banking atau e-wallet Anda</li>
+                                        <li>Pilih menu <strong>Scan QR</strong> atau <strong>QRIS</strong></li>
+                                        <li>Scan kode QR di atas</li>
+                                        <li>Masukkan nominal sesuai yang tertera di Detail Pembayaran</li>
+                                        <li>Konfirmasi dan selesaikan pembayaran</li>
+                                    </ol>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning mt-3 mb-0" style="font-size: 0.875rem;">
+                                <strong>⚠️ Penting:</strong> Pastikan nominal yang Anda transfer sesuai dengan
+                                <strong>Jumlah Bayar</strong> di atas, lalu upload bukti pembayaran di bawah ini.
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Upload Bukti -->
                 <div class="mb-3">
                     <label for="bukti" class="form-label">Upload Bukti Pembayaran *</label>
-                    <input type="file" name="bukti" id="bukti" class="form-control" accept="image/*" required>
+                    <input type="file" name="bukti" id="bukti" class="form-control" accept="image/*"
+                        required>
                     <div class="text-danger small mt-1 d-none" id="error-bukti"></div>
                     <div id="imagePreview" class="mt-3 d-none">
-                        <img id="previewImg" src="" alt="Preview" class="img-thumbnail" style="max-width: 300px;">
+                        <img id="previewImg" src="" alt="Preview" class="img-thumbnail"
+                            style="max-width: 300px;">
                     </div>
                 </div>
             </div>
@@ -934,6 +1035,26 @@
         document.querySelectorAll('.time-slot').forEach(el => el.classList.remove('selected'));
         element.classList.add('selected');
         document.getElementById('jam').value = time;
+
+        updateCheckoutInfo(time);
+    }
+
+    function updateCheckoutInfo(checkinTime) {
+        // Hitung jam checkout (2 jam setelah check-in)
+        const [hours, minutes] = checkinTime.split(':');
+        const checkoutHour = (parseInt(hours) + 2).toString().padStart(2, '0');
+        const checkoutTime = `${checkoutHour}:${minutes}`;
+
+        // Update di halaman pembayaran (slide 3)
+        const infoCheckin = document.getElementById('infoCheckin');
+        const infoCheckout = document.getElementById('infoCheckout');
+
+        if (infoCheckin) {
+            infoCheckin.textContent = checkinTime;
+        }
+        if (infoCheckout) {
+            infoCheckout.textContent = checkoutTime;
+        }
     }
 
     // ============================================

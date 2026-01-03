@@ -33,8 +33,9 @@
             </div>
 
             <nav class="p-4 space-y-2">
+                <!-- Dashboard -->
                 <a href="{{ route('admin.dashboard') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    class="{{ request()->routeIs('admin.dashboard') ? 'sidebar-active' : '' }} flex items-center gap-3 px-4 py-3 rounded-lg transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -42,18 +43,19 @@
                     <span>Dashboard</span>
                 </a>
 
+                <!-- Reservasi -->
                 <a href="{{ route('admin.reservasi') }}"
-                    class="sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg transition">
+                    class="{{ request()->routeIs('admin.reservasi') ? 'sidebar-active' : '' }} flex items-center gap-3 px-4 py-3 rounded-lg transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
-                    <span class="font-medium">Reservasi</span>
+                    <span>Reservasi</span>
                 </a>
 
-                <!-- NEW MENU -->
+                <!-- Kelola Jadwal -->
                 <a href="{{ route('admin.schedule-management') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    class="{{ request()->routeIs('admin.schedule-management') ? 'sidebar-active' : '' }} flex items-center gap-3 px-4 py-3 rounded-lg transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -65,17 +67,19 @@
                     <p class="px-4 text-xs font-semibold text-gray-500 uppercase">Stok Management</p>
                 </div>
 
+                <!-- Paket Menu - ACTIVE -->
                 <a href="{{ route('admin.paket-menu') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    class="{{ request()->routeIs('admin.paket-menu*') ? 'sidebar-active' : '' }} flex items-center gap-3 px-4 py-3 rounded-lg transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    <span>Paket Menu</span>
+                    <span class="font-medium">Paket Menu</span>
                 </a>
 
+                <!-- Ruangan -->
                 <a href="{{ route('admin.ruangan') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    class="{{ request()->routeIs('admin.ruangan*') ? 'sidebar-active' : '' }} flex items-center gap-3 px-4 py-3 rounded-lg transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -83,8 +87,9 @@
                     <span>Ruangan</span>
                 </a>
 
+                <!-- Fasilitas -->
                 <a href="{{ route('admin.fasilitas') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    class="{{ request()->routeIs('admin.fasilitas*') ? 'sidebar-active' : '' }} flex items-center gap-3 px-4 py-3 rounded-lg transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -92,8 +97,9 @@
                     <span>Fasilitas</span>
                 </a>
 
+                <!-- Menu Tambahan -->
                 <a href="{{ route('admin.menu-tambahan') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
+                    class="{{ request()->routeIs('admin.menu-tambahan*') ? 'sidebar-active' : '' }} flex items-center gap-3 px-4 py-3 rounded-lg transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -104,15 +110,6 @@
                 <div class="pt-4 pb-2">
                     <p class="px-4 text-xs font-semibold text-gray-500 uppercase">User Management</p>
                 </div>
-
-                {{-- <a href="{{ route('admin.users') }}"
-                    class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                    <span>Data User</span>
-                </a> --}}
             </nav>
 
             <div class="absolute bottom-0 w-64 p-4 border-t border-gray-800">
