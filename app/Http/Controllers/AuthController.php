@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\User;
+use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -117,29 +118,25 @@ class AuthController extends Controller
      */
     public function sendResetLink(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        $request->validate([
+            'email' => ['required', 'email'],
+        ], [
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Format email tidak valid',
+        ]);
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return back()->with('error', 'Email tidak ditemukan');
-        }
-
-        $token = Str::random(64);
-
-        DB::table('password_reset_tokens')->updateOrInsert(
-            ['email' => $request->email],
-            [
-                'token' => Hash::make($token),
-                'created_at' => now()
-            ]
+        $status = Password::sendResetLink(
+            $request->only('email')
         );
 
-        $link = url('/reset-password/' . $token . '?email=' . $request->email);
+        if ($status === Password::RESET_LINK_SENT) {
+            // UBAH BARIS INI - Jangan tampilkan link!
+            return back()->with('success', 'Link reset password telah dikirim ke email Anda. Silakan periksa inbox atau folder spam.');
+        }
 
-        // Dalam production, kirim email di sini
-        // Untuk development, tampilkan link
-        return back()->with('success', 'Link reset password: ' . $link);
+        return back()
+            ->withErrors(['email' => __($status)])
+            ->withInput();
     }
 
     /**
