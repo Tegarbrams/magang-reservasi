@@ -353,7 +353,7 @@
             <img src="{{ asset('img/vip.jpg') }}" alt="VIP Room" class="area-card-image">
             <div class="area-card-content">
                 <h3 class="area-card-title">VIP Room</h3>
-                <p class="area-card-info">10–15 orang</p>
+                <p class="area-card-info">2–10 orang</p>
                 <p class="area-card-info">Tertutup & nyaman</p>
                 <span class="area-card-badge">Klik untuk Reservasi</span>
             </div>
@@ -362,7 +362,7 @@
             <img src="{{ asset('img/meeting-room.jpg') }}" alt="Meeting Room" class="area-card-image">
             <div class="area-card-content">
                 <h3 class="area-card-title">Meeting Room</h3>
-                <p class="area-card-info">20–25 orang</p>
+                <p class="area-card-info">2-8 orang</p>
                 <p class="area-card-info">Diskusi & rapat</p>
                 <span class="area-card-badge">Klik untuk Reservasi</span>
             </div>
@@ -371,7 +371,7 @@
             <img src="{{ asset('img/indoor-ac.jpg') }}" alt="Indoor AC" class="area-card-image">
             <div class="area-card-content">
                 <h3 class="area-card-title">Indoor AC</h3>
-                <p class="area-card-info">30–40 orang</p>
+                <p class="area-card-info">2-35 orang</p>
                 <p class="area-card-info">Sejuk & nyaman</p>
                 <span class="area-card-badge">Klik untuk Reservasi</span>
             </div>
@@ -380,16 +380,16 @@
             <img src="{{ asset('img/backyard-outdoor.jpg') }}" alt="Backyard Outdoor" class="area-card-image">
             <div class="area-card-content">
                 <h3 class="area-card-title">Backyard Outdoor</h3>
-                <p class="area-card-info">40–50 orang</p>
+                <p class="area-card-info">15–60 orang</p>
                 <p class="area-card-info">Outdoor asri</p>
                 <span class="area-card-badge">Klik untuk Reservasi</span>
             </div>
         </a>
-        <a href="{{ route('reservasi.index', ['ruangan' => 5]) }}" class="area-card">
+        <a href="{{ route('reservasi.index', ['ruangan' => 6]) }}" class="area-card">
             <img src="{{ asset('img/indoor-nonac.jpg') }}" alt="Indoor Non-AC" class="area-card-image">
             <div class="area-card-content">
-                <h3 class="area-card-title">Indoor Non-AC</h3>
-                <p class="area-card-info">25–30 orang</p>
+                <h3 class="area-card-title">Smoking AC</h3>
+                <p class="area-card-info">2-30 orang</p>
                 <p class="area-card-info">Klasik alami</p>
                 <span class="area-card-badge">Klik untuk Reservasi</span>
             </div>
