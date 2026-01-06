@@ -145,7 +145,7 @@
 
   <!-- Footer -->
  <footer>
-    <div class="footer-container">
+    <div class="footer-container" id="footer">
         <div class="footer-grid">
             <div class="footer-info">
                 <h4>Café Ndalem Hanoman</h4>

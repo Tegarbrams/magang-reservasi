@@ -7,22 +7,25 @@
     <title>Dashboard Admin - Ndalem Hanoman</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    body { font-family: 'Inter', sans-serif; }
-    
-    /* Active state untuk sidebar */
-    .sidebar-active { 
-        background: linear-gradient(135deg, #D4AF37 0%, #F4E5C3 100%); 
-        color: #000;
-        font-weight: 600;
-    }
-    
-    /* Hover state untuk menu yang tidak active */
-    nav a:not(.sidebar-active):hover {
-        background: #1f2937;
-    }
-</style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Active state untuk sidebar */
+        .sidebar-active {
+            background: linear-gradient(135deg, #D4AF37 0%, #F4E5C3 100%);
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* Hover state untuk menu yang tidak active */
+        nav a:not(.sidebar-active):hover {
+            background: #1f2937;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-50">
@@ -139,22 +142,23 @@
                         <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
                         <p class="text-sm text-gray-600">Selamat datang di dashboard admin</p>
                     </div>
-                    <div class="text-sm text-gray-600">Thursday, 25 December 2025</div>
+                    <div class="text-sm text-gray-600">{{ $currentDate }}</div>
                 </div>
             </header>
 
             <!-- Content -->
             <main class="flex-1 overflow-y-auto p-8">
 
-                <!-- 📊 STATS CARDS ROW 1 -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- 📊 STATS CARDS ROW 1 - FIXED LAYOUT -->
+                <div class="grid grid-cols-3 gap-6 mb-8">
                     <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                         <div class="flex items-center justify-between">
-                            <div>
+                            <div class="flex-1">
                                 <p class="text-sm text-gray-600 mb-1">Total Reservasi</p>
                                 <h3 class="text-3xl font-bold text-gray-800">{{ $totalReservasi }}</h3>
                             </div>
-                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <div
+                                class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -166,11 +170,12 @@
 
                     <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                         <div class="flex items-center justify-between">
-                            <div>
+                            <div class="flex-1">
                                 <p class="text-sm text-gray-600 mb-1">Pending</p>
                                 <h3 class="text-3xl font-bold text-yellow-600">{{ $reservasiPending }}</h3>
                             </div>
-                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <div
+                                class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -182,31 +187,16 @@
 
                     <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
                         <div class="flex items-center justify-between">
-                            <div>
+                            <div class="flex-1">
                                 <p class="text-sm text-gray-600 mb-1">Approved</p>
                                 <h3 class="text-3xl font-bold text-green-600">{{ $reservasiConfirmed }}</h3>
                             </div>
-                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <div
+                                class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm text-gray-600 mb-1">Total User</p>
-                                <h3 class="text-3xl font-bold text-purple-600">{{ $totalUser }}</h3>
-                            </div>
-                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                 </svg>
                             </div>
                         </div>

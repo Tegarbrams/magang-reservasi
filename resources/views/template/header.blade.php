@@ -224,7 +224,7 @@
                 <a class="nav-link {{ Request::is('reservasi*') ? 'active-link' : '' }}" href="/reservasi">Reservasi</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ Request::is('login') ? 'active-link' : '' }}" href="/login">Login</a>
+                <a class="nav-link {{ Request::is('login') ? 'active-link' : '' }}" href="#footer">Kontak</a>
             </li>
         </ul>
     </nav>

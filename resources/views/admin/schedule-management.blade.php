@@ -132,6 +132,7 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -266,7 +267,8 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-2xl font-bold text-gray-800">Kelola Jadwal Reservasi</h2>
-                        <p class="text-sm text-gray-600 mt-1">Blok/unblock jadwal untuk maintenance atau keperluan lain</p>
+                        <p class="text-sm text-gray-600 mt-1">Blok/unblock jadwal untuk maintenance atau keperluan lain
+                        </p>
                     </div>
                 </div>
             </header>
@@ -289,7 +291,8 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Pilih Tanggal</label>
-                                <input type="date" id="dateSelect" class="w-full" value="{{ now()->format('Y-m-d') }}">
+                                <input type="date" id="dateSelect" class="w-full"
+                                    value="{{ now()->format('Y-m-d') }}">
                             </div>
                         </div>
 
@@ -316,24 +319,31 @@
 
                     <!-- Info Summary -->
                     <div id="infoSummary" class="hidden mb-6 fade-in">
-                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4">
+                        <div
+                            class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4">
                             <div class="flex flex-wrap items-center gap-4 justify-between">
                                 <div class="flex items-center gap-4">
                                     <div class="info-badge bg-green-100 text-green-700 border border-green-300">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                         <span id="availableCount">0</span> Tersedia
                                     </div>
                                     <div class="info-badge bg-red-100 text-red-700 border border-red-300">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                         <span id="bookedCount">0</span> Reservasi
                                     </div>
                                     <div class="info-badge bg-yellow-100 text-yellow-700 border border-yellow-300">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd"
+                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                         <span id="maintenanceCount">0</span> Maintenance
                                     </div>
@@ -353,8 +363,10 @@
 
                     <!-- Empty State -->
                     <div id="emptyState" class="text-center py-16">
-                        <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <p class="text-gray-500 text-lg font-medium">Pilih ruangan dan tanggal untuk melihat jadwal</p>
                     </div>
@@ -401,51 +413,55 @@
                 return;
             }
 
-            console.log('Loading schedule...', { ruanganId, date });
+            console.log('Loading schedule...', {
+                ruanganId,
+                date
+            });
 
             // Show loading
             document.getElementById('emptyState').classList.add('hidden');
             document.getElementById('slotsContainer').classList.remove('hidden');
             document.getElementById('infoSummary').classList.remove('hidden');
-            document.getElementById('slotsGrid').innerHTML = '<div class="col-span-full text-center py-8"><div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-yellow-500"></div><p class="mt-4 text-gray-600">Memuat data...</p></div>';
+            document.getElementById('slotsGrid').innerHTML =
+                '<div class="col-span-full text-center py-8"><div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-yellow-500"></div><p class="mt-4 text-gray-600">Memuat data...</p></div>';
 
             // Fetch data
             fetch(`/admin/schedule/get-data?ruangan_id=${ruanganId}&month=${date.substring(0, 7)}`, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log('Schedule data received:', data);
-                
-                if (data.success) {
-                    renderSlots(data.data, date);
-                } else {
-                    alert('Gagal load data: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(err => {
-                console.error('Error loading schedule:', err);
-                alert('Terjadi kesalahan saat memuat data');
-            });
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Schedule data received:', data);
+
+                    if (data.success) {
+                        renderSlots(data.data, date);
+                    } else {
+                        alert('Gagal load data: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(err => {
+                    console.error('Error loading schedule:', err);
+                    alert('Terjadi kesalahan saat memuat data');
+                });
         }
 
         function renderSlots(scheduleData, selectedDate) {
             const slotsGrid = document.getElementById('slotsGrid');
             slotsGrid.innerHTML = '';
 
-            console.log('=== DEBUG: Schedule Data ===');
-            console.log('All schedule data:', scheduleData);
+            console.log('=== RENDERING SLOTS ===');
+            console.log('Schedule data:', scheduleData);
             console.log('Selected date:', selectedDate);
 
-            // Filter data for selected date only
+            // Filter data untuk tanggal yang dipilih
             const dateSchedule = scheduleData.filter(s => s.date === selectedDate);
-            console.log('Filtered for selected date:', dateSchedule);
+            console.log('Filtered for date:', dateSchedule);
 
-            // All time slots (08:00 - 18:00)
+            // Semua slot waktu (08:00 - 18:00)
             const allSlots = [];
             for (let h = 8; h <= 18; h++) {
                 const timeStr = (h < 10 ? '0' + h : h) + ':00';
@@ -461,62 +477,68 @@
                 const slotCard = document.createElement('div');
                 slotCard.className = 'slot-card';
 
-                console.log(`=== Slot ${time} ===`, slotData); // DEBUG
+                console.log(`Slot ${time}:`, slotData);
 
                 if (slotData) {
-                    // 🔧 PERBAIKAN: Backend mengirim 'auto' untuk reservasi, bukan 'booked'
+                    // 🔧 SLOT DENGAN RESERVASI (type: 'auto')
                     if (slotData.type === 'auto') {
                         bookedCount++;
                         slotCard.className += ' slot-booked';
                         slotCard.innerHTML = `
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-lg font-bold text-red-700">${time}</span>
-                                <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                            <p class="text-sm font-semibold text-red-700 mb-1">🔒 Sudah Direservasi</p>
-                            <p class="text-xs text-red-600 mb-2">${slotData.label.substring(0, 30)}</p>
-                            <button onclick="unblockReservation('${selectedDate}', '${time}', '${slotData.label.replace(/'/g, "\\'")}')" class="w-full px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition">
-                                🔓 Buka Blok Reservasi
-                            </button>
-                            <p class="text-xs text-red-500 mt-2 text-center">⚠️ Slot akan terbuka untuk booking lain</p>
-                        `;
-                        slotCard.style.cursor = 'pointer';
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-lg font-bold text-red-700">${time}</span>
+                        <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-semibold text-red-700 mb-1">🔒 Sudah Direservasi</p>
+                    <p class="text-xs text-red-600 mb-2">${slotData.label.substring(0, 40)}...</p>
+                    <button onclick="confirmUnblockReservation('${slotData.id}', '${selectedDate}', '${time}', '${slotData.label.replace(/'/g, "\\'")}')" 
+                            class="w-full px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition">
+                        🔓 Buka Blok Reservasi
+                    </button>
+                    <p class="text-xs text-red-500 mt-2 text-center">⚠️ Slot akan terbuka untuk booking lain</p>
+                `;
+                        slotCard.style.cursor = 'default';
+
+                        // 🔧 SLOT MAINTENANCE (type: 'manual')
                     } else if (slotData.type === 'manual') {
                         maintenanceCount++;
                         slotCard.className += ' slot-maintenance';
                         slotCard.innerHTML = `
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-lg font-bold text-orange-700">${time}</span>
-                                <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                            <p class="text-sm font-semibold text-orange-700 mb-1">🔧 Maintenance</p>
-                            <p class="text-xs text-orange-600">${slotData.label.substring(0, 30)}</p>
-                            <button onclick="unblockSlot('${selectedDate}', '${time}')" class="mt-3 w-full px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition">
-                                ❌ Hapus Blok
-                            </button>
-                        `;
-                        slotCard.onclick = null;
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-lg font-bold text-orange-700">${time}</span>
+                        <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <p class="text-sm font-semibold text-orange-700 mb-1">🔧 Maintenance</p>
+                    <p class="text-xs text-orange-600 mb-3">${slotData.label.substring(0, 40)}</p>
+                    <button onclick="confirmUnblockMaintenance('${slotData.id}', '${selectedDate}', '${time}')" 
+                            class="w-full px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold rounded-lg transition">
+                        ❌ Hapus Blok
+                    </button>
+                `;
+                        slotCard.style.cursor = 'default';
                     }
                 } else {
+                    // 🔧 SLOT TERSEDIA
                     availableCount++;
                     slotCard.className += ' slot-available';
                     slotCard.innerHTML = `
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-lg font-bold text-green-700">${time}</span>
-                            <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                        </div>
-                        <p class="text-sm font-semibold text-green-700 mb-1">✅ Tersedia</p>
-                        <p class="text-xs text-green-600 mb-3">Slot ini dapat dibooking</p>
-                        <button onclick="blockSlot('${selectedDate}', '${time}')" class="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition">
-                            🔒 Blok Jadwal
-                        </button>
-                    `;
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-lg font-bold text-green-700">${time}</span>
+                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <p class="text-sm font-semibold text-green-700 mb-1">✅ Tersedia</p>
+                <p class="text-xs text-green-600 mb-3">Slot ini dapat dibooking</p>
+                <button onclick="blockSlot('${selectedDate}', '${time}')" 
+                        class="w-full px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition">
+                    🔒 Blok Jadwal
+                </button>
+            `;
                 }
 
                 slotsGrid.appendChild(slotCard);
@@ -526,137 +548,310 @@
             document.getElementById('availableCount').textContent = availableCount;
             document.getElementById('bookedCount').textContent = bookedCount;
             document.getElementById('maintenanceCount').textContent = maintenanceCount;
-            
+
             // Format date display
             const dateObj = new Date(selectedDate);
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
             const formattedDate = dateObj.toLocaleDateString('id-ID', options);
             document.getElementById('selectedDateDisplay').textContent = formattedDate;
 
-            console.log('Slots rendered successfully');
+            console.log('Summary:', {
+                availableCount,
+                bookedCount,
+                maintenanceCount
+            });
+        }
+
+        function confirmUnblockReservation(blockId, date, time, label) {
+            if (!confirm(
+                    `⚠️ PERINGATAN PENTING!\n\nAnda akan membuka blok reservasi:\n\nTanggal: ${date}\nJam: ${time}\nReservasi: ${label}\n\n❗ PERHATIAN:\n✓ Slot ini akan tersedia untuk booking customer lain\n✓ Reservasi yang ada harus dibatalkan secara manual di menu Reservasi\n✓ Customer yang sudah booking perlu dikonfirmasi ulang\n\n⚠️ Lanjutkan membuka blok ini?`
+                    )) {
+                return;
+            }
+
+            const ruanganId = document.getElementById('ruanganSelect').value;
+
+            console.log('Unblocking reservation...', {
+                blockId,
+                ruanganId,
+                date,
+                time
+            });
+
+            fetch('/admin/schedule/toggle-block', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ruangan_id: ruanganId,
+                        tanggal: date,
+                        jam: time,
+                        action: 'unblock'
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Unblock response:', data);
+
+                    if (data.success) {
+                        alert(
+                            '✅ Blok reservasi berhasil dibuka!\n\n⚠️ JANGAN LUPA:\n- Batalkan reservasi terkait di menu Reservasi\n- Informasikan customer tentang pembatalan');
+                        loadSchedule();
+                    } else {
+                        alert('❌ ' + (data.message || 'Gagal membuka blok reservasi'));
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('❌ Terjadi kesalahan saat membuka blok');
+                });
+        }
+
+        // 🔧 FIXED: Unblock Maintenance
+        function confirmUnblockMaintenance(blockId, date, time) {
+            if (!confirm(
+                    `Hapus blok maintenance?\n\nTanggal: ${date}\nJam: ${time}\n\nSlot ini akan tersedia kembali untuk reservasi.`
+                    )) {
+                return;
+            }
+
+            const ruanganId = document.getElementById('ruanganSelect').value;
+
+            console.log('Unblocking maintenance...', {
+                blockId,
+                ruanganId,
+                date,
+                time
+            });
+
+            fetch('/admin/schedule/toggle-block', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ruangan_id: ruanganId,
+                        tanggal: date,
+                        jam: time,
+                        action: 'unblock'
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Unblock response:', data);
+
+                    if (data.success) {
+                        alert('✅ Blok maintenance berhasil dihapus');
+                        loadSchedule();
+                    } else {
+                        alert('❌ ' + (data.message || 'Gagal menghapus blok'));
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('❌ Terjadi kesalahan');
+                });
+        }
+
+        // 🔧 Block manual
+        function blockSlot(date, time) {
+            const ruanganId = document.getElementById('ruanganSelect').value;
+            const keterangan = prompt(
+                `Blok jadwal untuk maintenance?\n\nTanggal: ${date}\nJam: ${time}\n\nMasukkan keterangan:`,
+                'Maintenance rutin'
+            );
+
+            if (keterangan === null) return;
+
+            console.log('Blocking slot...', {
+                ruanganId,
+                date,
+                time,
+                keterangan
+            });
+
+            fetch('/admin/schedule/toggle-block', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ruangan_id: ruanganId,
+                        tanggal: date,
+                        jam: time,
+                        action: 'block',
+                        keterangan: keterangan
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Block response:', data);
+
+                    if (data.success) {
+                        alert('✅ Jadwal berhasil diblok untuk maintenance');
+                        loadSchedule();
+                    } else {
+                        alert('❌ ' + (data.message || 'Gagal memblok jadwal'));
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('❌ Terjadi kesalahan');
+                });
         }
 
         function blockSlot(date, time) {
             const ruanganId = document.getElementById('ruanganSelect').value;
             const keterangan = prompt(
-                `Blok jadwal untuk maintenance?\n\nTanggal: ${date}\nJam: ${time}\n\nMasukkan keterangan:`, 
+                `Blok jadwal untuk maintenance?\n\nTanggal: ${date}\nJam: ${time}\n\nMasukkan keterangan:`,
                 'Maintenance rutin'
             );
-            
+
             if (keterangan === null) return; // User cancelled
 
-            console.log('Blocking slot...', { ruanganId, date, time, keterangan });
+            console.log('Blocking slot...', {
+                ruanganId,
+                date,
+                time,
+                keterangan
+            });
 
             fetch('/admin/schedule/toggle-block', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    ruangan_id: ruanganId,
-                    tanggal: date,
-                    jam: time,
-                    action: 'block',
-                    keterangan: keterangan
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ruangan_id: ruanganId,
+                        tanggal: date,
+                        jam: time,
+                        action: 'block',
+                        keterangan: keterangan
+                    })
                 })
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log('Block response:', data);
-                
-                if (data.success) {
-                    alert('✅ Jadwal berhasil diblok untuk maintenance');
-                    loadSchedule(); // Reload
-                } else {
-                    alert('❌ ' + (data.message || 'Gagal memblok jadwal'));
-                }
-            })
-            .catch(err => {
-                console.error('Error blocking slot:', err);
-                alert('Terjadi kesalahan saat memblok jadwal');
-            });
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Block response:', data);
+
+                    if (data.success) {
+                        alert('✅ Jadwal berhasil diblok untuk maintenance');
+                        loadSchedule(); // Reload
+                    } else {
+                        alert('❌ ' + (data.message || 'Gagal memblok jadwal'));
+                    }
+                })
+                .catch(err => {
+                    console.error('Error blocking slot:', err);
+                    alert('Terjadi kesalahan saat memblok jadwal');
+                });
         }
 
         function unblockSlot(date, time) {
-            if (!confirm(`Hapus blok maintenance?\n\nTanggal: ${date}\nJam: ${time}\n\nSlot ini akan tersedia kembali untuk reservasi.`)) {
+            if (!confirm(
+                    `Hapus blok maintenance?\n\nTanggal: ${date}\nJam: ${time}\n\nSlot ini akan tersedia kembali untuk reservasi.`
+                )) {
                 return;
             }
 
             const ruanganId = document.getElementById('ruanganSelect').value;
 
-            console.log('Unblocking maintenance slot...', { ruanganId, date, time });
+            console.log('Unblocking maintenance slot...', {
+                ruanganId,
+                date,
+                time
+            });
 
             fetch('/admin/schedule/toggle-block', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    ruangan_id: ruanganId,
-                    tanggal: date,
-                    jam: time,
-                    action: 'unblock'
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ruangan_id: ruanganId,
+                        tanggal: date,
+                        jam: time,
+                        action: 'unblock'
+                    })
                 })
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log('Unblock response:', data);
-                
-                if (data.success) {
-                    alert('✅ Blok maintenance berhasil dihapus');
-                    loadSchedule(); // Reload
-                } else {
-                    alert('❌ ' + (data.message || 'Gagal menghapus blok'));
-                }
-            })
-            .catch(err => {
-                console.error('Error unblocking slot:', err);
-                alert('Terjadi kesalahan saat menghapus blok');
-            });
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Unblock response:', data);
+
+                    if (data.success) {
+                        alert('✅ Blok maintenance berhasil dihapus');
+                        loadSchedule(); // Reload
+                    } else {
+                        alert('❌ ' + (data.message || 'Gagal menghapus blok'));
+                    }
+                })
+                .catch(err => {
+                    console.error('Error unblocking slot:', err);
+                    alert('Terjadi kesalahan saat menghapus blok');
+                });
         }
 
         function unblockReservation(date, time, label) {
-            if (!confirm(`⚠️ PERINGATAN: Buka blok reservasi?\n\nTanggal: ${date}\nJam: ${time}\nReservasi: ${label}\n\n❗ Tindakan ini akan:\n✓ Membuka slot untuk booking customer lain\n✓ Reservasi yang ada mungkin perlu dibatalkan manual\n\nLanjutkan?`)) {
+            if (!confirm(
+                    `⚠️ PERINGATAN: Buka blok reservasi?\n\nTanggal: ${date}\nJam: ${time}\nReservasi: ${label}\n\n❗ Tindakan ini akan:\n✓ Membuka slot untuk booking customer lain\n✓ Reservasi yang ada mungkin perlu dibatalkan manual\n\nLanjutkan?`
+                )) {
                 return;
             }
 
             const ruanganId = document.getElementById('ruanganSelect').value;
 
-            console.log('Unblocking reservation slot...', { ruanganId, date, time });
+            console.log('Unblocking reservation slot...', {
+                ruanganId,
+                date,
+                time
+            });
 
             fetch('/admin/schedule/toggle-block', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    ruangan_id: ruanganId,
-                    tanggal: date,
-                    jam: time,
-                    action: 'unblock'
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ruangan_id: ruanganId,
+                        tanggal: date,
+                        jam: time,
+                        action: 'unblock'
+                    })
                 })
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log('Unblock reservation response:', data);
-                
-                if (data.success) {
-                    alert('✅ Blok reservasi berhasil dibuka\n\n⚠️ Pastikan untuk membatalkan reservasi terkait di menu Reservasi!');
-                    loadSchedule(); // Reload
-                } else {
-                    alert('❌ ' + (data.message || 'Gagal membuka blok reservasi'));
-                }
-            })
-            .catch(err => {
-                console.error('Error unblocking reservation:', err);
-                alert('Terjadi kesalahan saat membuka blok reservasi');
-            });
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Unblock reservation response:', data);
+
+                    if (data.success) {
+                        alert(
+                            '✅ Blok reservasi berhasil dibuka\n\n⚠️ Pastikan untuk membatalkan reservasi terkait di menu Reservasi!'
+                            );
+                        loadSchedule(); // Reload
+                    } else {
+                        alert('❌ ' + (data.message || 'Gagal membuka blok reservasi'));
+                    }
+                })
+                .catch(err => {
+                    console.error('Error unblocking reservation:', err);
+                    alert('Terjadi kesalahan saat membuka blok reservasi');
+                });
         }
     </script>
 </body>
