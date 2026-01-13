@@ -1,34 +1,31 @@
-FROM php:8.2-apache
+FROM php:8.2-fpm
 
-# Install system dependencies + PHP extensions
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    unzip \
+    libzip-dev \
     libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    zip unzip git curl \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    && docker-php-ext-install pdo_mysql zip gd
 
-# Enable Apache rewrite
-RUN a2enmod rewrite
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
-WORKDIR /var/www/html
+WORKDIR /var/www
 
-# Copy project files
+# Copy project
 COPY . .
 
-# Install composer dependencies
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+# Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Permission
-RUN chown -R www-data:www-data storage bootstrap/cache
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www
 
-# Apache document root to Laravel public
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/*.conf \
-    /etc/apache2/apache2.conf
-
-EXPOSE 80
+EXPOSE 9000
+CMD ["php-fpm"]
