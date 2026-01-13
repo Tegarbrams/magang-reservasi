@@ -151,7 +151,7 @@ class ReservasiController extends Controller
             'fasilitas'         => 'array|nullable',
             'fasilitas.*'       => 'exists:fasilitas,id',
             'menu_tambahan'     => 'array|nullable',
-            'menu_tambahan.*'   => 'exists:menu_tambahans,id',
+            'menu_tambahan.*'   => 'string',
             'bukti'             => 'required|image|max:2048',
             'pesan'             => 'nullable|string',
             'dp_percentage'     => 'required|in:20,50,100', // Tambahan
@@ -224,11 +224,20 @@ class ReservasiController extends Controller
                 $fasilitasIds = $fasilitasItems->pluck('id')->toArray();
             }
 
-            $menuTambahanIds = [];
+            $menuTambahanData = [];
             if ($request->menu_tambahan) {
-                $menuItems = MenuTambahan::whereIn('id', $request->menu_tambahan)->get();
-                $total += $menuItems->sum('harga');
-                $menuTambahanIds = $menuItems->pluck('id')->toArray();
+                foreach ($request->menu_tambahan as $menuItem) {
+                    // Format: "id:qty" atau "id" saja
+                    $parts = explode(':', $menuItem);
+                    $menuId = $parts[0];
+                    $qty = isset($parts[1]) ? (int)$parts[1] : 1;
+
+                    $menu = MenuTambahan::find($menuId);
+                    if ($menu) {
+                        $total += $menu->harga * $qty;
+                        $menuTambahanData[$menuId] = ['qty' => $qty];
+                    }
+                }
             }
 
             // SIMPAN DATA RESERVASI (Tambah dp_percentage)
@@ -269,8 +278,8 @@ class ReservasiController extends Controller
             if (!empty($fasilitasIds)) {
                 $reservasi->fasilitas()->attach($fasilitasIds);
             }
-            if (!empty($menuTambahanIds)) {
-                $reservasi->menuTambahan()->attach($menuTambahanIds);
+            if (!empty($menuTambahanData)) {
+                $reservasi->menuTambahan()->attach($menuTambahanData);
             }
 
             // KURANGI STOCK (sama)

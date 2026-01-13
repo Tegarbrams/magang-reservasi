@@ -101,6 +101,6 @@ class Reservasi extends Model
             'reservasi_menu_tambahans',
             'reservasi_id',
             'menu_tambahan_id'
-        );
+        )->withPivot('qty')->withTimestamps();
     }
 }

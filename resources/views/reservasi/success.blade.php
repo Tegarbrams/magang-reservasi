@@ -71,7 +71,7 @@
             <!-- Success Message -->
             <h1 class="luxury-title text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 text-gray-800 px-2">Reservasi Berhasil!</h1>
             <p class="text-gray-600 text-base sm:text-lg mb-6 sm:mb-8 px-2">
-                Terima kasih telah melakukan reservasi di <span class="text-yellow-600 font-semibold">LUXURY Hotel</span>
+                Terima kasih telah melakukan reservasi di <span class="text-yellow-600 font-semibold">Cafe Ndalem Hanoman</span>
             </p>
 
             <!-- Info Box -->

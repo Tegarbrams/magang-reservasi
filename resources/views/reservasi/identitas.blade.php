@@ -919,16 +919,74 @@
             return;
         }
         container.innerHTML = database.menu_tambahan.map(menu => `
-            <div class="col-md-6">
-                <div class="form-check p-3 border rounded">
-                    <input class="form-check-input facility-checkbox" type="checkbox" name="menu_tambahan[]" value="${menu.id}" id="menu-${menu.id}" onchange="calculateTotal()">
-                    <label class="form-check-label w-100" for="menu-${menu.id}">
-                        <div class="fw-semibold">${menu.nama}</div>
-                        <div class="small text-muted">Rp ${Number(menu.harga).toLocaleString('id-ID')}</div>
-                    </label>
+        <div class="col-md-6">
+            <div class="form-check p-3 border rounded menu-item" id="menu-item-${menu.id}">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="d-flex align-items-center">
+                        <input class="form-check-input menu-checkbox me-2" 
+                               type="checkbox" 
+                               value="${menu.id}" 
+                               id="menu-${menu.id}" 
+                               onchange="toggleQtyInput(${menu.id})">
+                        <label class="form-check-label fw-semibold" for="menu-${menu.id}">
+                            ${menu.nama}
+                        </label>
+                    </div>
+                </div>
+                <div class="small text-muted mb-2">Rp ${Number(menu.harga).toLocaleString('id-ID')} / porsi</div>
+                
+                <!-- Qty Input (Hidden by default) -->
+                <div class="qty-controls d-none" id="qty-menu-${menu.id}" style="margin-top: 0.5rem;">
+                    <label class="small text-muted d-block mb-1">Jumlah:</label>
+                    <div class="input-group input-group-sm" style="max-width: 150px;">
+                        <button class="btn btn-outline-secondary" type="button" onclick="decreaseQty(${menu.id})">-</button>
+                        <input type="number" 
+                               class="form-control text-center qty-input" 
+                               id="qty-input-menu-${menu.id}" 
+                               value="1" 
+                               min="1" 
+                               max="99"
+                               onchange="calculateTotal()">
+                        <button class="btn btn-outline-secondary" type="button" onclick="increaseQty(${menu.id})">+</button>
+                    </div>
                 </div>
             </div>
-        `).join('');
+        </div>
+    `).join('');
+    }
+
+    function toggleQtyInput(id) {
+        const checkbox = document.getElementById(`menu-${id}`);
+        const qtyControl = document.getElementById(`qty-menu-${id}`);
+
+        if (checkbox.checked) {
+            qtyControl.classList.remove('d-none');
+        } else {
+            qtyControl.classList.add('d-none');
+            document.getElementById(`qty-input-menu-${id}`).value = 1;
+        }
+
+        calculateTotal();
+    }
+
+    // 🔧 INCREASE QTY
+    function increaseQty(id) {
+        const input = document.getElementById(`qty-input-menu-${id}`);
+        const currentVal = parseInt(input.value) || 1;
+        if (currentVal < 99) {
+            input.value = currentVal + 1;
+            calculateTotal();
+        }
+    }
+
+    // 🔧 DECREASE QTY
+    function decreaseQty(id) {
+        const input = document.getElementById(`qty-input-menu-${id}`);
+        const currentVal = parseInt(input.value) || 1;
+        if (currentVal > 1) {
+            input.value = currentVal - 1;
+            calculateTotal();
+        }
     }
 
     function selectPaket(id) {
@@ -1082,9 +1140,13 @@
             if (fas) total += Number(fas.harga);
         });
 
-        document.querySelectorAll('input[name="menu_tambahan[]"]:checked').forEach(cb => {
-            const menu = database.menu_tambahan.find(m => m.id == cb.value);
-            if (menu) total += Number(menu.harga);
+        document.querySelectorAll('.menu-checkbox:checked').forEach(cb => {
+            const menuId = cb.value;
+            const menu = database.menu_tambahan.find(m => m.id == menuId);
+            const qty = parseInt(document.getElementById(`qty-input-menu-${menuId}`).value) || 1;
+            if (menu) {
+                total += Number(menu.harga) * qty;
+            }
         });
 
         totalPrice = total;
@@ -1290,7 +1352,40 @@
 
         if (!validateSlide(3)) return;
 
-        const formData = new FormData(this);
+        const formData = new FormData();
+
+        // Data identitas
+        formData.append('nama', document.getElementById('nama').value);
+        formData.append('email', document.getElementById('email').value);
+        formData.append('no_hp', document.getElementById('no_hp').value);
+
+        // Data layanan
+        formData.append('paket_menu', document.getElementById('paket_menu').value);
+        formData.append('ruangan', document.getElementById('ruangan').value);
+        formData.append('tanggal', document.getElementById('tanggal').value);
+        formData.append('jam', document.getElementById('jam').value);
+        formData.append('jumlah_orang', document.getElementById('jumlah_orang').value);
+        formData.append('pesan', document.getElementById('pesan').value);
+
+        // Fasilitas (tanpa qty)
+        document.querySelectorAll('input[name="fasilitas[]"]:checked').forEach(cb => {
+            formData.append('fasilitas[]', cb.value);
+        });
+
+        // Menu tambahan dengan QTY (format: "id:qty")
+        document.querySelectorAll('.menu-checkbox:checked').forEach(cb => {
+            const menuId = cb.value;
+            const qty = document.getElementById(`qty-input-menu-${menuId}`).value;
+            formData.append('menu_tambahan[]', `${menuId}:${qty}`);
+        });
+
+        // Data pembayaran
+        formData.append('dp_percentage', document.getElementById('dp_percentage').value);
+
+        const buktiFile = document.getElementById('bukti').files[0];
+        if (buktiFile) {
+            formData.append('bukti', buktiFile);
+        }
 
         const submitBtn = document.getElementById('submitBtn');
         const originalText = submitBtn.textContent;

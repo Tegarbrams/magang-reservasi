@@ -310,10 +310,10 @@
                 </div>
 
                 <!-- Chart Pendapatan 4 Minggu -->
-                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-8">
+                {{-- <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200 mb-8">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">💵 Pendapatan 4 Minggu Terakhir</h3>
                     <canvas id="pendapatanChart"></canvas>
-                </div>
+                </div> --}}
 
                 <!-- Recent Reservations & Stock -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">

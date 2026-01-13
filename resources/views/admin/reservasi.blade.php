@@ -450,187 +450,220 @@
     </div>
 
     <script>
-        function viewDetail(id) {
-            document.getElementById('detailModal').classList.remove('hidden');
-            document.getElementById('modalContent').innerHTML =
-                '<div class="text-center py-8"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto"></div><p class="mt-4 text-gray-600">Memuat data...</p></div>';
+       function viewDetail(id) {
+    document.getElementById('detailModal').classList.remove('hidden');
+    document.getElementById('modalContent').innerHTML =
+        '<div class="text-center py-8"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto"></div><p class="mt-4 text-gray-600">Memuat data...</p></div>';
 
-            fetch(`/admin/reservasi/${id}/detail`, {
-                    method: 'GET',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const r = data.data;
-                        const formatRupiah = (num) => 'Rp ' + Number(num).toLocaleString('id-ID');
-                        const formatTanggal = (date) => new Date(date).toLocaleDateString('id-ID', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        });
-                        const tipePembayaranLabel = {
-                            'dp_20': 'DP 20%',
-                            'dp_50': 'DP 50%',
-                            'full': 'Lunas (100%)'
-                        };
+    fetch(`/admin/reservasi/${id}/detail`, {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const r = data.data;
+                const formatRupiah = (num) => 'Rp ' + Number(num).toLocaleString('id-ID');
+                const formatTanggal = (date) => new Date(date).toLocaleDateString('id-ID', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                const tipePembayaranLabel = {
+                    'dp_20': 'DP 20%',
+                    'dp_50': 'DP 50%',
+                    'full': 'Lunas (100%)'
+                };
 
-                        document.getElementById('modalContent').innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white p-4 rounded-lg">
-                            <p class="text-sm opacity-90">Nomor Reservasi</p>
-                            <p class="text-2xl font-bold">${r.nomor_reservasi}</p>
-                        </div>
-                        
-                        <div class="border rounded-lg p-4">
-                            <h4 class="font-bold text-gray-800 mb-3">📋 Data Pemesan</h4>
-                            <div class="space-y-2 text-sm">
-                                <div class="flex justify-between"><span class="text-gray-600">Nama</span><span class="font-medium">${r.nama}</span></div>
-                                <div class="flex justify-between"><span class="text-gray-600">Email</span><span class="font-medium">${r.email}</span></div>
-                                <div class="flex justify-between"><span class="text-gray-600">No. HP</span><span class="font-medium">${r.no_hp}</span></div>
-                            </div>
-                        </div>
-                        
-                        <div class="border rounded-lg p-4">
-                            <h4 class="font-bold text-gray-800 mb-3">📅 Detail Reservasi</h4>
-                            <div class="space-y-2 text-sm">
-                                <div class="flex justify-between"><span class="text-gray-600">Tanggal</span><span class="font-medium">${formatTanggal(r.tanggal)}</span></div>
-                                <div class="flex justify-between"><span class="text-gray-600">Jam</span><span class="font-medium">${r.jam}</span></div>
-                                <div class="flex justify-between"><span class="text-gray-600">Jumlah Orang</span><span class="font-medium">${r.jumlah_orang} orang</span></div>
-                                <div class="flex justify-between"><span class="text-gray-600">Paket</span><span class="font-medium">${r.paket_menu?.nama || '-'}</span></div>
-                                <div class="flex justify-between"><span class="text-gray-600">Ruangan</span><span class="font-medium">${r.ruangan?.nama || '-'}</span></div>
-                            </div>
-                        </div>
-                        
-                        ${r.catatan ? `<div class="border rounded-lg p-4"><h4 class="font-bold text-gray-800 mb-2">📝 Catatan</h4><p class="text-sm text-gray-700">${r.catatan}</p></div>` : ''}
+                document.getElementById('modalContent').innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white p-4 rounded-lg">
+                        <p class="text-sm opacity-90">Nomor Reservasi</p>
+                        <p class="text-2xl font-bold">${r.nomor_reservasi}</p>
                     </div>
                     
-                    <div class="space-y-4">
-                        <div class="border rounded-lg p-4 bg-green-50">
-                            <h4 class="font-bold text-gray-800 mb-3">💰 Pembayaran</h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center py-2 border-b">
-                                    <span class="text-gray-600">Total</span>
-                                    <span class="font-bold text-lg">${formatRupiah(r.total_harga)}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Tipe</span>
-                                    <span class="px-3 py-1 bg-yellow-500 text-white text-xs rounded-full">${tipePembayaranLabel[r.tipe_pembayaran] || r.tipe_pembayaran}</span>
-                                </div>
-                                <div class="flex justify-between py-2 bg-white rounded px-3">
-                                    <span class="text-gray-600">DP Dibayar</span>
-                                    <span class="font-bold text-green-600">${formatRupiah(r.jumlah_dibayar || 0)}</span>
-                                </div>
-                                <div class="flex justify-between py-2 bg-white rounded px-3">
-                                    <span class="text-gray-600">Sisa</span>
-                                    <span class="font-bold ${r.sisa_pembayaran > 0 ? 'text-orange-600' : 'text-green-600'}">${formatRupiah(r.sisa_pembayaran || 0)}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="border rounded-lg p-4">
-                            <h4 class="font-bold text-gray-800 mb-3">🖼️ Bukti Pembayaran</h4>
-                            ${r.bukti_pembayaran ? `
-                                                <img src="/storage/bukti_pembayaran/${r.bukti_pembayaran}" alt="Bukti" class="w-full rounded border-2 cursor-pointer hover:border-yellow-500" onclick="window.open(this.src, '_blank')">
-                                                <a href="/storage/bukti_pembayaran/${r.bukti_pembayaran}" target="_blank" class="mt-3 block text-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">📥 Download / Lihat</a>
-                                            ` : '<p class="text-gray-500 text-center py-4">Tidak ada bukti</p>'}
-                        </div>
-                        
-                        <div class="border rounded-lg p-4 bg-gray-50">
-                            <h4 class="font-bold text-gray-800 mb-2">📊 Status</h4>
-                            <span class="px-4 py-2 rounded-full text-sm font-medium inline-block
-                                ${r.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ''}
-                                ${r.status === 'approved' ? 'bg-green-100 text-green-800' : ''}
-                                ${r.status === 'rejected' ? 'bg-red-100 text-red-800' : ''}
-                                ${r.status === 'cancelled' ? 'bg-gray-100 text-gray-800' : ''}">
-                                ${r.status.toUpperCase()}
-                            </span>
+                    <div class="border rounded-lg p-4">
+                        <h4 class="font-bold text-gray-800 mb-3">📋 Data Pemesan</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between"><span class="text-gray-600">Nama</span><span class="font-medium">${r.nama}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600">Email</span><span class="font-medium">${r.email}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600">No. HP</span><span class="font-medium">${r.no_hp}</span></div>
                         </div>
                     </div>
+                    
+                    <div class="border rounded-lg p-4">
+                        <h4 class="font-bold text-gray-800 mb-3">📅 Detail Reservasi</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between"><span class="text-gray-600">Tanggal</span><span class="font-medium">${formatTanggal(r.tanggal)}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600">Jam</span><span class="font-medium">${r.jam}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600">Jumlah Orang</span><span class="font-medium">${r.jumlah_orang} orang</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600">Paket</span><span class="font-medium">${r.paket_menu?.nama || '-'}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600">Ruangan</span><span class="font-medium">${r.ruangan?.nama || '-'}</span></div>
+                        </div>
+                    </div>
+                    
+                    ${r.fasilitas && r.fasilitas.length > 0 ? `
+                        <div class="border rounded-lg p-4">
+                            <h4 class="font-bold text-gray-800 mb-3">✨ Fasilitas Tambahan</h4>
+                            <div class="space-y-2 text-sm">
+                                ${r.fasilitas.map(f => `
+                                    <div class="flex justify-between items-center py-2 border-b last:border-0">
+                                        <span class="text-gray-700">${f.nama}</span>
+                                        <span class="font-medium text-gray-900">${formatRupiah(f.harga)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${r.menu_tambahan && r.menu_tambahan.length > 0 ? `
+                        <div class="border rounded-lg p-4 bg-orange-50">
+                            <h4 class="font-bold text-gray-800 mb-3">🍽️ Menu Tambahan</h4>
+                            <div class="space-y-2">
+                                ${r.menu_tambahan.map(m => `
+                                    <div class="flex justify-between items-center py-2 px-3 bg-white rounded-lg border border-orange-200">
+                                        <div class="flex-1">
+                                            <p class="text-gray-800 font-semibold">${m.nama}</p>
+                                            <p class="text-xs text-gray-600 mt-1">
+                                                ${formatRupiah(m.harga)} × 
+                                                <span class="font-bold text-orange-600">${m.pivot?.qty || 1} porsi</span>
+                                            </p>
+                                        </div>
+                                        <span class="font-bold text-lg text-orange-600">${formatRupiah(m.harga * (m.pivot?.qty || 1))}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${r.catatan ? `<div class="border rounded-lg p-4"><h4 class="font-bold text-gray-800 mb-2">📝 Catatan</h4><p class="text-sm text-gray-700">${r.catatan}</p></div>` : ''}
                 </div>
-            `;
-                    } else {
-                        document.getElementById('modalContent').innerHTML =
-                            `<div class="text-center py-8"><p class="text-red-600 font-medium">❌ Gagal memuat detail</p></div>`;
-                    }
-                })
-                .catch(error => {
-                    document.getElementById('modalContent').innerHTML =
-                        `<div class="text-center py-8"><p class="text-red-600 font-medium">⚠️ Kesalahan koneksi</p></div>`;
-                });
-        }
-
-        function closeModal() {
-            document.getElementById('detailModal').classList.add('hidden');
-        }
-
-        function updateStatus(id, status) {
-            if (!confirm('Yakin ingin mengubah status?')) {
-                location.reload();
-                return;
+                
+                <div class="space-y-4">
+                    <div class="border rounded-lg p-4 bg-green-50">
+                        <h4 class="font-bold text-gray-800 mb-3">💰 Pembayaran</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center py-2 border-b">
+                                <span class="text-gray-600">Total</span>
+                                <span class="font-bold text-lg">${formatRupiah(r.total_harga)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Tipe</span>
+                                <span class="px-3 py-1 bg-yellow-500 text-white text-xs rounded-full">${tipePembayaranLabel[r.tipe_pembayaran] || r.tipe_pembayaran}</span>
+                            </div>
+                            <div class="flex justify-between py-2 bg-white rounded px-3">
+                                <span class="text-gray-600">DP Dibayar</span>
+                                <span class="font-bold text-green-600">${formatRupiah(r.jumlah_dibayar || 0)}</span>
+                            </div>
+                            <div class="flex justify-between py-2 bg-white rounded px-3">
+                                <span class="text-gray-600">Sisa</span>
+                                <span class="font-bold ${r.sisa_pembayaran > 0 ? 'text-orange-600' : 'text-green-600'}">${formatRupiah(r.sisa_pembayaran || 0)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4">
+                        <h4 class="font-bold text-gray-800 mb-3">🖼️ Bukti Pembayaran</h4>
+                        ${r.bukti_pembayaran ? `
+                            <img src="/storage/bukti_pembayaran/${r.bukti_pembayaran}" alt="Bukti" class="w-full rounded border-2 cursor-pointer hover:border-yellow-500" onclick="window.open(this.src, '_blank')">
+                            <a href="/storage/bukti_pembayaran/${r.bukti_pembayaran}" target="_blank" class="mt-3 block text-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">📥 Download / Lihat</a>
+                        ` : '<p class="text-gray-500 text-center py-4">Tidak ada bukti</p>'}
+                    </div>
+                    
+                    <div class="border rounded-lg p-4 bg-gray-50">
+                        <h4 class="font-bold text-gray-800 mb-2">📊 Status</h4>
+                        <span class="px-4 py-2 rounded-full text-sm font-medium inline-block
+                            ${r.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ''}
+                            ${r.status === 'approved' ? 'bg-green-100 text-green-800' : ''}
+                            ${r.status === 'rejected' ? 'bg-red-100 text-red-800' : ''}
+                            ${r.status === 'cancelled' ? 'bg-gray-100 text-gray-800' : ''}">
+                            ${r.status.toUpperCase()}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
+            } else {
+                document.getElementById('modalContent').innerHTML =
+                    `<div class="text-center py-8"><p class="text-red-600 font-medium">❌ Gagal memuat detail</p></div>`;
             }
+        })
+        .catch(error => {
+            document.getElementById('modalContent').innerHTML =
+                `<div class="text-center py-8"><p class="text-red-600 font-medium">⚠️ Kesalahan koneksi</p></div>`;
+        });
+}
 
-            fetch(`/admin/reservasi/${id}/update-status`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        status: status
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.success ? 'Status berhasil diupdate' : 'Gagal update');
-                    location.reload();
-                })
-                .catch(() => {
-                    alert('Terjadi kesalahan');
-                    location.reload();
-                });
-        }
+function closeModal() {
+    document.getElementById('detailModal').classList.add('hidden');
+}
 
-        function deleteReservasi(id) {
-            if (!confirm('Yakin ingin menghapus?')) return;
+function updateStatus(id, status) {
+    if (!confirm('Yakin ingin mengubah status?')) {
+        location.reload();
+        return;
+    }
 
-            fetch(`/admin/reservasi/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.success ? 'Berhasil dihapus' : 'Gagal');
-                    location.reload();
-                });
-        }
+    fetch(`/admin/reservasi/${id}/update-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                status: status
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.success ? 'Status berhasil diupdate' : 'Gagal update');
+            location.reload();
+        })
+        .catch(() => {
+            alert('Terjadi kesalahan');
+            location.reload();
+        });
+}
 
-      
-            function downloadExcel() {
-                // Ambil parameter filter yang sedang aktif
-                const urlParams = new URLSearchParams(window.location.search);
-                const status = urlParams.get('status') || '';
-                const tanggal_mulai = urlParams.get('tanggal_mulai') || '';
-                const tanggal_akhir = urlParams.get('tanggal_akhir') || '';
-                const search = urlParams.get('search') || '';
+function deleteReservasi(id) {
+    if (!confirm('Yakin ingin menghapus?')) return;
 
-                // Buat URL dengan parameter
-                let exportUrl = '{{ route('admin.reservasi.export-excel') }}?';
-                if (status) exportUrl += `status=${status}&`;
-                if (tanggal_mulai) exportUrl += `tanggal_mulai=${tanggal_mulai}&`;
-                if (tanggal_akhir) exportUrl += `tanggal_akhir=${tanggal_akhir}&`;
-                if (search) exportUrl += `search=${search}&`;
-
-                // Redirect untuk download
-                window.location.href = exportUrl;
+    fetch(`/admin/reservasi/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
             }
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.success ? 'Berhasil dihapus' : 'Gagal');
+            location.reload();
+        });
+}
+
+function downloadExcel() {
+    // Ambil parameter filter yang sedang aktif
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status') || '';
+    const tanggal_mulai = urlParams.get('tanggal_mulai') || '';
+    const tanggal_akhir = urlParams.get('tanggal_akhir') || '';
+    const search = urlParams.get('search') || '';
+
+    // Buat URL dengan parameter
+    let exportUrl = '{{ route('admin.reservasi.export-excel') }}?';
+    if (status) exportUrl += `status=${status}&`;
+    if (tanggal_mulai) exportUrl += `tanggal_mulai=${tanggal_mulai}&`;
+    if (tanggal_akhir) exportUrl += `tanggal_akhir=${tanggal_akhir}&`;
+    if (search) exportUrl += `search=${search}&`;
+
+    // Redirect untuk download
+    window.location.href = exportUrl;
+}
     </script>
 </body>
 
