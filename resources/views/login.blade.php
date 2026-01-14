@@ -122,7 +122,7 @@
 
         <!-- Footer Text -->
         <p class="text-center text-xs text-gray-400 mt-6">
-            🏨 Luxury Hotel - Pengalaman Menginap Terbaik
+            🏨 Cafe Ndalem Hanoman 
         </p>
             </div>
     </div>
