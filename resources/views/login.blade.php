@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Luxury Hotel</title>
+  <title>Login -Cafe Ndalem Hanoman l</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
@@ -58,7 +58,7 @@
         </div>
 
         <h2 class="luxury-title text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-2">Login</h2>
-        <p class="text-center text-gray-600 text-sm mb-6">Selamat datang kembali di Luxury Hotel</p>
+        <p class="text-center text-gray-600 text-sm mb-6">Selamat datang kembali di Cafe Ndalem Hanoman</p>
 
         @if(session('error'))
             <div class="bg-red-50 border-2 border-red-300 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
